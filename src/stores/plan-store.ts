@@ -1,14 +1,16 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { PlanInterval } from "@/data/services";
+import type { PlanInterval, ServiceFrequency } from "@/data/services";
 
 interface PlanState {
   selectedServices: string[];
   planInterval: PlanInterval;
+  serviceFrequencies: Record<string, ServiceFrequency>; // per-service frequency override
 
   toggleService: (id: string) => void;
   setServices: (ids: string[]) => void;
   setPlanInterval: (interval: PlanInterval) => void;
+  setServiceFrequency: (serviceId: string, frequency: ServiceFrequency) => void;
   clearServices: () => void;
   reset: () => void;
 }
@@ -18,6 +20,7 @@ export const usePlanStore = create<PlanState>()(
     (set) => ({
       selectedServices: [],
       planInterval: "monthly",
+      serviceFrequencies: {},
 
       toggleService: (id) =>
         set((state) => ({
@@ -27,8 +30,15 @@ export const usePlanStore = create<PlanState>()(
         })),
       setServices: (ids) => set({ selectedServices: ids }),
       setPlanInterval: (interval) => set({ planInterval: interval }),
-      clearServices: () => set({ selectedServices: [] }),
-      reset: () => set({ selectedServices: [], planInterval: "monthly" }),
+      setServiceFrequency: (serviceId, frequency) =>
+        set((state) => ({
+          serviceFrequencies: {
+            ...state.serviceFrequencies,
+            [serviceId]: frequency,
+          },
+        })),
+      clearServices: () => set({ selectedServices: [], serviceFrequencies: {} }),
+      reset: () => set({ selectedServices: [], planInterval: "monthly", serviceFrequencies: {} }),
     }),
     { name: "mhp-plan" }
   )

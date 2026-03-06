@@ -7,8 +7,8 @@ import { Badge } from "@/components/ui/badge";
 import { ShimmerButton } from "@/components/ui/motion";
 import { Button } from "@/components/ui/button";
 
-const line1Words = ["All", "Your", "Home", "Services."];
-const line2Words = ["One", "Monthly", "Plan."];
+const line1Words = ["One", "Plan.", "One", "Payment."];
+const line2Words = ["Your", "Entire", "Home", "-", "Handled."];
 
 export function HeroTextReveal() {
   return (
@@ -36,7 +36,7 @@ export function HeroTextReveal() {
         <span className="block">
           {line1Words.map((word, i) => (
             <motion.span
-              key={word}
+              key={`l1-${i}`}
               initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{
@@ -51,10 +51,10 @@ export function HeroTextReveal() {
             </motion.span>
           ))}
         </span>
-        <span className="block mt-1 sm:mt-2">
+        <span className="mt-1 block sm:mt-2">
           {line2Words.map((word, i) => (
             <motion.span
-              key={word}
+              key={`l2-${i}`}
               initial={{ opacity: 0, y: 30, filter: "blur(10px)" }}
               animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
               transition={{
@@ -78,9 +78,9 @@ export function HeroTextReveal() {
         transition={{ duration: 0.6, delay: 1.2 }}
         className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:mt-8 sm:text-lg md:text-xl"
       >
-        Stop juggling 10 different contractors. Subscribe to one plan that
-        covers lawn care, snow removal, HVAC, cleaning, and everything in
-        between. Vetted pros. Guaranteed scheduling. Predictable pricing.
+        Stop juggling contractors, negotiating quotes, and hoping someone shows
+        up. My Home Plan manages every service your home needs for one
+        predictable monthly price.
       </motion.p>
 
       {/* CTAs */}
@@ -92,7 +92,7 @@ export function HeroTextReveal() {
       >
         <Link href="/onboarding">
           <ShimmerButton className="h-12 px-8 text-base">
-            Get Started
+            Build Your Plan
             <ArrowRight className="ml-2 inline h-4 w-4" />
           </ShimmerButton>
         </Link>

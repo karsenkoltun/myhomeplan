@@ -3,10 +3,31 @@ import { persist } from "zustand/middleware";
 
 export type UserType = "homeowner" | "contractor" | "strata";
 
+export interface AddressInfo {
+  street: string;
+  unit: string;
+  city: string;
+  province: string;
+  postalCode: string;
+}
+
 export interface AccountInfo {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
+  dateOfBirth: string; // YYYY-MM-DD
+  address: AddressInfo;
+  mailingAddressSame: boolean;
+  mailingAddress?: AddressInfo;
+  preferredContact: "email" | "phone" | "text";
+  emergencyContactName: string;
+  emergencyContactPhone: string;
+  howDidYouHear: string;
+  referralCode: string;
+  agreedToTerms: boolean;
+  agreedToPrivacy: boolean;
+  marketingOptIn: boolean;
 }
 
 interface UserState {

@@ -12,10 +12,11 @@ import { ChevronDown, CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, 
 import { useState } from "react";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
-import { SERVICES } from "@/data/services";
+import { SERVICES, SERVICE_FREQUENCY_OPTIONS } from "@/data/services";
 import { SERVICE_SPECS, type SpecField } from "@/data/property-specs";
 import { calculateServicePrice } from "@/lib/pricing";
 import { SpringNumber } from "@/components/ui/motion";
+import { Clock } from "lucide-react";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
@@ -23,14 +24,14 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 export function StepServiceSpecs() {
-  const { selectedServices } = usePlanStore();
+  const { selectedServices, serviceFrequencies, setServiceFrequency } = usePlanStore();
   const { property, serviceSpecs, setServiceSpec } = usePropertyStore();
   const [openSections, setOpenSections] = useState<Set<string>>(new Set(selectedServices.slice(0, 1)));
 
   const selectedServiceData = SERVICES.filter((s) => selectedServices.includes(s.id));
 
   const totalMonthly = selectedServiceData.reduce(
-    (sum, s) => sum + calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id]),
+    (sum, s) => sum + calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property, serviceFrequencies[s.id]),
     0
   );
 
@@ -62,7 +63,9 @@ export function StepServiceSpecs() {
           const spec = SERVICE_SPECS.find((s) => s.serviceId === service.id);
           const Icon = ICON_MAP[service.icon] || CheckCircle2;
           const isOpen = openSections.has(service.id);
-          const price = calculateServicePrice(service, property.homeSqft, property.lotSqft, serviceSpecs[service.id]);
+          const price = calculateServicePrice(service, property.homeSqft, property.lotSqft, serviceSpecs[service.id], property, serviceFrequencies[service.id]);
+          const frequencyOptions = SERVICE_FREQUENCY_OPTIONS[service.id];
+          const currentFrequency = serviceFrequencies[service.id] || service.frequency;
 
           return (
             <Card key={service.id} className={isOpen ? "border-primary/30" : ""}>
@@ -91,6 +94,30 @@ export function StepServiceSpecs() {
                     transition={{ duration: 0.2 }}
                   >
                     <CardContent className="border-t pt-4">
+                      {/* Frequency selector */}
+                      {frequencyOptions && frequencyOptions.length > 1 && (
+                        <div className="mb-4 space-y-1.5">
+                          <Label className="flex items-center gap-1.5 text-xs">
+                            <Clock className="h-3 w-3" /> How often?
+                          </Label>
+                          <div className="flex flex-wrap gap-2">
+                            {frequencyOptions.map((opt) => (
+                              <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => setServiceFrequency(service.id, opt.value)}
+                                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                                  currentFrequency === opt.value
+                                    ? "border-primary bg-primary/10 text-primary"
+                                    : "border-border text-muted-foreground hover:border-primary/50"
+                                }`}
+                              >
+                                {opt.label}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                       <div className="grid gap-4 sm:grid-cols-2">
                         {spec.fields.map((field) => (
                           <SpecFieldInput

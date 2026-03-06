@@ -47,10 +47,10 @@ import {
   SERVICES,
   SERVICE_CATEGORIES,
   PLAN_DISCOUNTS,
-  calculateMonthlyPrice,
   type PlanInterval,
   type ServiceCategory,
 } from "@/data/services";
+import { calculateServicePrice } from "@/lib/pricing";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
@@ -76,7 +76,7 @@ export default function PlanBuilderPage() {
   const receipt = useMemo(() => {
     const items = SERVICES.filter((s) => selectedServices.has(s.id)).map((service) => ({
       service,
-      monthlyPrice: calculateMonthlyPrice(service, propertySqft, lotSqft),
+      monthlyPrice: calculateServicePrice(service, propertySqft, lotSqft),
     }));
     const subtotal = items.reduce((sum, item) => sum + item.monthlyPrice, 0);
     const discount = PLAN_DISCOUNTS[planInterval].discount;
@@ -172,7 +172,7 @@ export default function PlanBuilderPage() {
                       {categoryServices.map((service) => {
                         const Icon = ICON_MAP[service.icon] || CheckCircle2;
                         const isSelected = selectedServices.has(service.id);
-                        const monthlyPrice = calculateMonthlyPrice(service, propertySqft, lotSqft);
+                        const monthlyPrice = calculateServicePrice(service, propertySqft, lotSqft);
 
                         return (
                           <motion.div

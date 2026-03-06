@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useEffect, useCallback } from "react";
+import { Suspense, useEffect, useCallback, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -8,9 +8,19 @@ import { ArrowLeft, ArrowRight } from "lucide-react";
 import { OnboardingProgress } from "@/components/onboarding/onboarding-progress";
 import { StepUserType } from "@/components/onboarding/step-user-type";
 import { StepPropertyBasics, StepPropertyDetails } from "@/components/onboarding/step-property-info";
+import type { StepValidationRef } from "@/components/onboarding/step-property-info";
 import { StepServices } from "@/components/onboarding/step-services";
 import { StepServiceSpecs } from "@/components/onboarding/step-service-specs";
 import { StepReview } from "@/components/onboarding/step-review";
+import { StepContractorBusiness } from "@/components/onboarding/step-contractor-business";
+import { StepContractorServices } from "@/components/onboarding/step-contractor-services";
+import { StepContractorAvailability } from "@/components/onboarding/step-contractor-availability";
+import { StepContractorReferences } from "@/components/onboarding/step-contractor-references";
+import { StepStrataInfo } from "@/components/onboarding/step-strata-info";
+import { StepStrataProperty } from "@/components/onboarding/step-strata-property";
+import { StepStrataCoverage } from "@/components/onboarding/step-strata-coverage";
+import { StepStrataServices } from "@/components/onboarding/step-strata-services";
+import { StepStrataReview } from "@/components/onboarding/step-strata-review";
 import { useUserStore, type UserType } from "@/stores/user-store";
 import { usePlanStore } from "@/stores/plan-store";
 
@@ -25,15 +35,19 @@ const homeownerSteps = [
 
 const strataSteps = [
   "user-type",
-  "property-basics",
-  "services",
-  "service-specs",
-  "review",
+  "strata-info",
+  "strata-property",
+  "strata-coverage",
+  "strata-services",
+  "strata-review",
 ] as const;
 
 const contractorSteps = [
   "user-type",
-  "property-basics",
+  "contractor-business",
+  "contractor-services",
+  "contractor-availability",
+  "contractor-references",
   "review",
 ] as const;
 
@@ -69,6 +83,15 @@ function OnboardingContent() {
   const { userType, setUserType, onboardingStep, setOnboardingStep } = useUserStore();
   const { selectedServices } = usePlanStore();
 
+  // Refs for step validation
+  const propertyBasicsRef = useRef<StepValidationRef>(null);
+  const propertyDetailsRef = useRef<StepValidationRef>(null);
+  const servicesRef = useRef<StepValidationRef>(null);
+  const strataInfoRef = useRef<StepValidationRef>(null);
+  const strataPropertyRef = useRef<StepValidationRef>(null);
+  const strataCoverageRef = useRef<StepValidationRef>(null);
+  const strataServicesRef = useRef<StepValidationRef>(null);
+
   // Set user type from URL param
   useEffect(() => {
     const typeParam = searchParams.get("type") as UserType | null;
@@ -81,16 +104,33 @@ function OnboardingContent() {
   const steps = getSteps(userType);
   const currentStepName = steps[onboardingStep] || "user-type";
 
-  const canGoNext = () => {
-    if (currentStepName === "services" && selectedServices.length === 0) return false;
-    return true;
-  };
+  const validateCurrentStep = useCallback((): boolean => {
+    switch (currentStepName) {
+      case "property-basics":
+        return propertyBasicsRef.current?.validate() ?? true;
+      case "property-details":
+        return propertyDetailsRef.current?.validate() ?? true;
+      case "services":
+        return servicesRef.current?.validate() ?? true;
+      case "strata-info":
+        return strataInfoRef.current?.validate() ?? true;
+      case "strata-property":
+        return strataPropertyRef.current?.validate() ?? true;
+      case "strata-coverage":
+        return strataCoverageRef.current?.validate() ?? true;
+      case "strata-services":
+        return strataServicesRef.current?.validate() ?? true;
+      default:
+        return true;
+    }
+  }, [currentStepName]);
 
   const goNext = useCallback(() => {
+    if (!validateCurrentStep()) return;
     if (onboardingStep < steps.length - 1) {
       setOnboardingStep(onboardingStep + 1);
     }
-  }, [onboardingStep, steps.length, setOnboardingStep]);
+  }, [onboardingStep, steps.length, setOnboardingStep, validateCurrentStep]);
 
   const goBack = useCallback(() => {
     if (onboardingStep > 0) {
@@ -110,7 +150,7 @@ function OnboardingContent() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && currentStepName !== "user-type" && currentStepName !== "review" && canGoNext()) {
+      if (e.key === "Enter" && currentStepName !== "user-type" && currentStepName !== "review") {
         goNext();
       }
       if (e.key === "Escape" && onboardingStep > 0) {
@@ -126,13 +166,31 @@ function OnboardingContent() {
       case "user-type":
         return <StepUserType onSelect={handleUserTypeSelect} />;
       case "property-basics":
-        return <StepPropertyBasics />;
+        return <StepPropertyBasics ref={propertyBasicsRef} />;
       case "property-details":
-        return <StepPropertyDetails />;
+        return <StepPropertyDetails ref={propertyDetailsRef} />;
       case "services":
-        return <StepServices />;
+        return <StepServices ref={servicesRef} />;
       case "service-specs":
         return <StepServiceSpecs />;
+      case "contractor-business":
+        return <StepContractorBusiness />;
+      case "contractor-services":
+        return <StepContractorServices />;
+      case "contractor-availability":
+        return <StepContractorAvailability />;
+      case "contractor-references":
+        return <StepContractorReferences />;
+      case "strata-info":
+        return <StepStrataInfo ref={strataInfoRef} />;
+      case "strata-property":
+        return <StepStrataProperty ref={strataPropertyRef} />;
+      case "strata-coverage":
+        return <StepStrataCoverage ref={strataCoverageRef} />;
+      case "strata-services":
+        return <StepStrataServices ref={strataServicesRef} />;
+      case "strata-review":
+        return <StepStrataReview onComplete={handleComplete} />;
       case "review":
         return <StepReview onComplete={handleComplete} />;
       default:
@@ -178,7 +236,7 @@ function OnboardingContent() {
           <Button variant="ghost" onClick={goBack} className="gap-2">
             <ArrowLeft className="h-4 w-4" /> Back
           </Button>
-          <Button onClick={goNext} disabled={!canGoNext()} className="gap-2">
+          <Button onClick={goNext} className="gap-2">
             Next <ArrowRight className="h-4 w-4" />
           </Button>
         </motion.div>

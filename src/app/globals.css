@@ -145,6 +145,16 @@ html {
 }
 
 /* Animation keyframes */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+.animate-shake {
+  animation: shake 0.5s ease-in-out;
+}
+
 @keyframes glow-pulse {
   0%, 100% { box-shadow: 0 0 20px oklch(0.55 0.18 250 / 0.15); }
   50% { box-shadow: 0 0 40px oklch(0.55 0.18 250 / 0.3); }
@@ -206,4 +216,27 @@ html {
 
 .scroll-indicator {
   animation: float 2s ease-in-out infinite;
+}
+
+/* Roadmap road glow effect */
+.roadmap-milestone-dot {
+  filter: drop-shadow(0 0 6px oklch(0.55 0.18 250 / 0.5));
+  transition: filter 0.3s ease;
+}
+
+.roadmap-card {
+  backdrop-filter: blur(8px);
+}
+
+@keyframes road-glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px oklch(0.55 0.18 250 / 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 10px oklch(0.55 0.18 250 / 0.5));
+  }
+}
+
+.dark .roadmap-milestone-dot {
+  filter: drop-shadow(0 0 8px oklch(0.68 0.17 250 / 0.6));
 }

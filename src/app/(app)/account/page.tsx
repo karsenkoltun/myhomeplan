@@ -41,7 +41,7 @@ export default function AccountPage() {
 
   const selectedServiceData = SERVICES.filter((s) => selectedServices.includes(s.id));
   const subtotal = selectedServiceData.reduce(
-    (sum, s) => sum + calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id]),
+    (sum, s) => sum + calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
     0
   );
   const discount = PLAN_DISCOUNTS[planInterval].discount;
@@ -56,7 +56,7 @@ export default function AccountPage() {
           animate={{ opacity: 1, y: 0 }}
         >
           <h1 className="text-2xl font-bold sm:text-3xl">
-            Welcome, {account.name.split(" ")[0]}!
+            Welcome, {account.firstName}!
           </h1>
           <p className="mt-1 text-muted-foreground">
             Here&apos;s your plan overview. Everything in one place.
@@ -93,7 +93,7 @@ export default function AccountPage() {
               <div className="space-y-2">
                 {selectedServiceData.slice(0, 5).map((service) => {
                   const Icon = ICON_MAP[service.icon] || CheckCircle2;
-                  const price = calculateServicePrice(service, property.homeSqft, property.lotSqft, serviceSpecs[service.id]);
+                  const price = calculateServicePrice(service, property.homeSqft, property.lotSqft, serviceSpecs[service.id], property);
                   return (
                     <div key={service.id} className="flex items-center justify-between text-sm">
                       <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ export default function AccountPage() {
             <div className="grid gap-2 text-sm sm:grid-cols-3">
               <div>
                 <p className="text-xs text-muted-foreground">Name</p>
-                <p className="font-medium">{account.name}</p>
+                <p className="font-medium">{account.firstName} {account.lastName}</p>
               </div>
               <div>
                 <p className="text-xs text-muted-foreground">Email</p>
