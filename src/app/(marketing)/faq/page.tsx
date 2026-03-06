@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FadeIn } from "@/components/ui/motion";
-import { ArrowRight, Home, Users } from "lucide-react";
+import { ArrowRight, Home, Users, Building2 } from "lucide-react";
 
 const homeownerFaqs = [
   { q: "What is My Home Plan?", a: "My Home Plan is a monthly subscription service that bundles all your home maintenance needs into one simple plan. Instead of hiring and managing multiple contractors for lawn care, snow removal, HVAC, cleaning, pest control, and more - you pay one monthly fee and we handle everything." },
@@ -20,6 +20,15 @@ const homeownerFaqs = [
   { q: "What areas do you serve?", a: "We currently serve the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland. We're expanding to more BC cities soon." },
   { q: "Is there a scheduling guarantee?", a: "Yes. We guarantee your service will happen within your scheduled window. If we can't make it work, your next service is free." },
   { q: "How is this different from a home warranty?", a: "Home warranties only cover breakdowns and repairs. My Home Plan covers proactive maintenance and regular services - lawn care, cleaning, HVAC tune-ups, pest control, and more. We prevent problems before they happen." },
+];
+
+const strataFaqs = [
+  { q: "How does strata pricing work?", a: "Pricing is per-unit per month, based on the services selected and building size. Common areas and special features like parkades and elevators are factored into the per-unit rate." },
+  { q: "Can the strata council approve the plan?", a: "Yes. We provide detailed proposals with clear scope, pricing, and service schedules that are easy to present at council meetings." },
+  { q: "What about emergency repairs?", a: "Mid-size and large building plans include emergency response coverage. We coordinate emergency contractors and notify the strata manager immediately." },
+  { q: "Do you handle multiple buildings?", a: "Yes. We manage multi-building complexes with coordinated maintenance schedules and dedicated account management for larger properties." },
+  { q: "Can we customize the service frequency?", a: "Absolutely. Every strata building is different. We tailor frequency, scope, and scheduling to your building's specific needs and budget." },
+  { q: "Is there a minimum contract term?", a: "We offer month-to-month, quarterly (5% savings), and annual (12% savings) plans. Quarterly and annual contracts are recommended for budget predictability." },
 ];
 
 const contractorFaqs = [
@@ -64,6 +73,26 @@ export default function FAQPage() {
         </div>
       </FadeIn>
 
+      {/* Strata FAQ */}
+      <FadeIn delay={0.15}>
+        <div className="mt-12 sm:mt-16" id="strata">
+          <div className="mb-4 flex items-center gap-3 sm:mb-6">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-500/10 sm:h-10 sm:w-10">
+              <Building2 className="h-4 w-4 text-emerald-600 sm:h-5 sm:w-5" />
+            </div>
+            <h2 className="text-xl font-bold sm:text-2xl">For Strata Corporations</h2>
+          </div>
+          <Accordion type="single" collapsible className="space-y-1.5 sm:space-y-2">
+            {strataFaqs.map((faq, i) => (
+              <AccordionItem key={i} value={`strata-${i}`} className="rounded-xl border bg-card px-3 sm:px-4">
+                <AccordionTrigger className="text-left text-xs font-semibold hover:no-underline sm:text-sm">{faq.q}</AccordionTrigger>
+                <AccordionContent className="text-xs text-muted-foreground sm:text-sm">{faq.a}</AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </FadeIn>
+
       {/* Contractor FAQ */}
       <FadeIn delay={0.2}>
         <div className="mt-12 sm:mt-16" id="contractors">
@@ -90,9 +119,9 @@ export default function FAQPage() {
           <p className="text-sm text-muted-foreground">Still have questions?</p>
           <div className="mt-3 flex flex-col items-center gap-2.5 sm:mt-4 sm:flex-row sm:justify-center sm:gap-3">
             <Button className="w-full sm:w-auto" asChild>
-              <Link href="/plan-builder">Build Your Plan <ArrowRight className="ml-2 h-4 w-4" /></Link>
+              <Link href="/onboarding">Get Started <ArrowRight className="ml-2 h-4 w-4" /></Link>
             </Button>
-            <Button variant="outline" className="w-full sm:w-auto">
+            <Button variant="outline" className="w-full sm:w-auto" asChild>
               <a href="mailto:hello@myhomeplan.ca">Contact Us</a>
             </Button>
           </div>

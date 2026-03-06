@@ -8,10 +8,10 @@ const footerLinks = {
     { name: "Plan Builder", href: "/plan-builder" },
     { name: "Service Area", href: "/service-area" },
   ],
-  Contractors: [
-    { name: "Join Our Network", href: "/contractors" },
-    { name: "Contractor FAQ", href: "/faq#contractors" },
-    { name: "Contractor Dashboard", href: "#" },
+  "Who It's For": [
+    { name: "Homeowners", href: "/homeowners" },
+    { name: "Contractors", href: "/contractors" },
+    { name: "Strata Corporations", href: "/strata" },
   ],
   Company: [
     { name: "About Us", href: "/about" },
@@ -20,13 +20,18 @@ const footerLinks = {
     { name: "Privacy Policy", href: "#" },
     { name: "Terms of Service", href: "#" },
   ],
+  Account: [
+    { name: "Get Started", href: "/onboarding" },
+    { name: "My Account", href: "/account" },
+    { name: "My Property", href: "/account/property" },
+  ],
 };
 
 export function Footer() {
   return (
     <footer className="border-t bg-muted/30">
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-8 md:grid-cols-5">
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2">

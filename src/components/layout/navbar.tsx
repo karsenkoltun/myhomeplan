@@ -5,21 +5,26 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, X } from "lucide-react";
-import { motion } from "framer-motion";
+import { Menu, Home, X, ChevronDown, Building2, HardHat, User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const navigation = [
   { name: "How It Works", href: "/how-it-works" },
   { name: "Pricing", href: "/pricing" },
   { name: "Plan Builder", href: "/plan-builder" },
-  { name: "Contractors", href: "/contractors" },
-  { name: "Service Area", href: "/service-area" },
   { name: "FAQ", href: "/faq" },
+];
+
+const whoItsFor = [
+  { name: "Homeowners", href: "/homeowners", icon: Home, desc: "Residential maintenance plans" },
+  { name: "Contractors", href: "/contractors", icon: HardHat, desc: "Join our contractor network" },
+  { name: "Strata Corporations", href: "/strata", icon: Building2, desc: "Building maintenance solutions" },
 ];
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -50,6 +55,44 @@ export function Navbar() {
 
         {/* Desktop Nav */}
         <div className="hidden items-center gap-0.5 lg:flex">
+          {/* Who It's For Dropdown */}
+          <div
+            className="relative"
+            onMouseEnter={() => setDropdownOpen(true)}
+            onMouseLeave={() => setDropdownOpen(false)}
+          >
+            <button className="flex items-center gap-1 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+              Who It&apos;s For
+              <ChevronDown className={`h-3.5 w-3.5 transition-transform ${dropdownOpen ? "rotate-180" : ""}`} />
+            </button>
+            <AnimatePresence>
+              {dropdownOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute left-0 top-full z-50 mt-1 w-64 rounded-xl border bg-background p-2 shadow-xl"
+                >
+                  {whoItsFor.map((item) => (
+                    <Link
+                      key={item.name}
+                      href={item.href}
+                      className="flex items-start gap-3 rounded-lg p-3 transition-colors hover:bg-muted"
+                      onClick={() => setDropdownOpen(false)}
+                    >
+                      <item.icon className="mt-0.5 h-4 w-4 text-primary" />
+                      <div>
+                        <p className="text-sm font-medium">{item.name}</p>
+                        <p className="text-xs text-muted-foreground">{item.desc}</p>
+                      </div>
+                    </Link>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
@@ -76,10 +119,13 @@ export function Navbar() {
         {/* Desktop CTAs */}
         <div className="hidden items-center gap-2 lg:flex">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/contractors">For Contractors</Link>
+            <Link href="/account" className="gap-1.5">
+              <User className="h-4 w-4" />
+              Account
+            </Link>
           </Button>
           <Button size="sm" asChild>
-            <Link href="/plan-builder">Build Your Plan</Link>
+            <Link href="/onboarding">Get Started</Link>
           </Button>
         </div>
 
@@ -102,7 +148,24 @@ export function Navbar() {
                 <X className="h-4 w-4" />
               </Button>
             </div>
+
             <div className="flex flex-col gap-0.5">
+              {/* Who It's For section */}
+              <p className="mb-1 mt-2 px-3 text-xs font-semibold text-muted-foreground">WHO IT&apos;S FOR</p>
+              {whoItsFor.map((item) => (
+                <Link
+                  key={item.name}
+                  href={item.href}
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  onClick={() => setOpen(false)}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.name}
+                </Link>
+              ))}
+
+              <div className="my-2 border-t" />
+
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (
@@ -120,12 +183,15 @@ export function Navbar() {
                   </Link>
                 );
               })}
+
               <div className="mt-3 flex flex-col gap-2 border-t pt-3">
                 <Button variant="outline" size="sm" asChild>
-                  <Link href="/contractors" onClick={() => setOpen(false)}>For Contractors</Link>
+                  <Link href="/account" onClick={() => setOpen(false)}>
+                    <User className="mr-1.5 h-4 w-4" /> Account
+                  </Link>
                 </Button>
                 <Button size="sm" asChild>
-                  <Link href="/plan-builder" onClick={() => setOpen(false)}>Build Your Plan</Link>
+                  <Link href="/onboarding" onClick={() => setOpen(false)}>Get Started</Link>
                 </Button>
               </div>
             </div>
