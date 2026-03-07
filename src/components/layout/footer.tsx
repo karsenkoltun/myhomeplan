@@ -14,12 +14,12 @@ const footerLinks = {
     { name: "Strata Corporations", href: "/strata" },
     { name: "Property Managers", href: "/property-managers" },
   ],
-  Company: [
+  Resources: [
+    { name: "Blog", href: "/blog" },
     { name: "About Us", href: "/about" },
     { name: "FAQ", href: "/faq" },
     { name: "Contact", href: "/about#contact" },
     { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
   ],
   Account: [
     { name: "Get Started", href: "/onboarding" },

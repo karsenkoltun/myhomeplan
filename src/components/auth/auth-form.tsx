@@ -191,6 +191,17 @@ export function AuthForm({ mode }: AuthFormProps) {
                 {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {mode === "login" ? "Sign in" : "Create account"}
               </Button>
+
+              {mode === "login" && (
+                <div className="mt-2 text-center">
+                  <Link
+                    href="/forgot-password"
+                    className="text-sm text-muted-foreground hover:text-primary hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+              )}
             </form>
 
             <p className="mt-6 text-center text-sm text-muted-foreground">
