@@ -3,7 +3,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { Users, User, Phone, Link2 } from "lucide-react";
@@ -32,8 +31,8 @@ export function StepContractorReferences() {
         <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600">
           <Users className="h-6 w-6" />
         </div>
-        <h2 className="text-center text-2xl font-bold sm:text-3xl">References & Agreement</h2>
-        <p className="mt-2 text-center text-muted-foreground">Provide references and review our standards.</p>
+        <h2 className="text-center text-2xl font-bold sm:text-3xl">References & Portfolio</h2>
+        <p className="mt-2 text-center text-muted-foreground">Provide references and describe your past work.</p>
       </div>
 
       <div className="mt-8 space-y-6">
@@ -132,55 +131,24 @@ export function StepContractorReferences() {
           </CardContent>
         </Card>
 
-        {/* Agreements */}
-        <Card className="border-sky-500/20">
+        {/* Portfolio Description */}
+        <Card>
           <CardContent className="p-5 sm:p-6">
-            <h3 className="mb-4 text-sm font-semibold">Agreements</h3>
-            <div className="space-y-4">
-              <label className="flex items-start gap-3 cursor-pointer">
-                <Checkbox
-                  checked={contractor.agreeBackgroundCheck}
-                  onCheckedChange={(v) => setContractor({ agreeBackgroundCheck: v === true })}
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="text-sm font-medium">I agree to a background check</p>
-                  <p className="text-xs text-muted-foreground">
-                    My Home Plan conducts background checks on all contractor partners for the safety of our homeowners.
-                  </p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <Checkbox
-                  checked={contractor.agreeQualityStandards}
-                  onCheckedChange={(v) => setContractor({ agreeQualityStandards: v === true })}
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="text-sm font-medium">I agree to My Home Plan quality standards</p>
-                  <p className="text-xs text-muted-foreground">
-                    You commit to maintaining high-quality work, timely communication, and professional conduct.
-                  </p>
-                </div>
-              </label>
-
-              <label className="flex items-start gap-3 cursor-pointer">
-                <Checkbox
-                  checked={contractor.agreeTerms}
-                  onCheckedChange={(v) => setContractor({ agreeTerms: v === true })}
-                  className="mt-0.5"
-                />
-                <div>
-                  <p className="text-sm font-medium">I agree to the Terms of Service</p>
-                  <p className="text-xs text-muted-foreground">
-                    By checking this box, you agree to our{" "}
-                    <span className="text-sky-600 underline">Terms of Service</span> and{" "}
-                    <span className="text-sky-600 underline">Privacy Policy</span>.
-                  </p>
-                </div>
-              </label>
-            </div>
+            <Label className="mb-2 block text-sm font-semibold">
+              Portfolio / Past Work Description
+            </Label>
+            <p className="mb-3 text-xs text-muted-foreground">Describe notable projects, specializations, or achievements.</p>
+            <textarea
+              value={contractor.portfolioDescription}
+              onChange={(e) => setContractor({ portfolioDescription: e.target.value })}
+              placeholder="e.g. 10+ years of residential landscaping in the Okanagan. Specialized in irrigation systems and drought-resistant gardens. Completed 200+ projects..."
+              rows={5}
+              className={cn(
+                "flex w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs transition-colors placeholder:text-muted-foreground",
+                "focus-visible:border-ring focus-visible:outline-none focus-visible:ring-[3px] focus-visible:ring-ring/50",
+                "dark:bg-input/30"
+              )}
+            />
           </CardContent>
         </Card>
       </div>

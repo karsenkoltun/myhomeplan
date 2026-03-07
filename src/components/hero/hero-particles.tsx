@@ -26,7 +26,6 @@ export function HeroParticles() {
           }}
           animate={{
             y: [-20, 20, -20],
-            x: [-10, 10, -10],
             opacity: [0.2, 0.5, 0.2],
           }}
           transition={{

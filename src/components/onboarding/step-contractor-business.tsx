@@ -14,27 +14,8 @@ const businessTypes: { value: BusinessType; label: string; description: string }
   { value: "corporation", label: "Corporation", description: "Incorporated business" },
 ];
 
-const okanaganCities = [
-  "Kelowna",
-  "West Kelowna",
-  "Penticton",
-  "Vernon",
-  "Lake Country",
-  "Summerland",
-  "Peachland",
-];
-
 export function StepContractorBusiness() {
   const { contractor, setContractor } = usePropertyStore();
-
-  const toggleCity = (city: string) => {
-    const current = contractor.serviceArea;
-    if (current.includes(city)) {
-      setContractor({ serviceArea: current.filter((c) => c !== city) });
-    } else {
-      setContractor({ serviceArea: [...current, city] });
-    }
-  };
 
   return (
     <div className="mx-auto max-w-2xl">
@@ -134,31 +115,26 @@ export function StepContractorBusiness() {
           </CardContent>
         </Card>
 
-        {/* Service Area */}
+        {/* Business Registration */}
         <Card>
-          <CardContent className="p-5 sm:p-6">
-            <Label className="mb-3 block">Service Area <span className="text-red-500">*</span></Label>
-            <p className="mb-3 text-xs text-muted-foreground">Select all cities you service in the Okanagan.</p>
-            <div className="flex flex-wrap gap-2">
-              {okanaganCities.map((city) => {
-                const isSelected = contractor.serviceArea.includes(city);
-                return (
-                  <motion.button
-                    key={city}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => toggleCity(city)}
-                    className={cn(
-                      "flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-medium transition-all",
-                      isSelected
-                        ? "border-sky-500 bg-sky-500/10 text-sky-700 dark:text-sky-400"
-                        : "border-border/50 text-muted-foreground hover:border-sky-500/30 hover:bg-muted/50"
-                    )}
-                  >
-                    {isSelected && <Check className="h-3.5 w-3.5" />}
-                    {city}
-                  </motion.button>
-                );
-              })}
+          <CardContent className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6">
+            <div className="space-y-2">
+              <Label>Business Registration # <span className="text-xs text-muted-foreground">(CRA)</span></Label>
+              <Input
+                value={contractor.businessNumber}
+                onChange={(e) => setContractor({ businessNumber: e.target.value })}
+                placeholder="e.g. BN123456789"
+                className="h-11"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>GST/HST Number</Label>
+              <Input
+                value={contractor.gstNumber}
+                onChange={(e) => setContractor({ gstNumber: e.target.value })}
+                placeholder="e.g. 123456789RT0001"
+                className="h-11"
+              />
             </div>
           </CardContent>
         </Card>

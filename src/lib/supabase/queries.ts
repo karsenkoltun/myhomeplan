@@ -1,0 +1,544 @@
+import { createClient } from "./client";
+
+const supabase = () => createClient();
+
+// ---- PROFILES ----
+
+export async function getProfile(userId: string) {
+  const { data, error } = await supabase()
+    .from("profiles")
+    .select("*")
+    .eq("id", userId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateProfile(userId: string, updates: Record<string, unknown>) {
+  const { data, error } = await supabase()
+    .from("profiles")
+    .update(updates)
+    .eq("id", userId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- HOMEOWNER PROPERTIES ----
+
+export async function getProperty(userId: string) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertProperty(
+  userId: string,
+  propertyData: Record<string, unknown>
+) {
+  const existing = await getProperty(userId);
+
+  if (existing) {
+    const { data, error } = await supabase()
+      .from("homeowner_properties")
+      .update(propertyData)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } else {
+    const { data, error } = await supabase()
+      .from("homeowner_properties")
+      .insert({ ...propertyData, profile_id: userId })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+// ---- STRATA PROPERTIES ----
+
+export async function getStrataProperty(userId: string) {
+  const { data, error } = await supabase()
+    .from("strata_properties")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertStrataProperty(userId: string, strataData: Record<string, unknown>) {
+  const existing = await getStrataProperty(userId);
+
+  if (existing) {
+    const { data, error } = await supabase()
+      .from("strata_properties")
+      .update(strataData)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } else {
+    const { data, error } = await supabase()
+      .from("strata_properties")
+      .insert({ ...strataData, profile_id: userId })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+// ---- CONTRACTOR PROFILES ----
+
+export async function getContractorProfile(userId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertContractorProfile(userId: string, contractorData: Record<string, unknown>) {
+  const existing = await getContractorProfile(userId);
+
+  if (existing) {
+    const { data, error } = await supabase()
+      .from("contractor_profiles")
+      .update(contractorData)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } else {
+    const { data, error } = await supabase()
+      .from("contractor_profiles")
+      .insert({ ...contractorData, profile_id: userId })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+// ---- CONTRACTOR REFERENCES ----
+
+export async function saveContractorReferences(
+  contractorProfileId: string,
+  references: { name: string; phone: string; relationship: string }[]
+) {
+  await supabase()
+    .from("contractor_references")
+    .delete()
+    .eq("contractor_profile_id", contractorProfileId);
+
+  const validRefs = references.filter((r) => r.name.trim());
+  if (validRefs.length === 0) return;
+
+  const { error } = await supabase()
+    .from("contractor_references")
+    .insert(
+      validRefs.map((r) => ({
+        contractor_profile_id: contractorProfileId,
+        name: r.name,
+        phone: r.phone,
+        relationship: r.relationship,
+      }))
+    );
+  if (error) throw error;
+}
+
+// ---- PM COMPANIES ----
+
+export async function getPMCompany(userId: string) {
+  const { data, error } = await supabase()
+    .from("pm_companies")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function upsertPMCompany(userId: string, companyData: Record<string, unknown>) {
+  const existing = await getPMCompany(userId);
+
+  if (existing) {
+    const { data, error } = await supabase()
+      .from("pm_companies")
+      .update(companyData)
+      .eq("id", existing.id)
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  } else {
+    const { data, error } = await supabase()
+      .from("pm_companies")
+      .insert({ ...companyData, profile_id: userId })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  }
+}
+
+// ---- PM CONTACTS ----
+
+export async function savePMContacts(
+  pmCompanyId: string,
+  contacts: { name: string; email: string; phone: string; role: string; is_primary: boolean; can_approve_reports: boolean; can_approve_invoices: boolean; receives_notifications: boolean }[]
+) {
+  await supabase()
+    .from("pm_company_contacts")
+    .delete()
+    .eq("pm_company_id", pmCompanyId);
+
+  const validContacts = contacts.filter((c) => c.name.trim());
+  if (validContacts.length === 0) return;
+
+  const { error } = await supabase()
+    .from("pm_company_contacts")
+    .insert(
+      validContacts.map((c) => ({
+        pm_company_id: pmCompanyId,
+        ...c,
+      }))
+    );
+  if (error) throw error;
+}
+
+// ---- PM MANAGED PROPERTIES ----
+
+export async function savePMManagedProperties(
+  pmCompanyId: string,
+  properties: Record<string, unknown>[]
+) {
+  await supabase()
+    .from("pm_managed_properties")
+    .delete()
+    .eq("pm_company_id", pmCompanyId);
+
+  if (properties.length === 0) return;
+
+  const { error } = await supabase()
+    .from("pm_managed_properties")
+    .insert(
+      properties.map((p) => ({
+        pm_company_id: pmCompanyId,
+        ...p,
+      }))
+    );
+  if (error) throw error;
+}
+
+// ---- SUBSCRIPTIONS ----
+
+export async function getSubscription(userId: string) {
+  const { data, error } = await supabase()
+    .from("subscriptions")
+    .select("*, subscription_services(*)")
+    .eq("profile_id", userId)
+    .eq("status", "active")
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function createSubscription(
+  userId: string,
+  propertyId: string | null,
+  planInterval: "monthly" | "quarterly" | "annual",
+  monthlyTotal: number,
+  discountPct: number,
+  services: { serviceId: string; frequency: string; specs: Record<string, unknown>; monthlyPrice: number }[]
+) {
+  const { data: sub, error: subError } = await supabase()
+    .from("subscriptions")
+    .insert({
+      profile_id: userId,
+      property_id: propertyId,
+      plan_interval: planInterval,
+      monthly_total: monthlyTotal,
+      discount_pct: discountPct,
+      status: "active" as const,
+    })
+    .select()
+    .single();
+
+  if (subError) throw subError;
+
+  if (services.length > 0) {
+    const { error: svcError } = await supabase()
+      .from("subscription_services")
+      .insert(
+        services.map((s) => ({
+          subscription_id: sub.id,
+          service_id: s.serviceId,
+          frequency: s.frequency,
+          specs: s.specs,
+          calculated_monthly_price: s.monthlyPrice,
+        }))
+      );
+    if (svcError) throw svcError;
+  }
+
+  return sub;
+}
+
+// ---- SERVICES (from DB catalog) ----
+
+export async function getServices() {
+  const { data, error } = await supabase()
+    .from("services")
+    .select("*")
+    .eq("active", true)
+    .order("sort_order");
+  if (error) throw error;
+  return data;
+}
+
+export async function getStrataServices() {
+  const { data, error } = await supabase()
+    .from("strata_services")
+    .select("*")
+    .eq("active", true)
+    .order("sort_order");
+  if (error) throw error;
+  return data;
+}
+
+export async function getPlanTiers() {
+  const { data, error } = await supabase()
+    .from("plan_tiers")
+    .select("*")
+    .eq("active", true)
+    .order("sort_order");
+  if (error) throw error;
+  return data;
+}
+
+// ---- PRICING CONFIG (admin-editable multipliers) ----
+
+export async function getPricingAdjustments() {
+  const { data, error } = await supabase()
+    .from("pricing_adjustments")
+    .select("*");
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePricingAdjustment(
+  category: string,
+  serviceId: string,
+  key: string,
+  value: number
+) {
+  const { data, error } = await supabase()
+    .from("pricing_adjustments")
+    .update({ adjustment_value: value })
+    .eq("category", category)
+    .eq("service_id", serviceId)
+    .eq("adjustment_key", key)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePlatformConfig(key: string, value: string | number) {
+  const { data, error } = await supabase()
+    .from("platform_config")
+    .update({ value: JSON.stringify(value) })
+    .eq("key", key)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateServiceBasePrice(serviceId: string, basePrice: number) {
+  const { data, error } = await supabase()
+    .from("services")
+    .update({ base_price: basePrice })
+    .eq("id", serviceId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateStrataServicePrice(
+  serviceId: string,
+  basePerUnit: number,
+  basePerSqft: number
+) {
+  const { data, error } = await supabase()
+    .from("strata_services")
+    .update({ base_per_unit: basePerUnit, base_per_sqft: basePerSqft })
+    .eq("id", serviceId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- SERVICE BOOKINGS ----
+
+export async function getBookingsForProperty(propertyId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("*")
+    .eq("property_id", propertyId)
+    .order("scheduled_date", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getBookingsForContractor(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("*")
+    .eq("contractor_profile_id", contractorProfileId)
+    .order("scheduled_date", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createBooking(booking: {
+  property_id: string;
+  service_id: string;
+  scheduled_date: string;
+  scheduled_time: string;
+  notes?: string;
+  contractor_profile_id?: string;
+  price?: number;
+  subscription_id?: string;
+}) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .insert({
+      ...booking,
+      status: "scheduled" as const,
+      payment_status: "pending" as const,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateBookingStatus(
+  bookingId: string,
+  status: "scheduled" | "confirmed" | "in_progress" | "completed" | "cancelled" | "no_show"
+) {
+  const updates: Record<string, unknown> = { status };
+  if (status === "completed") updates.completed_at = new Date().toISOString();
+
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .update(updates)
+    .eq("id", bookingId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- NOTIFICATIONS ----
+
+export async function getNotifications(profileId: string) {
+  const { data, error } = await supabase()
+    .from("notifications")
+    .select("*")
+    .eq("profile_id", profileId)
+    .order("created_at", { ascending: false })
+    .limit(20);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createNotification(notification: {
+  profile_id: string;
+  title: string;
+  body: string;
+  type: string;
+  data?: Record<string, unknown>;
+}) {
+  const { data, error } = await supabase()
+    .from("notifications")
+    .insert(notification)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function markNotificationRead(notificationId: string) {
+  const { data, error } = await supabase()
+    .from("notifications")
+    .update({ read: true })
+    .eq("id", notificationId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- CONTRACTOR AVAILABILITY ----
+
+export async function getAvailableContractorsForService(serviceId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .select("*")
+    .eq("vetting_status", "approved")
+    .contains("services_offered", [serviceId]);
+  if (error) throw error;
+  return data ?? [];
+}
+
+// ---- PM CONTACTS (read) ----
+
+export async function getPMContacts(pmCompanyId: string) {
+  const { data, error } = await supabase()
+    .from("pm_company_contacts")
+    .select("*")
+    .eq("pm_company_id", pmCompanyId)
+    .order("is_primary", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+// ---- PM MANAGED PROPERTIES (read) ----
+
+export async function getPMManagedProperties(pmCompanyId: string) {
+  const { data, error } = await supabase()
+    .from("pm_managed_properties")
+    .select("*")
+    .eq("pm_company_id", pmCompanyId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}

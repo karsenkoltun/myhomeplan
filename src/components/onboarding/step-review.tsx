@@ -4,19 +4,21 @@ import { useState } from "react";
 import { z } from "zod";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { CheckCircle2, Sparkles, type LucideIcon, Scissors, Snowflake, Thermometer, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Building2, MapPin, Clock, FileSearch, ShieldCheck, Phone, Briefcase, ArrowRight } from "lucide-react";
+import { CheckCircle2, Sparkles, type LucideIcon, Scissors, Snowflake, Thermometer, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Building2, MapPin, Clock, FileSearch, ShieldCheck, Phone, Briefcase, ArrowRight, Loader2, Shield, DollarSign } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { usePropertyStore } from "@/stores/property-store";
 import { usePlanStore } from "@/stores/plan-store";
+import { useAuth } from "@/components/auth/auth-provider";
 import { SERVICES, PLAN_DISCOUNTS } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
+import { updateProfile, upsertProperty, upsertContractorProfile, saveContractorReferences, createSubscription } from "@/lib/supabase/queries";
 import { SpringNumber, ShimmerButton } from "@/components/ui/motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { RequiredLabel, FieldError } from "./shared";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
@@ -30,19 +32,6 @@ const accountSchema = z.object({
   phone: z.string().min(1, "This field is required"),
 });
 
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Label>
-      {children} <span className="text-red-500">*</span>
-    </Label>
-  );
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-500 mt-1">{message}</p>;
-}
-
 export function StepReview({ onComplete }: { onComplete: () => void }) {
   const { userType } = useUserStore();
 
@@ -50,18 +39,20 @@ export function StepReview({ onComplete }: { onComplete: () => void }) {
     return <ContractorReview onComplete={onComplete} />;
   }
 
-  return <HomeownerStrataReview onComplete={onComplete} />;
+  return <HomeownerReview onComplete={onComplete} />;
 }
 
-function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
+function HomeownerReview({ onComplete }: { onComplete: () => void }) {
   const { setAccount, completeOnboarding } = useUserStore();
   const { property, serviceSpecs } = usePropertyStore();
   const { selectedServices, planInterval, setPlanInterval } = usePlanStore();
+  const { user } = useAuth();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [shaking, setShaking] = useState(false);
 
@@ -84,7 +75,7 @@ function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
     }
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const result = accountSchema.safeParse({ firstName, lastName, email, phone });
 
     if (!result.success) {
@@ -101,27 +92,117 @@ function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
     }
 
     setErrors({});
-    setAccount({
-      firstName,
-      lastName,
-      email,
-      phone,
-      dateOfBirth: "",
-      address: { street: property.address, unit: "", city: "", province: "BC", postalCode: "" },
-      mailingAddressSame: true,
-      preferredContact: "email",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      howDidYouHear: "",
-      referralCode: "",
-      agreedToTerms: true,
-      agreedToPrivacy: true,
-      marketingOptIn: false,
-    });
-    completeOnboarding();
-    setSubmitted(true);
-    toast.success("Welcome to My Home Plan!");
-    setTimeout(onComplete, 1500);
+    setSaving(true);
+
+    try {
+      if (user) {
+        await updateProfile(user.id, {
+          first_name: firstName,
+          last_name: lastName,
+          email,
+          phone,
+          street: property.address,
+          province: "BC",
+          onboarding_complete: true,
+          agreed_to_terms: true,
+          agreed_to_privacy: true,
+        });
+
+        const savedProperty = await upsertProperty(user.id, {
+          address: property.address,
+          home_sqft: property.homeSqft,
+          lot_sqft: property.lotSqft,
+          year_built: property.yearBuilt,
+          home_type: property.homeType,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          floors: property.floors,
+          heating_type: property.heatingType,
+          has_ac: property.hasAC,
+          has_garage: property.hasGarage,
+          has_driveway: property.hasDriveway,
+          has_deck: property.hasDeck,
+          has_fence: property.hasFence,
+          has_pets: property.hasPets,
+          roof_type: property.roofType,
+          exterior_material: property.exteriorMaterial,
+          foundation: property.foundation,
+          window_count: property.windowCount,
+          landscaping_complexity: property.landscapingComplexity,
+          mature_trees: property.matureTrees,
+          garden_beds: property.gardenBeds,
+          garden_bed_sqft: property.gardenBedSqft,
+          deck_patio_sqft: property.deckPatioSqft,
+          has_pool: property.hasPool,
+          has_irrigation: property.hasIrrigation,
+          driveway_material: property.drivewayMaterial,
+          driveway_length: property.drivewayLength,
+          fence_type: property.fenceType,
+          fence_linear_feet: property.fenceLinearFeet,
+          // New fields
+          hvac_brand: property.hvacBrand,
+          hvac_age: property.hvacAge,
+          water_heater_type: property.waterHeaterType,
+          water_heater_age: property.waterHeaterAge,
+          furnace_filter_size: property.furnaceFilterSize,
+          access_instructions: property.accessInstructions,
+          gate_code_exists: property.gateCodeExists,
+          lockbox_exists: property.lockboxExists,
+          alarm_system: property.alarmSystem,
+          pet_details: property.petDetails,
+          parking_instructions: property.parkingInstructions,
+          preferred_service_day: property.preferredServiceDay,
+          chemical_sensitivities: property.chemicalSensitivities,
+          special_instructions: property.specialInstructions,
+          home_insurance_provider: property.homeInsuranceProvider,
+        });
+
+        if (selectedServices.length > 0) {
+          const serviceItems = selectedServiceData.map((s) => ({
+            serviceId: s.id,
+            frequency: s.frequency,
+            specs: serviceSpecs[s.id] || {},
+            monthlyPrice: calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
+          }));
+
+          await createSubscription(
+            user.id,
+            savedProperty.id,
+            planInterval,
+            total,
+            discount,
+            serviceItems
+          );
+        }
+      }
+
+      setAccount({
+        firstName,
+        lastName,
+        email,
+        phone,
+        dateOfBirth: "",
+        address: { street: property.address, unit: "", city: "", province: "BC", postalCode: "" },
+        mailingAddressSame: true,
+        preferredContact: "email",
+        emergencyContactName: "",
+        emergencyContactPhone: "",
+        howDidYouHear: "",
+        referralCode: "",
+        agreedToTerms: true,
+        agreedToPrivacy: true,
+        marketingOptIn: false,
+      });
+      completeOnboarding();
+      setSubmitted(true);
+      toast.success("Welcome to My Home Plan!");
+      setTimeout(onComplete, 1500);
+    } catch (error) {
+      console.error("Failed to save:", error);
+      toast.error("Something went wrong saving your data. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (submitted) {
@@ -171,6 +252,17 @@ function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
               <div><span className="text-muted-foreground">Bed/Bath:</span> {property.bedrooms}/{property.bathrooms}</div>
               <div><span className="text-muted-foreground">Type:</span> {property.homeType}</div>
             </div>
+            {/* Access info summary */}
+            {(property.accessInstructions || property.preferredServiceDay) && (
+              <div className="mt-3 border-t pt-2 text-sm">
+                {property.preferredServiceDay && (
+                  <div className="text-xs text-muted-foreground">Preferred service day: {property.preferredServiceDay}</div>
+                )}
+                {property.accessInstructions && (
+                  <div className="text-xs text-muted-foreground mt-1">Access: {property.accessInstructions}</div>
+                )}
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -202,7 +294,7 @@ function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
 
             {/* Payment frequency */}
             <div className="mb-4">
-              <Label className="text-xs text-muted-foreground">Payment Frequency</Label>
+              <label className="text-xs text-muted-foreground">Payment Frequency</label>
               <div className="mt-2 grid grid-cols-3 gap-1.5">
                 {(Object.entries(PLAN_DISCOUNTS) as [string, { label: string; discount: number; description: string }][]).map(([key, val]) => (
                   <button
@@ -306,10 +398,10 @@ function HomeownerStrataReview({ onComplete }: { onComplete: () => void }) {
           </CardContent>
         </Card>
 
-        <ShimmerButton onClick={handleSubmit} className="h-12 w-full text-base">
-          Complete Setup <Sparkles className="ml-2 inline h-4 w-4" />
+        <ShimmerButton onClick={handleSubmit} className="h-12 w-full text-base" disabled={saving}>
+          {saving ? <><Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Saving...</> : <>Complete Setup <Sparkles className="ml-2 inline h-4 w-4" /></>}
         </ShimmerButton>
-        <p className="text-center text-xs text-muted-foreground">No payment required today. This is a simulated signup.</p>
+        <p className="text-center text-xs text-muted-foreground">No payment required today.</p>
       </div>
     </div>
   );
@@ -347,8 +439,10 @@ const whatHappensNextSteps = [
 function ContractorReview({ onComplete }: { onComplete: () => void }) {
   const { setAccount, completeOnboarding } = useUserStore();
   const { contractor } = usePropertyStore();
-  const [email, setEmail] = useState("");
+  const { user } = useAuth();
+  const [email, setEmail] = useState(user?.email || "");
   const [submitted, setSubmitted] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [shaking, setShaking] = useState(false);
 
@@ -370,7 +464,7 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
     .filter((s) => contractor.servicesOffered.includes(s.id))
     .map((s) => s.name);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const result = contractorEmailSchema.safeParse({ email });
 
     if (!result.success) {
@@ -387,26 +481,98 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
     }
 
     setErrors({});
-    setAccount({
-      firstName: contractor.ownerName.split(" ")[0] || "",
-      lastName: contractor.ownerName.split(" ").slice(1).join(" ") || "",
-      email,
-      phone: "",
-      dateOfBirth: "",
-      address: { street: "", unit: "", city: "", province: "BC", postalCode: "" },
-      mailingAddressSame: true,
-      preferredContact: "email",
-      emergencyContactName: "",
-      emergencyContactPhone: "",
-      howDidYouHear: "",
-      referralCode: "",
-      agreedToTerms: contractor.agreeTerms,
-      agreedToPrivacy: true,
-      marketingOptIn: false,
-    });
-    completeOnboarding();
-    setSubmitted(true);
-    toast.success("Application submitted!");
+    setSaving(true);
+
+    try {
+      if (user) {
+        await updateProfile(user.id, {
+          user_type: "contractor",
+          first_name: contractor.ownerName.split(" ")[0] || "",
+          last_name: contractor.ownerName.split(" ").slice(1).join(" ") || "",
+          email,
+          onboarding_complete: true,
+          agreed_to_terms: contractor.agreeTerms,
+          agreed_to_privacy: contractor.agreePrivacy,
+        });
+
+        const savedContractor = await upsertContractorProfile(user.id, {
+          business_name: contractor.businessName,
+          owner_name: contractor.ownerName,
+          business_type: contractor.businessType,
+          years_in_business: contractor.yearsInBusiness,
+          employee_count: contractor.employeeCount,
+          service_area: contractor.serviceArea,
+          website: contractor.website,
+          services_offered: contractor.servicesOffered,
+          licenses: contractor.licenses,
+          experience_years: contractor.experienceYears,
+          available_days: contractor.availableDays,
+          available_hours: contractor.availableHours,
+          jobs_per_week: contractor.jobsPerWeek,
+          has_own_equipment: contractor.hasOwnEquipment,
+          vehicle_type: contractor.vehicleType,
+          why_join: contractor.whyJoin,
+          agree_background_check: contractor.agreeBackgroundCheck,
+          agree_quality_standards: contractor.agreeQualityStandards,
+          agree_terms: contractor.agreeTerms,
+          // New fields
+          personal_address: contractor.personalAddress,
+          personal_city: contractor.personalCity,
+          personal_province: contractor.personalProvince,
+          personal_postal_code: contractor.personalPostalCode,
+          date_of_birth: contractor.dateOfBirth || null,
+          emergency_contact_name: contractor.emergencyContactName,
+          emergency_contact_phone: contractor.emergencyContactPhone,
+          preferred_contact: contractor.preferredContact,
+          insurance_provider: contractor.insuranceProvider,
+          insurance_policy_number: contractor.insurancePolicyNumber,
+          insurance_coverage_amount: contractor.insuranceCoverageAmount || null,
+          insurance_expiry: contractor.insuranceExpiry || null,
+          wcb_account_number: contractor.wcbAccountNumber,
+          wcb_coverage_start: contractor.wcbCoverageStart || null,
+          wcb_coverage_end: contractor.wcbCoverageEnd || null,
+          business_number: contractor.businessNumber,
+          gst_number: contractor.gstNumber,
+          hourly_rate_min: contractor.hourlyRateMin || null,
+          hourly_rate_max: contractor.hourlyRateMax || null,
+          equipment_inventory: contractor.equipmentInventory,
+          seasonal_availability: contractor.seasonalAvailability,
+          portfolio_description: contractor.portfolioDescription,
+          agreed_to_criminal_check: contractor.agreedToCriminalCheck,
+          agreed_to_drug_test: contractor.agreedToDrugTest,
+        });
+
+        if (savedContractor) {
+          await saveContractorReferences(savedContractor.id, contractor.references);
+        }
+      }
+
+      setAccount({
+        firstName: contractor.ownerName.split(" ")[0] || "",
+        lastName: contractor.ownerName.split(" ").slice(1).join(" ") || "",
+        email,
+        phone: "",
+        dateOfBirth: "",
+        address: { street: contractor.personalAddress, unit: "", city: contractor.personalCity, province: contractor.personalProvince || "BC", postalCode: contractor.personalPostalCode },
+        mailingAddressSame: true,
+        preferredContact: (contractor.preferredContact || "email") as "email" | "phone" | "text",
+        emergencyContactName: contractor.emergencyContactName,
+        emergencyContactPhone: contractor.emergencyContactPhone,
+        howDidYouHear: "",
+        referralCode: "",
+        agreedToTerms: contractor.agreeTerms,
+        agreedToPrivacy: contractor.agreePrivacy,
+        marketingOptIn: false,
+      });
+      completeOnboarding();
+      setSubmitted(true);
+      toast.success("Application submitted!");
+    } catch (error) {
+      console.error("Failed to save:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (submitted) {
@@ -530,9 +696,41 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
               {contractor.website && (
                 <div><span className="text-muted-foreground">Website:</span> {contractor.website}</div>
               )}
+              {contractor.businessNumber && (
+                <div><span className="text-muted-foreground">Business #:</span> {contractor.businessNumber}</div>
+              )}
+              {contractor.gstNumber && (
+                <div><span className="text-muted-foreground">GST #:</span> {contractor.gstNumber}</div>
+              )}
             </div>
           </CardContent>
         </Card>
+
+        {/* Insurance Summary */}
+        {(contractor.insuranceProvider || contractor.wcbAccountNumber) && (
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="h-4 w-4 text-sky-600" />
+                <h3 className="text-sm font-semibold text-muted-foreground">Insurance & WCB</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {contractor.insuranceProvider && (
+                  <div><span className="text-muted-foreground">Liability:</span> {contractor.insuranceProvider}</div>
+                )}
+                {contractor.insuranceCoverageAmount > 0 && (
+                  <div><span className="text-muted-foreground">Coverage:</span> ${contractor.insuranceCoverageAmount.toLocaleString()}</div>
+                )}
+                {contractor.wcbAccountNumber && (
+                  <div><span className="text-muted-foreground">WCB #:</span> {contractor.wcbAccountNumber}</div>
+                )}
+                {contractor.isBonded && (
+                  <div><span className="text-muted-foreground">Bonded:</span> Yes</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Service Area */}
         <Card>
@@ -552,6 +750,9 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
                 <span className="text-sm text-muted-foreground">No cities selected</span>
               )}
             </div>
+            {contractor.maxTravelDistance > 0 && (
+              <p className="mt-2 text-xs text-muted-foreground">Max travel: {contractor.maxTravelDistance}km</p>
+            )}
           </CardContent>
         </Card>
 
@@ -584,6 +785,17 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
                       {lic.replace("-", " ").replace(/\b\w/g, (l) => l.toUpperCase())}
                     </Badge>
                   ))}
+                </div>
+              </>
+            )}
+
+            {(contractor.hourlyRateMin > 0 || contractor.hourlyRateMax > 0) && (
+              <>
+                <Separator className="my-3" />
+                <div className="flex items-center gap-2 text-sm">
+                  <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
+                  <span className="text-muted-foreground">Rate range:</span>
+                  <span className="font-medium">${contractor.hourlyRateMin} - ${contractor.hourlyRateMax}/hr</span>
                 </div>
               </>
             )}
@@ -642,8 +854,8 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
           </CardContent>
         </Card>
 
-        <ShimmerButton onClick={handleSubmit} className="h-12 w-full text-base">
-          Submit Application <Sparkles className="ml-2 inline h-4 w-4" />
+        <ShimmerButton onClick={handleSubmit} className="h-12 w-full text-base" disabled={saving}>
+          {saving ? <><Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Submitting...</> : <>Submit Application <Sparkles className="ml-2 inline h-4 w-4" /></>}
         </ShimmerButton>
         <p className="text-center text-xs text-muted-foreground">Your application will be reviewed within 48 hours.</p>
       </div>

@@ -21,6 +21,7 @@ import {
   type DrivewayMaterial,
   type DrivewayLength,
   type FenceType,
+  type WaterHeaterType,
 } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -36,7 +37,6 @@ import { easings } from "@/lib/animations";
 // --- Validation schemas ---
 
 const propertyBasicsSchema = z.object({
-  address: z.string().min(1, "This field is required"),
   homeSqft: z.number().min(200, "Must be at least 200 sq ft"),
   lotSqft: z.number().min(100, "Must be at least 100 sq ft"),
   yearBuilt: z.number().min(1800, "Must be 1800 or later").max(2026, "Cannot be in the future"),
@@ -54,26 +54,9 @@ const propertyDetailsSchema = z.object({
   }),
 });
 
-// --- Shared types ---
-
-export interface StepValidationRef {
-  validate: () => boolean;
-}
-
-// --- Helper components ---
-
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Label>
-      {children} <span className="text-red-500">*</span>
-    </Label>
-  );
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-500 mt-1">{message}</p>;
-}
+// Re-export from shared for backward compatibility
+export type { StepValidationRef } from "./shared";
+import { RequiredLabel, FieldError, type StepValidationRef } from "./shared";
 
 // --- Option data ---
 
@@ -166,7 +149,6 @@ export const StepPropertyBasics = forwardRef<StepValidationRef>(function StepPro
 
   const validate = useCallback(() => {
     const result = propertyBasicsSchema.safeParse({
-      address: property.address,
       homeSqft: property.homeSqft,
       lotSqft: property.lotSqft,
       yearBuilt: property.yearBuilt,
@@ -270,19 +252,6 @@ export const StepPropertyBasics = forwardRef<StepValidationRef>(function StepPro
                 </SelectContent>
               </Select>
               <FieldError message={errors.homeType} />
-            </div>
-            <div className="space-y-2 sm:col-span-2">
-              <RequiredLabel>Address</RequiredLabel>
-              <Input
-                value={property.address}
-                onChange={(e) => {
-                  setProperty({ address: e.target.value });
-                  clearError("address");
-                }}
-                placeholder="123 Main St, Kelowna, BC"
-                className={cn("h-11 transition-colors duration-200", errors.address && "ring-2 ring-red-500 border-red-500")}
-              />
-              <FieldError message={errors.address} />
             </div>
           </CardContent>
         </Card>
@@ -418,6 +387,53 @@ export const StepPropertyDetails = forwardRef<StepValidationRef>(function StepPr
               <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
                 <Label className="text-sm">Pets</Label>
                 <Switch checked={property.hasPets} onCheckedChange={(v) => setProperty({ hasPets: v })} />
+              </div>
+            </div>
+
+            {/* HVAC & Water Heater details */}
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>HVAC Brand</Label>
+                <Input
+                  value={property.hvacBrand}
+                  onChange={(e) => setProperty({ hvacBrand: e.target.value })}
+                  placeholder="e.g. Lennox, Carrier"
+                  className="h-11"
+                />
+              </div>
+              <NumberStepper
+                label="HVAC Age (years)"
+                value={property.hvacAge}
+                onChange={(v) => setProperty({ hvacAge: v })}
+                min={0}
+                max={40}
+              />
+              <div className="space-y-2">
+                <Label>Water Heater Type</Label>
+                <Select value={property.waterHeaterType} onValueChange={(v: WaterHeaterType) => setProperty({ waterHeaterType: v })}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="tank">Tank</SelectItem>
+                    <SelectItem value="tankless">Tankless</SelectItem>
+                    <SelectItem value="heat-pump">Heat Pump</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <NumberStepper
+                label="Water Heater Age (years)"
+                value={property.waterHeaterAge}
+                onChange={(v) => setProperty({ waterHeaterAge: v })}
+                min={0}
+                max={30}
+              />
+              <div className="space-y-2 sm:col-span-2">
+                <Label>Furnace Filter Size</Label>
+                <Input
+                  value={property.furnaceFilterSize}
+                  onChange={(e) => setProperty({ furnaceFilterSize: e.target.value })}
+                  placeholder='e.g. 16x25x1, 20x20x4'
+                  className="h-11"
+                />
               </div>
             </div>
           </CollapsibleSection>

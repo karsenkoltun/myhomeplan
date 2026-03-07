@@ -371,7 +371,7 @@ export default function HomePage() {
       </section>
 
       {/* ──────────── Cost Comparison ──────────── */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="overflow-hidden border-y bg-muted/20 py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <FadeIn>
             <div className="mx-auto max-w-2xl text-center">

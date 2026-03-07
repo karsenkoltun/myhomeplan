@@ -6,30 +6,76 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import { OnboardingProgress } from "@/components/onboarding/onboarding-progress";
+import type { StepValidationRef } from "@/components/onboarding/shared";
+
+// Step imports - Shared
 import { StepUserType } from "@/components/onboarding/step-user-type";
+
+// Steps - Homeowner
+import { StepPersonalInfo } from "@/components/onboarding/step-personal-info";
+import { StepAddressInfo } from "@/components/onboarding/step-address-info";
 import { StepPropertyBasics, StepPropertyDetails } from "@/components/onboarding/step-property-info";
-import type { StepValidationRef } from "@/components/onboarding/step-property-info";
+import { StepPropertyAccess } from "@/components/onboarding/step-property-access";
 import { StepServices } from "@/components/onboarding/step-services";
 import { StepServiceSpecs } from "@/components/onboarding/step-service-specs";
 import { StepReview } from "@/components/onboarding/step-review";
+
+// Steps - Contractor
+import { StepContractorPersonal } from "@/components/onboarding/step-contractor-personal";
 import { StepContractorBusiness } from "@/components/onboarding/step-contractor-business";
+import { StepContractorInsurance } from "@/components/onboarding/step-contractor-insurance";
 import { StepContractorServices } from "@/components/onboarding/step-contractor-services";
+import { StepContractorServiceArea } from "@/components/onboarding/step-contractor-service-area";
 import { StepContractorAvailability } from "@/components/onboarding/step-contractor-availability";
 import { StepContractorReferences } from "@/components/onboarding/step-contractor-references";
+import { StepContractorAgreements } from "@/components/onboarding/step-contractor-agreements";
+
+// Steps - Strata
 import { StepStrataInfo } from "@/components/onboarding/step-strata-info";
 import { StepStrataProperty } from "@/components/onboarding/step-strata-property";
+import { StepStrataOperations } from "@/components/onboarding/step-strata-operations";
+import { StepStrataCurrentProviders } from "@/components/onboarding/step-strata-current-providers";
 import { StepStrataCoverage } from "@/components/onboarding/step-strata-coverage";
 import { StepStrataServices } from "@/components/onboarding/step-strata-services";
 import { StepStrataReview } from "@/components/onboarding/step-strata-review";
+
+// Steps - Property Manager
+import { StepPMCompanyInfo } from "@/components/onboarding/step-pm-company-info";
+import { StepPMInsurance } from "@/components/onboarding/step-pm-insurance";
+import { StepPMContacts } from "@/components/onboarding/step-pm-contacts";
+import { StepPMPortfolio } from "@/components/onboarding/step-pm-portfolio";
+import { StepPMProperties } from "@/components/onboarding/step-pm-properties";
+import { StepPMServices } from "@/components/onboarding/step-pm-services";
+import { StepPMBilling } from "@/components/onboarding/step-pm-billing";
+import { StepPMReview } from "@/components/onboarding/step-pm-review";
+
 import { useUserStore, type UserType } from "@/stores/user-store";
 import { usePlanStore } from "@/stores/plan-store";
 
+// --- Step Arrays ---
+
 const homeownerSteps = [
   "user-type",
+  "personal-info",
+  "address-info",
   "property-basics",
   "property-details",
+  "property-access",
   "services",
   "service-specs",
+  "review",
+] as const;
+
+const contractorSteps = [
+  "user-type",
+  "contractor-personal",
+  "contractor-business",
+  "contractor-insurance",
+  "contractor-services",
+  "contractor-service-area",
+  "contractor-availability",
+  "contractor-references",
+  "contractor-agreements",
   "review",
 ] as const;
 
@@ -37,25 +83,34 @@ const strataSteps = [
   "user-type",
   "strata-info",
   "strata-property",
+  "strata-operations",
+  "strata-current-providers",
   "strata-coverage",
   "strata-services",
   "strata-review",
 ] as const;
 
-const contractorSteps = [
+const pmSteps = [
   "user-type",
-  "contractor-business",
-  "contractor-services",
-  "contractor-availability",
-  "contractor-references",
-  "review",
+  "pm-company-info",
+  "pm-insurance",
+  "pm-contacts",
+  "pm-portfolio",
+  "pm-properties",
+  "pm-services",
+  "pm-billing",
+  "pm-review",
 ] as const;
 
 function getSteps(userType: UserType | null) {
   if (userType === "strata") return strataSteps;
   if (userType === "contractor") return contractorSteps;
+  if (userType === "property-manager") return pmSteps;
   return homeownerSteps;
 }
+
+// Steps that have their own submit button (no nav buttons shown)
+const TERMINAL_STEPS = new Set(["user-type", "review", "strata-review", "pm-review"]);
 
 const slideVariants = {
   enter: (direction: number) => ({
@@ -84,18 +139,22 @@ function OnboardingContent() {
   const { selectedServices } = usePlanStore();
 
   // Refs for step validation
+  const personalInfoRef = useRef<StepValidationRef>(null);
+  const addressInfoRef = useRef<StepValidationRef>(null);
   const propertyBasicsRef = useRef<StepValidationRef>(null);
   const propertyDetailsRef = useRef<StepValidationRef>(null);
   const servicesRef = useRef<StepValidationRef>(null);
+  const contractorPersonalRef = useRef<StepValidationRef>(null);
   const strataInfoRef = useRef<StepValidationRef>(null);
   const strataPropertyRef = useRef<StepValidationRef>(null);
   const strataCoverageRef = useRef<StepValidationRef>(null);
   const strataServicesRef = useRef<StepValidationRef>(null);
+  const pmCompanyInfoRef = useRef<StepValidationRef>(null);
 
   // Set user type from URL param
   useEffect(() => {
     const typeParam = searchParams.get("type") as UserType | null;
-    if (typeParam && ["homeowner", "contractor", "strata"].includes(typeParam)) {
+    if (typeParam && ["homeowner", "contractor", "strata", "property-manager"].includes(typeParam)) {
       setUserType(typeParam);
       if (onboardingStep === 0) setOnboardingStep(1);
     }
@@ -106,12 +165,18 @@ function OnboardingContent() {
 
   const validateCurrentStep = useCallback((): boolean => {
     switch (currentStepName) {
+      case "personal-info":
+        return personalInfoRef.current?.validate() ?? true;
+      case "address-info":
+        return addressInfoRef.current?.validate() ?? true;
       case "property-basics":
         return propertyBasicsRef.current?.validate() ?? true;
       case "property-details":
         return propertyDetailsRef.current?.validate() ?? true;
       case "services":
         return servicesRef.current?.validate() ?? true;
+      case "contractor-personal":
+        return contractorPersonalRef.current?.validate() ?? true;
       case "strata-info":
         return strataInfoRef.current?.validate() ?? true;
       case "strata-property":
@@ -120,6 +185,8 @@ function OnboardingContent() {
         return strataCoverageRef.current?.validate() ?? true;
       case "strata-services":
         return strataServicesRef.current?.validate() ?? true;
+      case "pm-company-info":
+        return pmCompanyInfoRef.current?.validate() ?? true;
       default:
         return true;
     }
@@ -147,10 +214,12 @@ function OnboardingContent() {
     router.push("/account");
   };
 
+  const isTerminal = TERMINAL_STEPS.has(currentStepName);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Enter" && currentStepName !== "user-type" && currentStepName !== "review") {
+      if (e.key === "Enter" && !isTerminal) {
         goNext();
       }
       if (e.key === "Escape" && onboardingStep > 0) {
@@ -159,38 +228,83 @@ function OnboardingContent() {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNext, goBack, currentStepName, onboardingStep]);
+  }, [goNext, goBack, isTerminal, onboardingStep]);
 
   const renderStep = () => {
     switch (currentStepName) {
+      // Shared
       case "user-type":
         return <StepUserType onSelect={handleUserTypeSelect} />;
+
+      // Homeowner
+      case "personal-info":
+        return <StepPersonalInfo ref={personalInfoRef} />;
+      case "address-info":
+        return <StepAddressInfo ref={addressInfoRef} />;
       case "property-basics":
         return <StepPropertyBasics ref={propertyBasicsRef} />;
       case "property-details":
         return <StepPropertyDetails ref={propertyDetailsRef} />;
+      case "property-access":
+        return <StepPropertyAccess />;
       case "services":
         return <StepServices ref={servicesRef} />;
       case "service-specs":
         return <StepServiceSpecs />;
+
+      // Contractor
+      case "contractor-personal":
+        return <StepContractorPersonal ref={contractorPersonalRef} />;
       case "contractor-business":
         return <StepContractorBusiness />;
+      case "contractor-insurance":
+        return <StepContractorInsurance />;
       case "contractor-services":
         return <StepContractorServices />;
+      case "contractor-service-area":
+        return <StepContractorServiceArea />;
       case "contractor-availability":
         return <StepContractorAvailability />;
       case "contractor-references":
         return <StepContractorReferences />;
+      case "contractor-agreements":
+        return <StepContractorAgreements />;
+
+      // Strata
       case "strata-info":
         return <StepStrataInfo ref={strataInfoRef} />;
       case "strata-property":
         return <StepStrataProperty ref={strataPropertyRef} />;
+      case "strata-operations":
+        return <StepStrataOperations />;
+      case "strata-current-providers":
+        return <StepStrataCurrentProviders />;
       case "strata-coverage":
         return <StepStrataCoverage ref={strataCoverageRef} />;
       case "strata-services":
         return <StepStrataServices ref={strataServicesRef} />;
       case "strata-review":
         return <StepStrataReview onComplete={handleComplete} />;
+
+      // Property Manager
+      case "pm-company-info":
+        return <StepPMCompanyInfo ref={pmCompanyInfoRef} />;
+      case "pm-insurance":
+        return <StepPMInsurance />;
+      case "pm-contacts":
+        return <StepPMContacts />;
+      case "pm-portfolio":
+        return <StepPMPortfolio />;
+      case "pm-properties":
+        return <StepPMProperties />;
+      case "pm-services":
+        return <StepPMServices />;
+      case "pm-billing":
+        return <StepPMBilling />;
+      case "pm-review":
+        return <StepPMReview onComplete={handleComplete} />;
+
+      // Shared review (homeowner + contractor)
       case "review":
         return <StepReview onComplete={handleComplete} />;
       default:
@@ -227,7 +341,7 @@ function OnboardingContent() {
       </AnimatePresence>
 
       {/* Navigation buttons */}
-      {currentStepName !== "user-type" && currentStepName !== "review" && (
+      {!isTerminal && (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -242,7 +356,7 @@ function OnboardingContent() {
         </motion.div>
       )}
 
-      {currentStepName !== "user-type" && currentStepName !== "review" && (
+      {!isTerminal && (
         <p className="mt-3 text-center text-xs text-muted-foreground">
           Press Enter to continue, Escape to go back
         </p>

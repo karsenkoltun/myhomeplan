@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,8 +8,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { usePropertyStore, type HomeType, type HeatingType } from "@/stores/property-store";
+import { useAuth } from "@/components/auth/auth-provider";
+import { upsertProperty } from "@/lib/supabase/queries";
 import { FadeIn } from "@/components/ui/motion";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -16,10 +19,54 @@ import Link from "next/link";
 export default function PropertyEditorPage() {
   const router = useRouter();
   const { property, setProperty } = usePropertyStore();
+  const { user } = useAuth();
+  const [saving, setSaving] = useState(false);
 
-  const handleSave = () => {
-    toast.success("Property details saved!");
-    router.push("/account");
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      if (user) {
+        await upsertProperty(user.id, {
+          address: property.address,
+          home_sqft: property.homeSqft,
+          lot_sqft: property.lotSqft,
+          year_built: property.yearBuilt,
+          home_type: property.homeType,
+          bedrooms: property.bedrooms,
+          bathrooms: property.bathrooms,
+          floors: property.floors,
+          heating_type: property.heatingType,
+          has_ac: property.hasAC,
+          has_garage: property.hasGarage,
+          has_driveway: property.hasDriveway,
+          has_deck: property.hasDeck,
+          has_fence: property.hasFence,
+          has_pets: property.hasPets,
+          roof_type: property.roofType,
+          exterior_material: property.exteriorMaterial,
+          foundation: property.foundation,
+          window_count: property.windowCount,
+          landscaping_complexity: property.landscapingComplexity,
+          mature_trees: property.matureTrees,
+          garden_beds: property.gardenBeds,
+          garden_bed_sqft: property.gardenBedSqft,
+          deck_patio_sqft: property.deckPatioSqft,
+          has_pool: property.hasPool,
+          has_irrigation: property.hasIrrigation,
+          driveway_material: property.drivewayMaterial,
+          driveway_length: property.drivewayLength,
+          fence_type: property.fenceType,
+          fence_linear_feet: property.fenceLinearFeet,
+        });
+      }
+      toast.success("Property details saved!");
+      router.push("/account");
+    } catch (error) {
+      console.error("Failed to save property:", error);
+      toast.error("Failed to save. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -123,8 +170,9 @@ export default function PropertyEditorPage() {
           </Card>
         </FadeIn>
 
-        <Button onClick={handleSave} className="w-full gap-2" size="lg">
-          <Save className="h-4 w-4" /> Save Changes
+        <Button onClick={handleSave} className="w-full gap-2" size="lg" disabled={saving}>
+          {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+          {saving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </div>

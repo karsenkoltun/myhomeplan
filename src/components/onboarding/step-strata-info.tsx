@@ -6,11 +6,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
-import { motion } from "framer-motion";
-import { usePropertyStore, type StrataContactRole } from "@/stores/property-store";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Trash2, UserPlus } from "lucide-react";
+import { usePropertyStore, type StrataContactRole, type StrataCouncilContact } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import type { StepValidationRef } from "./step-property-info";
+import { RequiredLabel, FieldError, type StepValidationRef } from "./shared";
 
 // --- Validation ---
 
@@ -35,20 +38,13 @@ const contactRoles: { value: StrataContactRole; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
-// --- Helpers ---
-
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Label>
-      {children} <span className="text-red-500">*</span>
-    </Label>
-  );
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-500 mt-1">{message}</p>;
-}
+const emptyContact: StrataCouncilContact = {
+  name: "",
+  role: "council-member",
+  email: "",
+  phone: "",
+  canApprove: false,
+};
 
 // --- Component ---
 
@@ -94,6 +90,21 @@ export const StepStrataInfo = forwardRef<StepValidationRef>(function StepStrataI
         return next;
       });
     }
+  };
+
+  const addCouncilContact = () => {
+    if (strata.councilContacts.length >= 5) return;
+    setStrata({ councilContacts: [...strata.councilContacts, { ...emptyContact }] });
+  };
+
+  const removeCouncilContact = (index: number) => {
+    setStrata({ councilContacts: strata.councilContacts.filter((_, i) => i !== index) });
+  };
+
+  const updateCouncilContact = (index: number, field: keyof StrataCouncilContact, value: string | boolean) => {
+    const updated = [...strata.councilContacts];
+    updated[index] = { ...updated[index], [field]: value };
+    setStrata({ councilContacts: updated });
   };
 
   return (
@@ -213,6 +224,111 @@ export const StepStrataInfo = forwardRef<StepValidationRef>(function StepStrataI
                 <FieldError message={errors.contactPhone} />
               </div>
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Additional Council Contacts */}
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <div className="mb-4 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Council Contacts</h3>
+                <p className="mt-1 text-xs text-muted-foreground">Add additional council members or contacts (up to 5)</p>
+              </div>
+              {strata.councilContacts.length < 5 && (
+                <Button variant="outline" size="sm" onClick={addCouncilContact} className="gap-1.5">
+                  <Plus className="h-3.5 w-3.5" /> Add
+                </Button>
+              )}
+            </div>
+
+            <AnimatePresence mode="popLayout">
+              {strata.councilContacts.length === 0 ? (
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  onClick={addCouncilContact}
+                  className="flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed p-6 text-sm text-muted-foreground hover:border-primary/30 hover:bg-muted/50 transition-all"
+                >
+                  <UserPlus className="h-4 w-4" />
+                  Add a council contact
+                </motion.button>
+              ) : (
+                <div className="space-y-4">
+                  {strata.councilContacts.map((contact, index) => (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="rounded-xl border p-4"
+                    >
+                      <div className="mb-3 flex items-center justify-between">
+                        <span className="text-xs font-semibold text-muted-foreground">Contact {index + 1}</span>
+                        <Button variant="ghost" size="sm" onClick={() => removeCouncilContact(index)} className="h-7 w-7 p-0 text-muted-foreground hover:text-red-500">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Name</Label>
+                          <Input
+                            value={contact.name}
+                            onChange={(e) => updateCouncilContact(index, "name", e.target.value)}
+                            placeholder="Full name"
+                            className="h-9"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Role</Label>
+                          <Select
+                            value={contact.role}
+                            onValueChange={(v) => updateCouncilContact(index, "role", v)}
+                          >
+                            <SelectTrigger className="h-9">
+                              <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {contactRoles.map((r) => (
+                                <SelectItem key={r.value} value={r.value}>{r.label}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Email</Label>
+                          <Input
+                            type="email"
+                            value={contact.email}
+                            onChange={(e) => updateCouncilContact(index, "email", e.target.value)}
+                            placeholder="email@example.com"
+                            className="h-9"
+                          />
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label className="text-xs">Phone</Label>
+                          <Input
+                            type="tel"
+                            value={contact.phone}
+                            onChange={(e) => updateCouncilContact(index, "phone", e.target.value)}
+                            placeholder="250-555-0123"
+                            className="h-9"
+                          />
+                        </div>
+                      </div>
+                      <div className="mt-3 flex items-center gap-2">
+                        <Switch
+                          checked={contact.canApprove}
+                          onCheckedChange={(v) => updateCouncilContact(index, "canApprove", v)}
+                        />
+                        <Label className="text-xs text-muted-foreground">Can approve work orders</Label>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </AnimatePresence>
           </CardContent>
         </Card>
       </div>

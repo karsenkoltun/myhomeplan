@@ -28,6 +28,9 @@ import {
   Sun,
   Car,
   ArrowUpDown,
+  Shield,
+  DollarSign,
+  Wrench,
 } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { usePropertyStore } from "@/stores/property-store";
@@ -262,21 +265,39 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
           <CardContent className="p-5">
             <div className="flex items-center gap-2 mb-3">
               <Users className="h-4 w-4 text-muted-foreground" />
-              <h3 className="text-sm font-semibold text-muted-foreground">Primary Contact</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground">
+                Contacts ({1 + strata.councilContacts.filter((c) => c.name).length})
+              </h3>
             </div>
-            <div className="space-y-1.5 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Name</span>
-                <span className="font-medium">{strata.contactName}</span>
+            <div className="space-y-2">
+              {/* Primary contact */}
+              <div className="flex items-center justify-between text-sm">
+                <div>
+                  <span className="font-medium">{strata.contactName}</span>
+                  <Badge className="ml-2 text-[10px] bg-primary/10 text-primary">Primary</Badge>
+                </div>
+                <span className="text-muted-foreground">{contactRoleLabels[strata.contactRole]}</span>
               </div>
-              <div className="flex items-center justify-between">
-                <span className="text-muted-foreground">Role</span>
-                <span className="font-medium">{contactRoleLabels[strata.contactRole]}</span>
-              </div>
-              <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+              <div className="flex items-center gap-4 text-xs text-muted-foreground">
                 <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {strata.contactEmail}</span>
                 <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {strata.contactPhone}</span>
               </div>
+
+              {/* Council contacts */}
+              {strata.councilContacts.filter((c) => c.name).map((c, i) => (
+                <div key={i} className="border-t pt-2 mt-2">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-muted-foreground">{contactRoleLabels[c.role]}</span>
+                  </div>
+                  <div className="flex items-center gap-4 text-xs text-muted-foreground mt-0.5">
+                    {c.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {c.email}</span>}
+                    {c.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" /> {c.phone}</span>}
+                    {c.canApprove && <Badge variant="secondary" className="text-[10px]">Can Approve</Badge>}
+                  </div>
+                </div>
+              ))}
+
               {strata.managementCompany && (
                 <div className="text-xs text-muted-foreground mt-1">
                   Management: {strata.managementCompany}
@@ -286,11 +307,68 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
           </CardContent>
         </Card>
 
+        {/* Operations summary */}
+        {(strata.insuranceProvider || strata.reserveFundBalance > 0) && (
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Shield className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-semibold text-muted-foreground">Operations</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-sm">
+                {strata.insuranceProvider && (
+                  <div><span className="text-muted-foreground">Insurance:</span> {strata.insuranceProvider}</div>
+                )}
+                {strata.insuranceCoverageAmount > 0 && (
+                  <div><span className="text-muted-foreground">Coverage:</span> ${strata.insuranceCoverageAmount.toLocaleString()}</div>
+                )}
+                {strata.reserveFundBalance > 0 && (
+                  <div><span className="text-muted-foreground">Reserve Fund:</span> ${strata.reserveFundBalance.toLocaleString()}</div>
+                )}
+                {strata.annualReserveContribution > 0 && (
+                  <div><span className="text-muted-foreground">Annual Contribution:</span> ${strata.annualReserveContribution.toLocaleString()}</div>
+                )}
+                {strata.depreciationReportDate && (
+                  <div><span className="text-muted-foreground">Depreciation Report:</span> {strata.depreciationReportDate}</div>
+                )}
+                {strata.agmMonth > 0 && (
+                  <div><span className="text-muted-foreground">AGM Month:</span> {new Date(2000, strata.agmMonth - 1).toLocaleString("en", { month: "long" })}</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Current providers summary */}
+        {strata.currentProviders.length > 0 && (
+          <Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-2 mb-3">
+                <Wrench className="h-4 w-4 text-muted-foreground" />
+                <h3 className="text-sm font-semibold text-muted-foreground">Current Providers ({strata.currentProviders.length})</h3>
+              </div>
+              <div className="space-y-2">
+                {strata.currentProviders.map((p, i) => (
+                  <div key={i} className="flex items-center justify-between text-sm">
+                    <div>
+                      <span className="font-medium">{p.companyName}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">{p.category}</span>
+                    </div>
+                    {p.contractEndDate && (
+                      <span className="text-xs text-muted-foreground">Ends {p.contractEndDate}</span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Pain points */}
         {strata.currentPainPoints.length > 0 && (
           <Card>
             <CardContent className="p-5">
-              <h3 className="text-sm font-semibold text-muted-foreground mb-2">Challenges We'll Address</h3>
+              <h3 className="text-sm font-semibold text-muted-foreground mb-2">Challenges We&apos;ll Address</h3>
               <div className="flex flex-wrap gap-1.5">
                 {strata.currentPainPoints.map((pp) => (
                   <Badge key={pp} variant="secondary" className="text-xs">

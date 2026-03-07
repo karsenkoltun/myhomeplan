@@ -1,7 +1,7 @@
 "use client";
 
 import { GlowCard } from "@/components/ui/motion";
-import { Home, HardHat, Building2 } from "lucide-react";
+import { Home, HardHat, Building2, Briefcase } from "lucide-react";
 import type { UserType } from "@/stores/user-store";
 
 const options = [
@@ -29,6 +29,14 @@ const options = [
     color: "emerald" as const,
     accent: "bg-emerald-500/10 text-emerald-600",
   },
+  {
+    type: "property-manager" as UserType,
+    title: "Property Manager",
+    description: "I manage properties for clients",
+    icon: Briefcase,
+    color: "violet" as const,
+    accent: "bg-violet-500/10 text-violet-600",
+  },
 ];
 
 export function StepUserType({
@@ -41,7 +49,7 @@ export function StepUserType({
       <h2 className="text-center text-2xl font-bold sm:text-3xl">Welcome to My Home Plan</h2>
       <p className="mt-2 text-center text-muted-foreground">Let&apos;s get you set up. Who are you?</p>
 
-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {options.map((opt) => (
           <button key={opt.type} onClick={() => onSelect(opt.type)} className="text-left">
             <GlowCard glowColor={opt.color} className="h-full cursor-pointer">

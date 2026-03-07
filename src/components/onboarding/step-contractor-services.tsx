@@ -174,31 +174,33 @@ export function StepContractorServices() {
           </CardContent>
         </Card>
 
-        {/* Document Upload Placeholders */}
+        {/* Hourly Rate Range */}
         <Card>
           <CardContent className="p-5 sm:p-6">
-            <Label className="mb-3 block text-sm font-semibold">Documentation</Label>
+            <Label className="mb-3 block text-sm font-semibold">Hourly Rate Range</Label>
+            <p className="mb-3 text-xs text-muted-foreground">What is your typical hourly rate range?</p>
             <div className="grid gap-4 sm:grid-cols-2">
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/60 p-6 text-center transition-colors hover:border-sky-500/40 hover:bg-muted/30">
-                <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
-                <p className="text-sm font-medium">Proof of Insurance</p>
-                <p className="mt-1 text-xs text-muted-foreground">PDF, JPG, or PNG up to 10MB</p>
-                <button className="mt-3 rounded-lg bg-muted px-4 py-1.5 text-xs font-medium transition-colors hover:bg-muted/80">
-                  Upload File
-                </button>
+              <div className="space-y-2">
+                <Label>Minimum ($/hr)</Label>
+                <Input
+                  type="number"
+                  value={contractor.hourlyRateMin || ""}
+                  onChange={(e) => setContractor({ hourlyRateMin: Number(e.target.value) })}
+                  placeholder="e.g. 45"
+                  className="h-11"
+                />
               </div>
-              <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/60 p-6 text-center transition-colors hover:border-sky-500/40 hover:bg-muted/30">
-                <Upload className="mb-2 h-8 w-8 text-muted-foreground/50" />
-                <p className="text-sm font-medium">Business License</p>
-                <p className="mt-1 text-xs text-muted-foreground">PDF, JPG, or PNG up to 10MB</p>
-                <button className="mt-3 rounded-lg bg-muted px-4 py-1.5 text-xs font-medium transition-colors hover:bg-muted/80">
-                  Upload File
-                </button>
+              <div className="space-y-2">
+                <Label>Maximum ($/hr)</Label>
+                <Input
+                  type="number"
+                  value={contractor.hourlyRateMax || ""}
+                  onChange={(e) => setContractor({ hourlyRateMax: Number(e.target.value) })}
+                  placeholder="e.g. 85"
+                  className="h-11"
+                />
               </div>
             </div>
-            <p className="mt-3 text-center text-xs text-muted-foreground">
-              Documents will be verified during the review process.
-            </p>
           </CardContent>
         </Card>
       </div>

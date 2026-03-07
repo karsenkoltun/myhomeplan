@@ -1,10 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { Home, X } from "lucide-react";
+import { Home, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/components/auth/auth-provider";
+import { NotificationBell } from "@/components/dashboard/notification-bell";
 
 export function AppNav() {
+  const { user, signOut } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/90 backdrop-blur-xl">
       <nav className="mx-auto flex h-14 max-w-5xl items-center justify-between px-4 sm:h-16 sm:px-6">
@@ -17,11 +21,27 @@ export function AppNav() {
           </span>
         </Link>
 
-        <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
-          <Link href="/">
-            <X className="h-4 w-4" />
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          {user && (
+            <span className="hidden text-sm text-muted-foreground sm:block">
+              {user.email}
+            </span>
+          )}
+          <NotificationBell />
+          <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
+            <Link href="/account">
+              <User className="h-4 w-4" />
+            </Link>
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-9 w-9"
+            onClick={signOut}
+          >
+            <LogOut className="h-4 w-4" />
+          </Button>
+        </div>
       </nav>
     </header>
   );

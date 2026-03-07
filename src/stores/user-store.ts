@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export type UserType = "homeowner" | "contractor" | "strata";
+export type UserType = "homeowner" | "contractor" | "strata" | "property-manager";
 
 export interface AddressInfo {
   street: string;

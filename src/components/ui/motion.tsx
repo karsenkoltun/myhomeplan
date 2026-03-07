@@ -203,7 +203,7 @@ export function SlideIn({
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, x: from === "left" ? -60 : 60 }}
+      initial={{ opacity: 0, x: from === "left" ? -30 : 30 }}
       animate={isInView ? { opacity: 1, x: 0 } : {}}
       transition={{
         duration: 0.6,
@@ -305,13 +305,14 @@ export function GlowCard({
 }: {
   children: ReactNode;
   className?: string;
-  glowColor?: "primary" | "sky" | "emerald" | "amber";
+  glowColor?: "primary" | "sky" | "emerald" | "amber" | "violet";
 }) {
   const colorMap = {
     primary: "hover:shadow-primary/20 hover:border-primary/40",
     sky: "hover:shadow-sky-500/20 hover:border-sky-500/40",
     emerald: "hover:shadow-emerald-500/20 hover:border-emerald-500/40",
     amber: "hover:shadow-amber-500/20 hover:border-amber-500/40",
+    violet: "hover:shadow-violet-500/20 hover:border-violet-500/40",
   };
 
   return (
@@ -366,18 +367,21 @@ export function ShimmerButton({
   children,
   className = "",
   onClick,
+  disabled,
 }: {
   children: ReactNode;
   className?: string;
   onClick?: () => void;
+  disabled?: boolean;
 }) {
   return (
     <motion.button
       onClick={onClick}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
+      disabled={disabled}
+      whileHover={disabled ? undefined : { scale: 1.02 }}
+      whileTap={disabled ? undefined : { scale: 0.98 }}
       transition={springs.snappy}
-      className={`shimmer-button relative overflow-hidden rounded-xl bg-primary px-8 py-3 font-semibold text-primary-foreground ${className}`}
+      className={`shimmer-button relative overflow-hidden rounded-xl bg-primary px-8 py-3 font-semibold text-primary-foreground ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className}`}
     >
       <span className="relative z-10">{children}</span>
       <div className="shimmer-sweep absolute inset-0" />

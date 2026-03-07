@@ -1,6 +1,8 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Check } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export function OnboardingProgress({
   currentStep,
@@ -10,26 +12,40 @@ export function OnboardingProgress({
   totalSteps: number;
 }) {
   const progress = ((currentStep + 1) / totalSteps) * 100;
+  // Use compact mode for 8+ steps
+  const compact = totalSteps >= 8;
 
   return (
     <div className="w-full">
       {/* Step indicators */}
-      <div className="flex items-center justify-between px-2">
-        {Array.from({ length: totalSteps }).map((_, i) => (
-          <div key={i} className="flex items-center">
-            <motion.div
-              className={`flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-colors ${
-                i <= currentStep
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-muted-foreground"
-              }`}
-              animate={i === currentStep ? { scale: [1, 1.15, 1] } : {}}
-              transition={{ duration: 0.3 }}
-            >
-              {i + 1}
-            </motion.div>
-          </div>
-        ))}
+      <div className="flex items-center justify-between px-1">
+        {Array.from({ length: totalSteps }).map((_, i) => {
+          const isCompleted = i < currentStep;
+          const isCurrent = i === currentStep;
+          return (
+            <div key={i} className="flex items-center">
+              <motion.div
+                className={cn(
+                  "flex items-center justify-center rounded-full font-bold transition-colors",
+                  compact ? "h-6 w-6 text-[10px]" : "h-8 w-8 text-xs",
+                  isCompleted
+                    ? "bg-primary text-primary-foreground"
+                    : isCurrent
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-muted-foreground"
+                )}
+                animate={isCurrent ? { scale: [1, 1.15, 1] } : {}}
+                transition={{ duration: 0.3 }}
+              >
+                {isCompleted ? (
+                  <Check className={cn(compact ? "h-3 w-3" : "h-3.5 w-3.5")} />
+                ) : (
+                  i + 1
+                )}
+              </motion.div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Progress bar */}

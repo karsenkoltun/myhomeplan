@@ -11,7 +11,7 @@ import { Building, Building2, Hotel, TowerControl, Blocks, Waves, Dumbbell, Part
 import { usePropertyStore, type StrataBuildingType, type StrataAmenity } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import type { StepValidationRef } from "./step-property-info";
+import { RequiredLabel, FieldError, type StepValidationRef } from "./shared";
 
 // --- Validation ---
 
@@ -51,20 +51,19 @@ const provinces = [
   "AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT",
 ];
 
-// --- Helpers ---
+const parkingTypes = [
+  { value: "underground", label: "Underground" },
+  { value: "surface", label: "Surface" },
+  { value: "both", label: "Both" },
+  { value: "none", label: "None" },
+];
 
-function RequiredLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <Label>
-      {children} <span className="text-red-500">*</span>
-    </Label>
-  );
-}
-
-function FieldError({ message }: { message?: string }) {
-  if (!message) return null;
-  return <p className="text-xs text-red-500 mt-1">{message}</p>;
-}
+const fireSystemTypes = [
+  { value: "sprinkler", label: "Sprinkler" },
+  { value: "alarm", label: "Alarm Only" },
+  { value: "both", label: "Sprinkler + Alarm" },
+  { value: "none", label: "None" },
+];
 
 // --- Component ---
 
@@ -289,6 +288,118 @@ export const StepStrataProperty = forwardRef<StepValidationRef>(function StepStr
                   />
                   <FieldError message={errors.postalCode} />
                 </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Elevator, Parking, Roof, Fire System */}
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Building Systems</h3>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <div className="space-y-2">
+                <Label>Elevator Count</Label>
+                <Input
+                  type="number"
+                  value={strata.elevatorCount}
+                  onChange={(e) => setStrata({ elevatorCount: Math.max(0, Number(e.target.value)) })}
+                  min={0}
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Elevator Service Provider</Label>
+                <Input
+                  value={strata.elevatorServiceProvider}
+                  onChange={(e) => setStrata({ elevatorServiceProvider: e.target.value })}
+                  placeholder="e.g. ThyssenKrupp, Otis"
+                  className="h-11"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Parking Type</Label>
+                <Select
+                  value={strata.parkingType}
+                  onValueChange={(v) => setStrata({ parkingType: v })}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {parkingTypes.map((pt) => (
+                      <SelectItem key={pt.value} value={pt.value}>{pt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Total Stalls</Label>
+                  <Input
+                    type="number"
+                    value={strata.parkingStallCount}
+                    onChange={(e) => setStrata({ parkingStallCount: Math.max(0, Number(e.target.value)) })}
+                    min={0}
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Visitor Stalls</Label>
+                  <Input
+                    type="number"
+                    value={strata.visitorParkingCount}
+                    onChange={(e) => setStrata({ visitorParkingCount: Math.max(0, Number(e.target.value)) })}
+                    min={0}
+                    className="h-11"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label>Roof Age (years)</Label>
+                  <Input
+                    type="number"
+                    value={strata.roofAge}
+                    onChange={(e) => setStrata({ roofAge: Math.max(0, Number(e.target.value)) })}
+                    min={0}
+                    className="h-11"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Roof Warranty Expiry</Label>
+                  <Input
+                    type="date"
+                    value={strata.roofWarrantyExpiry}
+                    onChange={(e) => setStrata({ roofWarrantyExpiry: e.target.value })}
+                    className="h-11"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Fire System Type</Label>
+                <Select
+                  value={strata.fireSystemType}
+                  onValueChange={(v) => setStrata({ fireSystemType: v })}
+                >
+                  <SelectTrigger className="h-11">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {fireSystemTypes.map((ft) => (
+                      <SelectItem key={ft.value} value={ft.value}>{ft.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Last Fire Inspection</Label>
+                <Input
+                  type="date"
+                  value={strata.lastFireInspection}
+                  onChange={(e) => setStrata({ lastFireInspection: e.target.value })}
+                  className="h-11"
+                />
               </div>
             </div>
           </CardContent>

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Menu, Home, X, ChevronDown, Building2, HardHat, User } from "lucide-react";
+import { Menu, Home, X, ChevronDown, Building2, HardHat, User, LogOut } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/auth/auth-provider";
 
 const navigation = [
   { name: "How It Works", href: "/how-it-works" },
@@ -26,6 +27,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const pathname = usePathname();
+  const { user, signOut } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 10);
@@ -118,15 +120,31 @@ export function Navbar() {
 
         {/* Desktop CTAs */}
         <div className="hidden items-center gap-2 lg:flex">
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/account" className="gap-1.5">
-              <User className="h-4 w-4" />
-              Account
-            </Link>
-          </Button>
-          <Button size="sm" asChild>
-            <Link href="/onboarding">Get Started</Link>
-          </Button>
+          {user ? (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/account" className="gap-1.5">
+                  <User className="h-4 w-4" />
+                  Dashboard
+                </Link>
+              </Button>
+              <Button variant="outline" size="sm" onClick={signOut} className="gap-1.5">
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link href="/login" className="gap-1.5">
+                  Sign In
+                </Link>
+              </Button>
+              <Button size="sm" asChild>
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}
@@ -185,14 +203,29 @@ export function Navbar() {
               })}
 
               <div className="mt-3 flex flex-col gap-2 border-t pt-3">
-                <Button variant="outline" size="sm" asChild>
-                  <Link href="/account" onClick={() => setOpen(false)}>
-                    <User className="mr-1.5 h-4 w-4" /> Account
-                  </Link>
-                </Button>
-                <Button size="sm" asChild>
-                  <Link href="/onboarding" onClick={() => setOpen(false)}>Get Started</Link>
-                </Button>
+                {user ? (
+                  <>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/account" onClick={() => setOpen(false)}>
+                        <User className="mr-1.5 h-4 w-4" /> Dashboard
+                      </Link>
+                    </Button>
+                    <Button variant="ghost" size="sm" onClick={() => { setOpen(false); signOut(); }}>
+                      <LogOut className="mr-1.5 h-4 w-4" /> Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button variant="outline" size="sm" asChild>
+                      <Link href="/login" onClick={() => setOpen(false)}>
+                        Sign In
+                      </Link>
+                    </Button>
+                    <Button size="sm" asChild>
+                      <Link href="/signup" onClick={() => setOpen(false)}>Get Started</Link>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </SheetContent>
