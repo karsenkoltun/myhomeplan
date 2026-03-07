@@ -6,17 +6,22 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
-  Briefcase, CheckCircle2, DollarSign, Star, Calendar as CalendarIcon, Clock,
+  Briefcase, CheckCircle2, DollarSign, Star, Calendar as CalendarIcon, Clock, TrendingUp, Users,
 } from "lucide-react";
 import {
   getContractorProfile,
   getBookingsForContractor,
   updateBookingStatus,
+  getContractorMetrics,
+  getContractorMonthlyEarnings,
 } from "@/lib/supabase/queries";
 import { SERVICES } from "@/data/services";
 import { DashboardShell } from "./dashboard-shell";
 import { StatCard } from "./stat-card";
 import { BookingList } from "./booking-list";
+import { ContractorClients } from "./contractor-clients";
+import { ContractorAvailability } from "./contractor-availability";
+import { ContractorCredentials } from "./contractor-credentials";
 import { FadeIn } from "@/components/ui/motion";
 import { FullScreenCalendar } from "@/components/ui/fullscreen-calendar";
 import { format, parseISO, isSameMonth, startOfToday } from "date-fns";
@@ -25,6 +30,11 @@ import type { Database } from "@/lib/supabase/types";
 type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 type ContractorProfile = Database["public"]["Tables"]["contractor_profiles"]["Row"];
 
+interface MonthlyEarning {
+  month: string;
+  total: number;
+}
+
 export function ContractorDashboard({
   profile,
 }: {
@@ -32,14 +42,22 @@ export function ContractorDashboard({
 }) {
   const [contractor, setContractor] = useState<ContractorProfile | null>(null);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [metrics, setMetrics] = useState({ totalJobs: 0, completedJobs: 0, cancelledJobs: 0, completionRate: 0, cancellationRate: 0 });
+  const [monthlyEarnings, setMonthlyEarnings] = useState<MonthlyEarning[]>([]);
 
   const loadData = useCallback(async () => {
     try {
       const cp = await getContractorProfile(profile.id as string);
       if (cp) {
         setContractor(cp);
-        const data = await getBookingsForContractor(cp.id);
+        const [data, metricsData, earnings] = await Promise.all([
+          getBookingsForContractor(cp.id),
+          getContractorMetrics(cp.id),
+          getContractorMonthlyEarnings(cp.id),
+        ]);
         setBookings(data);
+        setMetrics(metricsData);
+        setMonthlyEarnings(earnings);
       }
     } catch {
       // silent
@@ -93,26 +111,32 @@ export function ContractorDashboard({
     vettingStatus === "rejected" ? "bg-red-100 text-red-800" :
     "bg-yellow-100 text-yellow-800";
 
+  // Earnings chart - simple CSS bars
+  const maxEarning = Math.max(...monthlyEarnings.map((e) => e.total), 1);
+
   return (
     <DashboardShell
       title={`Welcome, ${displayName}!`}
       subtitle="Manage your jobs, schedule, and earnings."
     >
       {/* Stats Row */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <StatCard icon={Briefcase} label="Active Jobs" value={activeJobs.length} delay={0.05} />
         <StatCard icon={CheckCircle2} label="Completed (Month)" value={completedThisMonth.length} delay={0.1} />
         <StatCard icon={DollarSign} label="Total Earnings" value={Math.round(totalEarnings)} prefix="$" delay={0.15} />
         <StatCard icon={Star} label="Rating" value={contractor?.rating ?? 0} suffix="/5" delay={0.2} />
+        <StatCard icon={TrendingUp} label="Completion Rate" value={metrics.completionRate} suffix="%" delay={0.25} />
       </div>
 
       {/* Main Tabs */}
-      <FadeIn delay={0.25}>
+      <FadeIn delay={0.3}>
         <Tabs defaultValue="jobs" className="mt-6">
           <TabsList className="w-full justify-start">
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="earnings">Earnings</TabsTrigger>
+            <TabsTrigger value="clients">Clients</TabsTrigger>
+            <TabsTrigger value="availability">Availability</TabsTrigger>
           </TabsList>
 
           <TabsContent value="jobs" className="mt-4">
@@ -162,6 +186,32 @@ export function ContractorDashboard({
                 <CardTitle className="text-base">Earnings Summary</CardTitle>
               </CardHeader>
               <CardContent>
+                {/* Monthly bar chart */}
+                {monthlyEarnings.length > 0 && (
+                  <div className="mb-6">
+                    <p className="mb-3 text-sm font-medium text-muted-foreground">Monthly Earnings</p>
+                    <div className="flex items-end gap-2" style={{ height: 120 }}>
+                      {monthlyEarnings.slice(-6).map((e) => {
+                        const height = Math.max(8, (e.total / maxEarning) * 100);
+                        return (
+                          <div key={e.month} className="flex flex-1 flex-col items-center gap-1">
+                            <span className="text-[10px] font-medium">${Math.round(e.total)}</span>
+                            <div
+                              className="w-full rounded-t-md bg-primary transition-all"
+                              style={{ height: `${height}%` }}
+                            />
+                            <span className="text-[10px] text-muted-foreground">
+                              {e.month.substring(5)}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                <Separator className="my-4" />
+
                 {bookings.filter((b) => b.status === "completed").length === 0 ? (
                   <p className="py-6 text-center text-sm text-muted-foreground">
                     No completed jobs yet
@@ -170,6 +220,7 @@ export function ContractorDashboard({
                   <div className="space-y-2">
                     {bookings
                       .filter((b) => b.status === "completed")
+                      .slice(0, 10)
                       .map((b) => (
                         <div key={b.id} className="flex items-center justify-between rounded-lg border p-3 text-sm">
                           <div>
@@ -191,11 +242,62 @@ export function ContractorDashboard({
               </CardContent>
             </Card>
           </TabsContent>
+
+          <TabsContent value="clients" className="mt-4">
+            {contractor && <ContractorClients contractorProfileId={contractor.id} />}
+          </TabsContent>
+
+          <TabsContent value="availability" className="mt-4">
+            {contractor && (
+              <ContractorAvailability
+                contractorProfileId={contractor.id}
+                initialDays={(contractor.available_days as string[]) ?? []}
+                initialHours={(contractor.available_hours as string[]) ?? []}
+                initialJobsPerWeek={contractor.jobs_per_week ?? 5}
+              />
+            )}
+          </TabsContent>
         </Tabs>
       </FadeIn>
 
+      {/* Performance Metrics */}
+      <FadeIn delay={0.35}>
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle className="text-base">Performance Metrics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 text-sm sm:grid-cols-2 lg:grid-cols-4">
+              <div className="rounded-lg border p-3 text-center">
+                <p className="text-2xl font-bold text-primary">{metrics.totalJobs}</p>
+                <p className="text-xs text-muted-foreground">Total Jobs</p>
+              </div>
+              <div className="rounded-lg border p-3 text-center">
+                <p className="text-2xl font-bold text-green-600">{metrics.completionRate}%</p>
+                <p className="text-xs text-muted-foreground">Completion Rate</p>
+              </div>
+              <div className="rounded-lg border p-3 text-center">
+                <p className="text-2xl font-bold text-amber-600">{metrics.cancellationRate}%</p>
+                <p className="text-xs text-muted-foreground">Cancellation Rate</p>
+              </div>
+              <div className="rounded-lg border p-3 text-center">
+                <p className="text-2xl font-bold">{contractor?.rating ?? 0}/5</p>
+                <p className="text-xs text-muted-foreground">Average Rating</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </FadeIn>
+
+      {/* Credentials */}
+      {contractor && (
+        <div className="mt-6">
+          <ContractorCredentials contractor={contractor} />
+        </div>
+      )}
+
       {/* Profile Status */}
-      <FadeIn delay={0.3}>
+      <FadeIn delay={0.4}>
         <Card className="mt-6">
           <CardHeader>
             <div className="flex items-center justify-between">

@@ -11,16 +11,27 @@ import {
   Home, Settings, CreditCard, Calendar,
   CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, ClipboardList, DollarSign,
+  Phone, ShoppingCart, AlertCircle,
   type LucideIcon,
 } from "lucide-react";
 import { usePropertyStore } from "@/stores/property-store";
 import { usePlanStore } from "@/stores/plan-store";
-import { getProperty, getBookingsForProperty, getSubscription } from "@/lib/supabase/queries";
-import { SERVICES, PLAN_DISCOUNTS } from "@/data/services";
+import {
+  getProperty,
+  getBookingsForProperty,
+  getSubscription,
+  getSubscriptionWithUsage,
+  getRecentActivity,
+  getServiceCredits,
+} from "@/lib/supabase/queries";
+import { SERVICES, PLAN_DISCOUNTS, PLAN_TIERS } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
 import { DashboardShell } from "./dashboard-shell";
 import { StatCard } from "./stat-card";
 import { BookingList } from "./booking-list";
+import { UsageOverview } from "./usage-overview";
+import { ActivityFeed } from "./activity-feed";
+import { CreditBalance } from "./credit-balance";
 import { FadeIn, SpringNumber } from "@/components/ui/motion";
 import type { Database } from "@/lib/supabase/types";
 
@@ -31,6 +42,22 @@ const ICON_MAP: Record<string, LucideIcon> = {
 
 type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 
+interface UsageData {
+  serviceId: string;
+  frequency: string;
+  monthlyPrice: number;
+  used: number;
+}
+
+interface Activity {
+  id: string;
+  type: "notification" | "booking";
+  title: string;
+  body: string;
+  timestamp: string;
+  read: boolean;
+}
+
 export function HomeownerDashboard({
   profile,
 }: {
@@ -39,20 +66,54 @@ export function HomeownerDashboard({
   const { property, serviceSpecs } = usePropertyStore();
   const { selectedServices, planInterval } = usePlanStore();
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [usageData, setUsageData] = useState<UsageData[]>([]);
+  const [periodStart, setPeriodStart] = useState("");
+  const [periodEnd, setPeriodEnd] = useState("");
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [totalCredits, setTotalCredits] = useState(0);
+  const [usedCredits, setUsedCredits] = useState(0);
+  const [planTierName, setPlanTierName] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadBookings() {
+    async function loadData() {
       try {
-        const prop = await getProperty(profile.id as string);
+        const userId = profile.id as string;
+        const prop = await getProperty(userId);
+
         if (prop) {
           const data = await getBookingsForProperty(prop.id);
           setBookings(data);
+
+          const activityData = await getRecentActivity(userId, prop.id);
+          setActivities(activityData);
+        }
+
+        // Load usage data from subscription
+        const usageResult = await getSubscriptionWithUsage(userId);
+        if (usageResult) {
+          setUsageData(usageResult.usageMap);
+          setPeriodStart(usageResult.periodStart);
+          setPeriodEnd(usageResult.periodEnd);
+
+          // Find plan tier name
+          const sub = usageResult.subscription;
+          if (sub.plan_tier_id) {
+            const tier = PLAN_TIERS.find((t) => t.id === sub.plan_tier_id);
+            if (tier) setPlanTierName(tier.name);
+          }
+
+          // Load credits
+          const credits = await getServiceCredits(sub.id);
+          const total = credits.reduce((s, c) => s + c.total_credits, 0);
+          const used = credits.reduce((s, c) => s + c.used_credits, 0);
+          setTotalCredits(total);
+          setUsedCredits(used);
         }
       } catch {
         // silent
       }
     }
-    loadBookings();
+    loadData();
   }, [profile.id]);
 
   const displayName = (profile.first_name as string) || "there";
@@ -82,6 +143,13 @@ export function HomeownerDashboard({
         <StatCard icon={CheckCircle2} label="Completed" value={completedCount} delay={0.2} />
       </div>
 
+      {/* Usage Overview */}
+      {usageData.length > 0 && (
+        <div className="mt-6">
+          <UsageOverview usageData={usageData} periodStart={periodStart} periodEnd={periodEnd} delay={0.22} />
+        </div>
+      )}
+
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         {/* Plan Summary */}
         <FadeIn delay={0.25}>
@@ -89,7 +157,12 @@ export function HomeownerDashboard({
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Your Plan</CardTitle>
-                <Badge className="bg-primary/10 text-primary">{PLAN_DISCOUNTS[planInterval].label}</Badge>
+                <div className="flex items-center gap-2">
+                  {planTierName && (
+                    <Badge className="bg-primary text-primary-foreground">{planTierName}</Badge>
+                  )}
+                  <Badge className="bg-primary/10 text-primary">{PLAN_DISCOUNTS[planInterval].label}</Badge>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
@@ -124,53 +197,83 @@ export function HomeownerDashboard({
           </Card>
         </FadeIn>
 
-        {/* Property Card */}
-        <FadeIn delay={0.3}>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">Your Property</CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <Link href="/account/property"><Settings className="mr-1 h-3.5 w-3.5" /> Edit</Link>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div>
-                  <p className="text-xs text-muted-foreground">Home Size</p>
-                  <p className="font-medium">{property.homeSqft.toLocaleString()} sq ft</p>
+        {/* Credits + Property Column */}
+        <div className="flex flex-col gap-6">
+          {/* Credit Balance */}
+          <CreditBalance totalCredits={totalCredits} usedCredits={usedCredits} delay={0.28} />
+
+          {/* Property Card */}
+          <FadeIn delay={0.3}>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base">Your Property</CardTitle>
+                  <Button variant="ghost" size="sm" asChild>
+                    <Link href="/account/property"><Settings className="mr-1 h-3.5 w-3.5" /> Edit</Link>
+                  </Button>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Lot Size</p>
-                  <p className="font-medium">{property.lotSqft.toLocaleString()} sq ft</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Home Size</p>
+                    <p className="font-medium">{property.homeSqft.toLocaleString()} sq ft</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Lot Size</p>
+                    <p className="font-medium">{property.lotSqft.toLocaleString()} sq ft</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Bedrooms/Bathrooms</p>
+                    <p className="font-medium">{property.bedrooms} bed / {property.bathrooms} bath</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Home Type</p>
+                    <p className="font-medium capitalize">{property.homeType}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Bedrooms/Bathrooms</p>
-                  <p className="font-medium">{property.bedrooms} bed / {property.bathrooms} bath</p>
+                {property.address && (
+                  <>
+                    <Separator className="my-3" />
+                    <p className="text-sm text-muted-foreground">{property.address}</p>
+                  </>
+                )}
+              </CardContent>
+            </Card>
+          </FadeIn>
+        </div>
+
+        {/* Activity Feed */}
+        <ActivityFeed activities={activities} delay={0.33} />
+
+        {/* Emergency Contact */}
+        {(profile.emergency_contact_name as string) && (
+          <FadeIn delay={0.35}>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="h-4 w-4 text-destructive" />
+                  <CardTitle className="text-base">Emergency Contact</CardTitle>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Home Type</p>
-                  <p className="font-medium capitalize">{property.homeType}</p>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-2 text-sm">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Name</p>
+                    <p className="font-medium">{profile.emergency_contact_name as string}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Phone</p>
+                    <p className="font-medium flex items-center gap-1">
+                      <Phone className="h-3 w-3" />
+                      {profile.emergency_contact_phone as string}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Year Built</p>
-                  <p className="font-medium">{property.yearBuilt}</p>
-                </div>
-                <div>
-                  <p className="text-xs text-muted-foreground">Heating</p>
-                  <p className="font-medium capitalize">{property.heatingType.replace("-", " ")}</p>
-                </div>
-              </div>
-              {property.address && (
-                <>
-                  <Separator className="my-3" />
-                  <p className="text-sm text-muted-foreground">{property.address}</p>
-                </>
-              )}
-            </CardContent>
-          </Card>
-        </FadeIn>
+              </CardContent>
+            </Card>
+          </FadeIn>
+        )}
 
         {/* Bookings */}
         <div className="md:col-span-2">
@@ -178,7 +281,7 @@ export function HomeownerDashboard({
             bookings={upcomingBookings}
             title="Upcoming Bookings"
             emptyMessage="No upcoming bookings. Schedule your first service!"
-            delay={0.35}
+            delay={0.38}
           />
         </div>
 
@@ -187,9 +290,10 @@ export function HomeownerDashboard({
           <Card className="md:col-span-2">
             <CardHeader><CardTitle className="text-base">Quick Actions</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {[
                   { icon: Calendar, label: "Book Service", href: "/account/book" },
+                  { icon: ShoppingCart, label: "Buy Credits", desc: "Add-on services" },
                   { icon: CreditCard, label: "Billing", desc: "Coming soon" },
                   { icon: Settings, label: "Edit Property", href: "/account/property" },
                   { icon: Home, label: "Browse Services", href: "/plan-builder" },

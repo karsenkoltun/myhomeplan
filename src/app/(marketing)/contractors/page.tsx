@@ -16,6 +16,8 @@ import {
   StaggerItem,
   ScaleOnHover,
   GlowCard,
+  ShimmerButton,
+  AnimatedCounter,
 } from "@/components/ui/motion";
 import { motion } from "framer-motion";
 import {
@@ -50,46 +52,92 @@ import {
   Check,
   X,
   Minus,
+  BadgeDollarSign,
+  ShieldCheck,
+  Target,
+  CalendarClock,
 } from "lucide-react";
 
 // ---- Data ----
 
 const benefits = [
   {
+    icon: Target,
+    title: "Free Leads, Every Month",
+    description:
+      "We send you qualified, ready-to-book homeowners at zero cost. No bidding wars, no pay-per-lead fees, no wasted time on tire-kickers.",
+    color: "text-emerald-500",
+    bgColor: "bg-emerald-500/10",
+  },
+  {
     icon: Briefcase,
-    title: "Steady Work Pipeline",
+    title: "Steady Year-Round Pipeline",
     description:
-      "No more slow seasons or scrambling for leads. Get consistent job assignments year-round.",
+      "No more feast-or-famine cycles. We keep your calendar full through every season so you can plan ahead with confidence.",
+    color: "text-blue-500",
+    bgColor: "bg-blue-500/10",
   },
   {
-    icon: DollarSign,
-    title: "Zero Marketing Costs",
+    icon: ShieldCheck,
+    title: "Guaranteed Payment, Always",
     description:
-      "We handle all customer acquisition. No more paying for ads, leads, or listings.",
+      "Stop chasing invoices. We guarantee payment for every completed job - deposited directly to your account on schedule.",
+    color: "text-violet-500",
+    bgColor: "bg-violet-500/10",
   },
   {
-    icon: Shield,
-    title: "Guaranteed Payment",
+    icon: ClipboardCheck,
+    title: "We Handle All Admin",
     description:
-      "Get paid on time, every time. No chasing invoices or dealing with non-payment.",
+      "Scheduling, customer communication, invoicing, follow-ups - we take care of everything so you can focus on the work.",
+    color: "text-rose-500",
+    bgColor: "bg-rose-500/10",
   },
   {
-    icon: Calendar,
-    title: "Flexible Schedule",
+    icon: Star,
+    title: "Build Your Reputation",
     description:
-      "Set your availability and capacity. Only take jobs that fit your schedule.",
+      "Every job builds your verified profile with real reviews. The better you perform, the more premium jobs you unlock.",
+    color: "text-amber-500",
+    bgColor: "bg-amber-500/10",
   },
   {
-    icon: Clock,
-    title: "Simple Scheduling",
+    icon: CalendarClock,
+    title: "Set Your Own Schedule",
     description:
-      "We coordinate with homeowners and handle all scheduling logistics for you.",
+      "You decide when you work, how much you take on, and which areas you serve. Full flexibility, zero pressure.",
+    color: "text-cyan-500",
+    bgColor: "bg-cyan-500/10",
+  },
+];
+
+const statCards = [
+  {
+    value: "$0",
+    label: "Cost to Join",
+    description: "No fees, no subscriptions, no hidden charges. Ever.",
+    color: "from-emerald-500/20 to-emerald-600/5",
+    borderColor: "border-emerald-500/30",
+    textColor: "text-emerald-500",
+    icon: BadgeDollarSign,
   },
   {
-    icon: TrendingUp,
-    title: "Professional Growth",
-    description:
-      "Access to more clients, reviews, and a reputation that grows with every job.",
+    value: "100%",
+    label: "Payment Guaranteed",
+    description: "Every completed job. On time. No exceptions.",
+    color: "from-primary/20 to-blue-600/5",
+    borderColor: "border-primary/30",
+    textColor: "text-primary",
+    icon: ShieldCheck,
+  },
+  {
+    value: "0 hrs",
+    label: "Marketing Needed",
+    description: "We bring the customers. You bring the skills.",
+    color: "from-amber-500/20 to-amber-600/5",
+    borderColor: "border-amber-500/30",
+    textColor: "text-amber-500",
+    icon: Megaphone,
   },
 ];
 
@@ -150,16 +198,6 @@ const comparisonRows = [
   },
 ];
 
-const requirements = [
-  "Valid business license",
-  "Proof of insurance (minimum $2M liability)",
-  "WCB coverage (or equivalent)",
-  "Minimum 2 years experience in your trade",
-  "Own equipment and reliable transportation",
-  "Pass a background check",
-  "Commitment to quality and professionalism",
-];
-
 const serviceCategories = [
   { name: "Lawn Care & Landscaping", icon: Scissors, hiring: true },
   { name: "Snow Removal", icon: Snowflake, hiring: true },
@@ -214,45 +252,48 @@ const testimonials = [
       "I used to spend $500/month on advertising. Now I get more work than ever and it costs me nothing.",
     name: "Mike T.",
     trade: "Landscaping",
+    rating: 5,
   },
   {
     quote:
       "The steady scheduling is a game changer. I know exactly what my week looks like every Monday.",
     name: "Sarah K.",
     trade: "House Cleaning",
+    rating: 5,
   },
   {
     quote:
       "Getting paid on time, every time. That alone was worth joining.",
     name: "Dave R.",
     trade: "Handyman",
+    rating: 5,
   },
 ];
 
 const faqs = [
   {
-    q: "Is there a cost to join?",
-    a: "No, it's completely free to apply and join.",
+    q: "Is there really no cost to join?",
+    a: "Zero. No sign-up fees, no monthly subscriptions, no hidden costs. We make money from the homeowner side, not from you. You keep more of what you earn.",
   },
   {
     q: "How do I get paid?",
-    a: "Direct deposit every two weeks for completed jobs.",
+    a: "Direct deposit every two weeks for completed jobs. Payment is guaranteed for every job you complete - no chasing invoices, no awkward conversations with clients.",
   },
   {
     q: "Can I set my own schedule?",
-    a: "Yes, you set your available days, hours, and weekly capacity.",
+    a: "Absolutely. You set your available days, hours, and weekly capacity. Only want to work weekdays? No problem. Need to block off a week? Just update your availability and we handle the rest.",
   },
   {
     q: "What if I need to take time off?",
-    a: "Just update your availability - we'll reassign jobs.",
+    a: "Just update your availability in the app. We'll automatically reassign any upcoming jobs and hold your spot in the network. No penalties, no questions asked.",
   },
   {
     q: "What area do you serve?",
-    a: "Currently serving the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, and surrounding areas.",
+    a: "Currently serving the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, and surrounding areas. We're expanding rapidly, so check back if your area isn't listed yet.",
   },
   {
     q: "Do I need my own equipment?",
-    a: "Yes, you'll need your own tools and reliable transportation.",
+    a: "Yes, you'll need your own tools and reliable transportation. This keeps costs down for everyone and means you're working with equipment you know and trust.",
   },
 ];
 
@@ -272,7 +313,7 @@ export default function ContractorsPage() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* ==================== 1. HERO ==================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-16 text-white sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-20 text-white sm:py-28">
         {/* Background pattern */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-400/20 via-transparent to-transparent" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTMwVjBoLTEydjRoMTJ6TTI0IDI0djJoMTJ2LTJIMjR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50" />
@@ -290,29 +331,24 @@ export default function ContractorsPage() {
         <FadeIn>
           <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
             <Badge className="mb-4 bg-white/20 text-white hover:bg-white/25 sm:mb-5">
-              For Service Professionals
+              Now Accepting Applications
             </Badge>
             <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              Grow Your Business with
+              FREE Leads. Guaranteed Pay.
               <br />
-              <span className="text-sky-300">My Home Plan</span>
+              <span className="text-sky-300">Zero Marketing Costs.</span>
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed opacity-90 sm:mt-6 sm:text-lg md:text-xl">
-              Join our network of trusted local contractors. Get steady work,
-              reliable scheduling, and guaranteed payment - without spending a
-              dime on marketing.
+              Stop paying for leads that go nowhere. Join My Home Plan and get
+              steady, qualified jobs sent directly to you - completely free.
+              We handle the customers, you handle the craft.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="h-12 w-full px-8 text-base font-semibold sm:h-13 sm:w-auto"
-                asChild
-              >
-                <Link href="/onboarding?type=contractor">
-                  Apply Now <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+              <Link href="/onboarding?type=contractor">
+                <ShimmerButton className="h-12 w-full px-8 text-base font-semibold sm:h-13 sm:w-auto">
+                  Apply Now - Takes 10 Minutes <ArrowRight className="ml-2 h-4 w-4" />
+                </ShimmerButton>
+              </Link>
               <Button
                 size="lg"
                 variant="outline"
@@ -323,44 +359,32 @@ export default function ContractorsPage() {
                     ?.scrollIntoView({ behavior: "smooth" });
                 }}
               >
-                Learn More <ArrowDown className="ml-2 h-4 w-4" />
+                See the Benefits <ArrowDown className="ml-2 h-4 w-4" />
               </Button>
             </div>
           </div>
         </FadeIn>
       </section>
 
-      {/* ==================== 2. BENEFITS ==================== */}
-      <section
-        id="benefits"
-        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
-      >
-        <FadeIn>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-              Why Contractors Choose My Home Plan
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base md:text-lg">
-              We built this platform to solve the biggest pain points
-              contractors face every day.
-            </p>
-          </div>
-        </FadeIn>
-
-        <StaggerContainer className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {benefits.map((b) => (
-            <StaggerItem key={b.title}>
-              <ScaleOnHover scale={1.02}>
-                <Card className="h-full border-border/50">
-                  <CardContent className="p-5 sm:p-6">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 sm:h-12 sm:w-12">
-                      <b.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
+      {/* ==================== 2. BIG STAT CARDS ==================== */}
+      <section className="relative -mt-12 z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <StaggerContainer className="grid gap-4 sm:grid-cols-3 sm:gap-6">
+          {statCards.map((stat) => (
+            <StaggerItem key={stat.label}>
+              <ScaleOnHover scale={1.03}>
+                <Card className={`border-2 ${stat.borderColor} bg-gradient-to-br ${stat.color} backdrop-blur-sm shadow-lg`}>
+                  <CardContent className="flex flex-col items-center p-6 text-center sm:p-8">
+                    <div className={`flex h-12 w-12 items-center justify-center rounded-full ${stat.textColor} bg-background/80 mb-3`}>
+                      <stat.icon className="h-6 w-6" />
                     </div>
-                    <h3 className="mt-4 text-base font-semibold sm:text-lg">
-                      {b.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {b.description}
+                    <p className={`text-3xl font-bold tracking-tight sm:text-4xl ${stat.textColor}`}>
+                      {stat.value}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold sm:text-base">
+                      {stat.label}
+                    </p>
+                    <p className="mt-1.5 text-xs text-muted-foreground sm:text-sm">
+                      {stat.description}
                     </p>
                   </CardContent>
                 </Card>
@@ -370,7 +394,49 @@ export default function ContractorsPage() {
         </StaggerContainer>
       </section>
 
-      {/* ==================== 3. COMPARISON TABLE ==================== */}
+      {/* ==================== 3. BENEFITS ==================== */}
+      <section
+        id="benefits"
+        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
+      >
+        <FadeIn>
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
+              Everything You Need to Succeed.
+              <br />
+              <span className="text-primary">Nothing You Don't.</span>
+            </h2>
+            <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base md:text-lg">
+              We built this platform to eliminate the biggest headaches
+              contractors deal with every single day.
+            </p>
+          </div>
+        </FadeIn>
+
+        <StaggerContainer className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {benefits.map((b) => (
+            <StaggerItem key={b.title}>
+              <ScaleOnHover scale={1.02}>
+                <GlowCard className="h-full">
+                  <CardContent className="p-5 sm:p-6">
+                    <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${b.bgColor} sm:h-12 sm:w-12`}>
+                      <b.icon className={`h-5 w-5 ${b.color} sm:h-6 sm:w-6`} />
+                    </div>
+                    <h3 className="mt-4 text-base font-semibold sm:text-lg">
+                      {b.title}
+                    </h3>
+                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                      {b.description}
+                    </p>
+                  </CardContent>
+                </GlowCard>
+              </ScaleOnHover>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      </section>
+
+      {/* ==================== 4. COMPARISON TABLE ==================== */}
       <section className="border-y bg-muted/20 py-16 sm:py-24">
         <FadeIn>
           <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
@@ -442,51 +508,10 @@ export default function ContractorsPage() {
         </FadeIn>
       </section>
 
-      {/* ==================== 4. REQUIREMENTS ==================== */}
+      {/* ==================== 5. SERVICE CATEGORIES ==================== */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <FadeIn>
           <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              What You Need to Apply
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              We vet every contractor to ensure the best experience for
-              homeowners and professionals alike.
-            </p>
-          </div>
-        </FadeIn>
-
-        <FadeIn delay={0.15}>
-          <div className="mx-auto mt-8 max-w-xl sm:mt-10">
-            <Card className="border-border/50">
-              <CardContent className="p-6 sm:p-8">
-                <ul className="space-y-4">
-                  {requirements.map((req, i) => (
-                    <motion.li
-                      key={req}
-                      initial={{ opacity: 0, x: -16 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.07, duration: 0.4 }}
-                      className="flex items-start gap-3"
-                    >
-                      <div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/40">
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                      </div>
-                      <span className="text-sm sm:text-base">{req}</span>
-                    </motion.li>
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          </div>
-        </FadeIn>
-      </section>
-
-      {/* ==================== 5. SERVICE CATEGORIES ==================== */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
-        <FadeIn>
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               Services We're Hiring For
             </h2>
@@ -497,7 +522,7 @@ export default function ContractorsPage() {
           </div>
         </FadeIn>
 
-        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-3 px-4 sm:mt-12 sm:grid-cols-3 sm:gap-4 md:grid-cols-5 lg:px-8">
+        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4 md:grid-cols-5">
           {serviceCategories.map((svc) => (
             <StaggerItem key={svc.name}>
               <ScaleOnHover scale={1.04}>
@@ -521,9 +546,9 @@ export default function ContractorsPage() {
       </section>
 
       {/* ==================== 6. APPLICATION PROCESS TIMELINE ==================== */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section className="border-y bg-muted/20 py-16 sm:py-24">
         <FadeIn>
-          <div className="mx-auto max-w-2xl text-center">
+          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               How the Application Process Works
             </h2>
@@ -534,7 +559,7 @@ export default function ContractorsPage() {
         </FadeIn>
 
         {/* Desktop: horizontal timeline */}
-        <div className="mx-auto mt-12 hidden max-w-5xl md:block">
+        <div className="mx-auto mt-12 hidden max-w-5xl px-4 md:block lg:px-8">
           <div className="relative">
             {/* Connecting line */}
             <div className="absolute left-0 right-0 top-8 h-0.5 bg-border" />
@@ -563,7 +588,7 @@ export default function ContractorsPage() {
         </div>
 
         {/* Mobile: vertical timeline */}
-        <div className="mx-auto mt-8 max-w-md md:hidden">
+        <div className="mx-auto mt-8 max-w-md px-4 md:hidden">
           <div className="relative ml-6 border-l-2 border-border pl-8">
             {timelineSteps.map((step, i) => (
               <FadeIn key={step.title} delay={i * 0.1}>
@@ -590,9 +615,9 @@ export default function ContractorsPage() {
       </section>
 
       {/* ==================== 7. TESTIMONIALS ==================== */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
         <FadeIn>
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
               What Our Contractors Say
             </h2>
@@ -602,11 +627,19 @@ export default function ContractorsPage() {
           </div>
         </FadeIn>
 
-        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl gap-5 px-4 sm:mt-12 sm:gap-6 md:grid-cols-3 lg:px-8">
+        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl gap-5 sm:mt-12 sm:gap-6 md:grid-cols-3">
           {testimonials.map((t) => (
             <StaggerItem key={t.name}>
               <Card className="h-full border-border/50">
                 <CardContent className="flex h-full flex-col p-5 sm:p-6">
+                  <div className="mb-3 flex gap-0.5">
+                    {Array.from({ length: t.rating }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-4 w-4 fill-amber-400 text-amber-400"
+                      />
+                    ))}
+                  </div>
                   <Quote className="mb-3 h-6 w-6 text-primary/30" />
                   <p className="flex-1 text-sm leading-relaxed italic text-muted-foreground">
                     &ldquo;{t.quote}&rdquo;
@@ -630,40 +663,42 @@ export default function ContractorsPage() {
       </section>
 
       {/* ==================== 8. FAQ ==================== */}
-      <section className="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <FadeIn>
-          <div className="text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Frequently Asked Questions
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              Everything you need to know about joining as a contractor.
-            </p>
-          </div>
-        </FadeIn>
+      <section className="border-t bg-muted/20 py-16 sm:py-24">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="text-center">
+              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
+                Everything you need to know about joining as a contractor.
+              </p>
+            </div>
+          </FadeIn>
 
-        <FadeIn delay={0.1}>
-          <Accordion
-            type="single"
-            collapsible
-            className="mt-8 sm:mt-10"
-          >
-            {faqs.map((faq, i) => (
-              <AccordionItem key={i} value={`faq-${i}`}>
-                <AccordionTrigger className="text-left text-sm font-semibold sm:text-base">
-                  {faq.q}
-                </AccordionTrigger>
-                <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                  {faq.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
-        </FadeIn>
+          <FadeIn delay={0.1}>
+            <Accordion
+              type="single"
+              collapsible
+              className="mt-8 sm:mt-10"
+            >
+              {faqs.map((faq, i) => (
+                <AccordionItem key={i} value={`faq-${i}`}>
+                  <AccordionTrigger className="text-left text-sm font-semibold sm:text-base">
+                    {faq.q}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </FadeIn>
+        </div>
       </section>
 
       {/* ==================== 9. FINAL CTA ==================== */}
-      <section className="border-t bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-16 text-white sm:py-24">
+      <section className="bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-16 text-white sm:py-24">
         <FadeIn>
           <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
             <motion.div
@@ -674,22 +709,22 @@ export default function ContractorsPage() {
               <Rocket className="h-7 w-7 text-sky-300" />
             </motion.div>
             <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-              Ready to Grow Your Business?
+              Stop Chasing Leads.
+              <br />
+              Let Them Come to You.
             </h2>
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed opacity-90 sm:text-lg">
-              Join our growing network of Okanagan contractors. Apply in under
-              10 minutes.
+              Join our growing network of Okanagan contractors. Free to apply,
+              free to join, and your first jobs could be lined up within two weeks.
             </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="mt-8 h-12 w-full px-10 text-base font-semibold sm:mt-10 sm:h-13 sm:w-auto"
-              asChild
-            >
-              <Link href="/onboarding?type=contractor">
-                Apply Now <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <Link href="/onboarding?type=contractor">
+              <ShimmerButton className="mt-8 h-12 w-full px-10 text-base font-semibold sm:mt-10 sm:h-13 sm:w-auto">
+                Apply Now - Takes 10 Minutes <ArrowRight className="ml-2 h-4 w-4" />
+              </ShimmerButton>
+            </Link>
+            <p className="mt-4 text-sm opacity-70">
+              No fees. No commitments. No credit card required.
+            </p>
           </div>
         </FadeIn>
       </section>

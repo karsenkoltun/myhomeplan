@@ -20,6 +20,7 @@ const whoItsFor = [
   { name: "Homeowners", href: "/homeowners", icon: Home, desc: "Residential maintenance plans" },
   { name: "Contractors", href: "/contractors", icon: HardHat, desc: "Join our contractor network" },
   { name: "Strata Corporations", href: "/strata", icon: Building2, desc: "Building maintenance solutions" },
+  { name: "Property Managers", href: "/property-managers", icon: Building2, desc: "Portfolio maintenance management" },
 ];
 
 export function Navbar() {

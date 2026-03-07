@@ -6,10 +6,13 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   Building2, ClipboardList, DollarSign, Calendar, Users, Wrench,
+  Shield, FileText, Flame, AlertTriangle,
 } from "lucide-react";
-import { getStrataProperty } from "@/lib/supabase/queries";
+import { getStrataProperty, getSubscriptionWithUsage } from "@/lib/supabase/queries";
 import { DashboardShell } from "./dashboard-shell";
 import { StatCard } from "./stat-card";
+import { UsageOverview } from "./usage-overview";
+import { StrataServiceProviders } from "./strata-service-providers";
 import { FadeIn } from "@/components/ui/motion";
 import type { Database, Json } from "@/lib/supabase/types";
 
@@ -22,18 +25,40 @@ interface CouncilContact {
   phone: string;
 }
 
+function getExpiryBadge(date: string | null, label: string) {
+  if (!date) return <Badge variant="secondary" className="text-[10px]">{label}: Not set</Badge>;
+  const d = new Date(date);
+  const now = new Date();
+  const daysLeft = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+  if (daysLeft < 0) return <Badge variant="destructive" className="text-[10px]">{label}: Expired</Badge>;
+  if (daysLeft < 30) return <Badge className="bg-red-100 text-red-800 text-[10px]">{label}: {daysLeft}d left</Badge>;
+  if (daysLeft < 90) return <Badge className="bg-amber-100 text-amber-800 text-[10px]">{label}: {daysLeft}d left</Badge>;
+  return <Badge className="bg-emerald-100 text-emerald-800 text-[10px]">{label}: Valid</Badge>;
+}
+
 export function StrataDashboard({
   profile,
 }: {
   profile: Record<string, unknown>;
 }) {
   const [strata, setStrata] = useState<StrataProperty | null>(null);
+  const [usageData, setUsageData] = useState<{ serviceId: string; frequency: string; monthlyPrice: number; used: number }[]>([]);
+  const [periodStart, setPeriodStart] = useState("");
+  const [periodEnd, setPeriodEnd] = useState("");
 
   useEffect(() => {
     async function load() {
       try {
-        const data = await getStrataProperty(profile.id as string);
+        const userId = profile.id as string;
+        const data = await getStrataProperty(userId);
         setStrata(data);
+
+        const usage = await getSubscriptionWithUsage(userId);
+        if (usage) {
+          setUsageData(usage.usageMap);
+          setPeriodStart(usage.periodStart);
+          setPeriodEnd(usage.periodEnd);
+        }
       } catch {
         // silent
       }
@@ -45,6 +70,8 @@ export function StrataDashboard({
   const councilContacts = (strata?.council_contacts as CouncilContact[] | null) ?? [];
   const amenities = (strata?.amenities as string[] | null) ?? [];
   const priorityAreas = (strata?.priority_areas as string[] | null) ?? [];
+  const currentProviders = strata?.current_providers as Record<string, string> | null;
+  const contractEndDates = strata?.current_contract_end_dates as Record<string, string> | null;
 
   return (
     <DashboardShell
@@ -58,6 +85,13 @@ export function StrataDashboard({
         <StatCard icon={DollarSign} label="Annual Budget" value={strata?.annual_maintenance_budget ?? 0} prefix="$" delay={0.15} />
         <StatCard icon={Calendar} label="Year Built" value={strata?.year_built ?? 0} delay={0.2} />
       </div>
+
+      {/* Usage Overview */}
+      {usageData.length > 0 && (
+        <div className="mt-6">
+          <UsageOverview usageData={usageData} periodStart={periodStart} periodEnd={periodEnd} delay={0.22} />
+        </div>
+      )}
 
       <div className="mt-6 grid gap-6 md:grid-cols-2">
         {/* Building Overview */}
@@ -105,7 +139,7 @@ export function StrataDashboard({
           </Card>
         </FadeIn>
 
-        {/* Reserve Fund & Insurance */}
+        {/* Financial Overview (expanded) */}
         <FadeIn delay={0.3}>
           <Card>
             <CardHeader>
@@ -129,10 +163,65 @@ export function StrataDashboard({
                   <p className="text-xs text-muted-foreground">Coverage</p>
                   <p className="font-medium">${(strata?.insurance_coverage_amount ?? 0).toLocaleString()}</p>
                 </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Maintenance Budget</p>
+                  <p className="font-medium">${(strata?.annual_maintenance_budget ?? 0).toLocaleString()}/yr</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Per Unit/Month</p>
+                  <p className="font-medium">
+                    ${strata?.unit_count ? Math.round((strata.annual_maintenance_budget ?? 0) / strata.unit_count / 12).toLocaleString() : "0"}
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
         </FadeIn>
+
+        {/* Document Status */}
+        <FadeIn delay={0.33}>
+          <Card className="md:col-span-2">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-base">Document Status</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-wrap gap-2">
+                {getExpiryBadge(strata?.insurance_expiry ?? null, "Insurance")}
+                {getExpiryBadge(strata?.depreciation_report_date ?? null, "Depreciation Report")}
+                {getExpiryBadge(strata?.last_fire_inspection ?? null, "Fire Inspection")}
+                {getExpiryBadge(strata?.roof_warranty_expiry ?? null, "Roof Warranty")}
+              </div>
+              <Separator className="my-3" />
+              <div className="grid gap-3 text-sm sm:grid-cols-3">
+                <div>
+                  <p className="text-xs text-muted-foreground">Fire System</p>
+                  <p className="font-medium capitalize">{strata?.fire_system_type || "-"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Roof Age</p>
+                  <p className="font-medium">{strata?.roof_age ?? 0} years</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">AGM Month</p>
+                  <p className="font-medium">
+                    {strata?.agm_month ? new Date(2024, (strata.agm_month - 1)).toLocaleString("default", { month: "long" }) : "-"}
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+
+        {/* Service Providers */}
+        <div className="md:col-span-2">
+          <StrataServiceProviders
+            currentProviders={currentProviders}
+            contractEndDates={contractEndDates}
+          />
+        </div>
 
         {/* Priority Areas */}
         {priorityAreas.length > 0 && (

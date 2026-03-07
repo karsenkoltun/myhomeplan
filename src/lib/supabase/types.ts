@@ -472,6 +472,19 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["notifications"]["Row"]> & { profile_id: string; title: string };
         Update: Partial<Database["public"]["Tables"]["notifications"]["Row"]>;
       };
+      service_credits: {
+        Row: {
+          id: string;
+          subscription_id: string;
+          service_id: string;
+          total_credits: number;
+          used_credits: number;
+          purchased_at: string;
+          expires_at: string | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["service_credits"]["Row"]> & { subscription_id: string; service_id: string; total_credits: number };
+        Update: Partial<Database["public"]["Tables"]["service_credits"]["Row"]>;
+      };
       pricing_multipliers: {
         Row: {
           id: string;

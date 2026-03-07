@@ -6,20 +6,30 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   Building, Home, DollarSign, ClipboardList, Users, MapPin,
+  CheckCircle2, XCircle, Bell, FileText,
 } from "lucide-react";
 import {
   getPMCompany,
   getPMContacts,
   getPMManagedProperties,
 } from "@/lib/supabase/queries";
+import { SERVICES } from "@/data/services";
 import { DashboardShell } from "./dashboard-shell";
 import { StatCard } from "./stat-card";
+import { PMBillingView } from "./pm-billing-view";
 import { FadeIn } from "@/components/ui/motion";
 import type { Database, Json } from "@/lib/supabase/types";
 
 type PMCompany = Database["public"]["Tables"]["pm_companies"]["Row"];
 type PMContact = Database["public"]["Tables"]["pm_company_contacts"]["Row"];
 type PMProperty = Database["public"]["Tables"]["pm_managed_properties"]["Row"];
+
+function getServiceStatusDot(serviceCount: number) {
+  if (serviceCount >= 5) return "bg-emerald-500";
+  if (serviceCount >= 2) return "bg-amber-500";
+  if (serviceCount >= 1) return "bg-blue-500";
+  return "bg-gray-300";
+}
 
 export function PMDashboard({
   profile,
@@ -52,6 +62,10 @@ export function PMDashboard({
 
   const displayName = company?.company_name || (profile.first_name as string) || "there";
   const totalUnits = properties.reduce((sum, p) => sum + (p.unit_count || 0), 0);
+  const totalActiveServices = properties.reduce((sum, p) => {
+    const svcs = (p.selected_services as string[] | null) ?? [];
+    return sum + svcs.length;
+  }, 0);
 
   return (
     <DashboardShell
@@ -66,13 +80,16 @@ export function PMDashboard({
         <StatCard icon={Users} label="Team Members" value={contacts.length} delay={0.2} />
       </div>
 
-      {/* Portfolio Grid */}
+      {/* Portfolio Grid with service status dots */}
       <FadeIn delay={0.25}>
         <Card className="mt-6">
           <CardHeader>
             <div className="flex items-center gap-2">
               <MapPin className="h-4 w-4 text-muted-foreground" />
               <CardTitle className="text-base">Portfolio ({properties.length} properties)</CardTitle>
+              <Badge variant="secondary" className="ml-auto text-[10px]">
+                {totalActiveServices} active services
+              </Badge>
             </div>
           </CardHeader>
           <CardContent>
@@ -84,12 +101,20 @@ export function PMDashboard({
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {properties.map((prop) => {
                   const selectedServices = (prop.selected_services as string[] | null) ?? [];
+                  const serviceNames = selectedServices
+                    .map((sid) => SERVICES.find((s) => s.id === sid)?.name ?? sid)
+                    .slice(0, 4);
                   return (
-                    <div key={prop.id} className="rounded-lg border p-3">
-                      <p className="font-medium text-sm">{prop.property_name || prop.address}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {prop.address}, {prop.city}
-                      </p>
+                    <div key={prop.id} className="rounded-lg border p-3 transition-colors hover:border-primary/20">
+                      <div className="flex items-start justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{prop.property_name || prop.address}</p>
+                          <p className="text-xs text-muted-foreground">
+                            {prop.address}, {prop.city}
+                          </p>
+                        </div>
+                        <div className={`h-2.5 w-2.5 rounded-full ${getServiceStatusDot(selectedServices.length)}`} title={`${selectedServices.length} services`} />
+                      </div>
                       <Separator className="my-2" />
                       <div className="grid grid-cols-2 gap-1 text-xs">
                         <div>
@@ -105,20 +130,20 @@ export function PMDashboard({
                           <span>{prop.total_sqft?.toLocaleString()}</span>
                         </div>
                         <div>
-                          <span className="text-muted-foreground">Built: </span>
-                          <span>{prop.year_built}</span>
+                          <span className="text-muted-foreground">Services: </span>
+                          <span className="font-medium">{selectedServices.length}</span>
                         </div>
                       </div>
-                      {selectedServices.length > 0 && (
+                      {serviceNames.length > 0 && (
                         <div className="mt-2 flex flex-wrap gap-1">
-                          {selectedServices.slice(0, 3).map((s) => (
-                            <Badge key={s} variant="secondary" className="text-[10px]">
-                              {s}
+                          {serviceNames.map((name) => (
+                            <Badge key={name} variant="secondary" className="text-[10px]">
+                              {name}
                             </Badge>
                           ))}
-                          {selectedServices.length > 3 && (
+                          {selectedServices.length > 4 && (
                             <Badge variant="outline" className="text-[10px]">
-                              +{selectedServices.length - 3}
+                              +{selectedServices.length - 4}
                             </Badge>
                           )}
                         </div>
@@ -132,8 +157,88 @@ export function PMDashboard({
         </Card>
       </FadeIn>
 
-      {/* Billing Summary */}
-      <FadeIn delay={0.3}>
+      {/* Billing View */}
+      <div className="mt-6">
+        <PMBillingView
+          properties={properties.map((p) => ({
+            id: p.id,
+            property_name: p.property_name,
+            address: p.address,
+            city: p.city,
+            unit_count: p.unit_count,
+            total_sqft: p.total_sqft,
+            selected_services: (p.selected_services as string[]) ?? [],
+          }))}
+          billingPreference={company?.billing_preference ?? "monthly"}
+          annualSpend={company?.annual_maintenance_spend ?? 0}
+        />
+      </div>
+
+      {/* Team Permissions Table */}
+      {contacts.length > 0 && (
+        <FadeIn delay={0.35}>
+          <Card className="mt-6">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-base">Team Permissions</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left">
+                      <th className="pb-2 pr-4 text-xs font-medium text-muted-foreground">Name</th>
+                      <th className="pb-2 pr-4 text-xs font-medium text-muted-foreground">Role</th>
+                      <th className="pb-2 pr-4 text-center text-xs font-medium text-muted-foreground">Reports</th>
+                      <th className="pb-2 pr-4 text-center text-xs font-medium text-muted-foreground">Invoices</th>
+                      <th className="pb-2 text-center text-xs font-medium text-muted-foreground">Notifications</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {contacts.map((contact) => (
+                      <tr key={contact.id} className="border-b last:border-0">
+                        <td className="py-2.5 pr-4">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium">{contact.name}</span>
+                            {contact.is_primary && <Badge variant="secondary" className="text-[10px]">Primary</Badge>}
+                          </div>
+                        </td>
+                        <td className="py-2.5 pr-4 text-muted-foreground">{contact.role}</td>
+                        <td className="py-2.5 pr-4 text-center">
+                          {contact.can_approve_reports ? (
+                            <CheckCircle2 className="mx-auto h-4 w-4 text-emerald-500" />
+                          ) : (
+                            <XCircle className="mx-auto h-4 w-4 text-muted-foreground/30" />
+                          )}
+                        </td>
+                        <td className="py-2.5 pr-4 text-center">
+                          {contact.can_approve_invoices ? (
+                            <CheckCircle2 className="mx-auto h-4 w-4 text-emerald-500" />
+                          ) : (
+                            <XCircle className="mx-auto h-4 w-4 text-muted-foreground/30" />
+                          )}
+                        </td>
+                        <td className="py-2.5 text-center">
+                          {contact.receives_notifications ? (
+                            <Bell className="mx-auto h-4 w-4 text-primary" />
+                          ) : (
+                            <XCircle className="mx-auto h-4 w-4 text-muted-foreground/30" />
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+        </FadeIn>
+      )}
+
+      {/* Company Overview */}
+      <FadeIn delay={0.4}>
         <Card className="mt-6">
           <CardHeader>
             <CardTitle className="text-base">Company Overview</CardTitle>
@@ -176,39 +281,6 @@ export function PMDashboard({
           </CardContent>
         </Card>
       </FadeIn>
-
-      {/* Team Contacts */}
-      {contacts.length > 0 && (
-        <FadeIn delay={0.35}>
-          <Card className="mt-6">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-base">Team Contacts</CardTitle>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {contacts.map((contact) => (
-                  <div key={contact.id} className="flex flex-col gap-2 rounded-lg border p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <p className="font-medium">{contact.name}</p>
-                        {contact.is_primary && <Badge variant="secondary" className="text-[10px]">Primary</Badge>}
-                      </div>
-                      <p className="text-xs text-muted-foreground">{contact.role}</p>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      <p>{contact.email}</p>
-                      <p>{contact.phone}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </FadeIn>
-      )}
     </DashboardShell>
   );
 }

@@ -12,6 +12,7 @@ const footerLinks = {
     { name: "Homeowners", href: "/homeowners" },
     { name: "Contractors", href: "/contractors" },
     { name: "Strata Corporations", href: "/strata" },
+    { name: "Property Managers", href: "/property-managers" },
   ],
   Company: [
     { name: "About Us", href: "/about" },

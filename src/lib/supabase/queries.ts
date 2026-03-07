@@ -542,3 +542,186 @@ export async function getPMManagedProperties(pmCompanyId: string) {
   if (error) throw error;
   return data ?? [];
 }
+
+// ---- USAGE TRACKING ----
+
+export async function getSubscriptionWithUsage(userId: string) {
+  const sub = await getSubscription(userId);
+  if (!sub) return null;
+
+  const services = sub.subscription_services ?? [];
+  const periodStart = sub.current_period_start ?? sub.created_at;
+  const periodEnd = sub.current_period_end ?? new Date().toISOString();
+
+  // Get completed bookings in current period
+  const { data: bookings } = await supabase()
+    .from("service_bookings")
+    .select("service_id, status")
+    .eq("subscription_id", sub.id)
+    .eq("status", "completed")
+    .gte("scheduled_date", periodStart.split("T")[0])
+    .lte("scheduled_date", periodEnd.split("T")[0]);
+
+  const completedByService: Record<string, number> = {};
+  (bookings ?? []).forEach((b) => {
+    completedByService[b.service_id] = (completedByService[b.service_id] || 0) + 1;
+  });
+
+  const usageMap = services.map((svc: Record<string, unknown>) => ({
+    serviceId: svc.service_id as string,
+    frequency: svc.frequency as string,
+    monthlyPrice: svc.calculated_monthly_price as number,
+    used: completedByService[svc.service_id as string] ?? 0,
+  }));
+
+  return { subscription: sub, usageMap, periodStart, periodEnd };
+}
+
+// ---- ACTIVITY FEED ----
+
+export async function getRecentActivity(profileId: string, propertyId?: string) {
+  const [notifs, bookings] = await Promise.all([
+    getNotifications(profileId),
+    propertyId ? getBookingsForProperty(propertyId) : Promise.resolve([]),
+  ]);
+
+  const activities = [
+    ...notifs.map((n) => ({
+      id: n.id,
+      type: "notification" as const,
+      title: n.title,
+      body: n.body,
+      timestamp: n.created_at,
+      read: n.read,
+    })),
+    ...bookings.slice(0, 20).map((b) => ({
+      id: b.id,
+      type: "booking" as const,
+      title: `${b.status === "completed" ? "Completed" : b.status === "cancelled" ? "Cancelled" : "Booked"}: ${b.service_id}`,
+      body: `${b.scheduled_date} at ${b.scheduled_time}`,
+      timestamp: b.completed_at ?? b.created_at,
+      read: true,
+    })),
+  ];
+
+  activities.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  return activities.slice(0, 20);
+}
+
+// ---- CONTRACTOR CLIENTS ----
+
+export async function getContractorClients(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("property_id")
+    .eq("contractor_profile_id", contractorProfileId)
+    .eq("status", "completed");
+  if (error) throw error;
+
+  const uniquePropertyIds = [...new Set((data ?? []).map((b) => b.property_id))];
+  if (uniquePropertyIds.length === 0) return [];
+
+  const { data: properties } = await supabase()
+    .from("homeowner_properties")
+    .select("*, profiles!homeowner_properties_profile_id_fkey(first_name, last_name, phone, email)")
+    .in("id", uniquePropertyIds);
+
+  return properties ?? [];
+}
+
+// ---- CONTRACTOR EARNINGS ----
+
+export async function getContractorMonthlyEarnings(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("scheduled_date, price")
+    .eq("contractor_profile_id", contractorProfileId)
+    .eq("status", "completed")
+    .order("scheduled_date", { ascending: true });
+  if (error) throw error;
+
+  const monthlyMap: Record<string, number> = {};
+  (data ?? []).forEach((b) => {
+    const month = b.scheduled_date.substring(0, 7); // YYYY-MM
+    monthlyMap[month] = (monthlyMap[month] || 0) + (b.price || 0);
+  });
+
+  return Object.entries(monthlyMap).map(([month, total]) => ({ month, total }));
+}
+
+// ---- CONTRACTOR METRICS ----
+
+export async function getContractorMetrics(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("status")
+    .eq("contractor_profile_id", contractorProfileId);
+  if (error) throw error;
+
+  const all = data ?? [];
+  const total = all.length;
+  const completed = all.filter((b) => b.status === "completed").length;
+  const cancelled = all.filter((b) => b.status === "cancelled").length;
+
+  return {
+    totalJobs: total,
+    completedJobs: completed,
+    cancelledJobs: cancelled,
+    completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
+    cancellationRate: total > 0 ? Math.round((cancelled / total) * 100) : 0,
+  };
+}
+
+// ---- CONTRACTOR AVAILABILITY (update) ----
+
+export async function updateContractorAvailability(
+  contractorProfileId: string,
+  availableDays: string[],
+  availableHours: string[],
+  jobsPerWeek?: number
+) {
+  const updates: Record<string, unknown> = {
+    available_days: availableDays,
+    available_hours: availableHours,
+  };
+  if (jobsPerWeek !== undefined) updates.jobs_per_week = jobsPerWeek;
+
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .update(updates)
+    .eq("id", contractorProfileId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- SERVICE CREDITS ----
+
+export async function getServiceCredits(subscriptionId: string) {
+  const { data, error } = await supabase()
+    .from("service_credits")
+    .select("*")
+    .eq("subscription_id", subscriptionId);
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function purchaseCredits(
+  subscriptionId: string,
+  serviceId: string,
+  qty: number
+) {
+  const { data, error } = await supabase()
+    .from("service_credits")
+    .insert({
+      subscription_id: subscriptionId,
+      service_id: serviceId,
+      total_credits: qty,
+      used_credits: 0,
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
