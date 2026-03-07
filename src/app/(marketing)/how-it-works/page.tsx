@@ -11,6 +11,7 @@ import {
   ShimmerButton,
   FloatingElement,
 } from "@/components/ui/motion";
+import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { Testimonials3D } from "@/components/marketing/testimonials-3d";
@@ -193,12 +194,8 @@ export default function HowItWorksPage() {
             <p className="mx-auto mt-4 max-w-xl text-muted-foreground/90 sm:text-lg">
               Build your custom plan in under 5 minutes.
             </p>
-            <div className="mt-8">
-              <Link href="/onboarding">
-                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
-                  Get Started <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
+            <div className="mt-8 flex justify-center">
+              <FlowButton text="Get Started" href="/onboarding" className="h-12 px-10 text-base border-white/30 text-white" />
             </div>
             <p className="mt-4 text-xs opacity-70">No credit card required. Cancel anytime.</p>
           </div>

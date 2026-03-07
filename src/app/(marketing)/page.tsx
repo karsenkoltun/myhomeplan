@@ -11,6 +11,8 @@ import {
 } from "@/components/ui/motion";
 import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
+import DisplayCards from "@/components/ui/display-cards";
+import { FlowButton } from "@/components/ui/flow-button";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { Testimonials3D } from "@/components/marketing/testimonials-3d";
@@ -204,6 +206,60 @@ export default function HomePage() {
       {/* ══════════ SOCIAL PROOF BAR ══════════ */}
       <SocialProofBar />
 
+      {/* ══════════ DISPLAY CARDS - PRODUCT PREVIEW ══════════ */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Your Home, On Autopilot
+                </h2>
+                <p className="mt-3 text-muted-foreground sm:text-lg">
+                  Every service scheduled, tracked, and managed - so you never think about maintenance again.
+                </p>
+              </div>
+              <div className="flex-1">
+                <DisplayCards
+                  cards={[
+                    {
+                      className:
+                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Calendar className="size-4 text-emerald-300" />,
+                      title: "Lawn Care Scheduled",
+                      description: "Next service: March 15",
+                      date: "Bi-weekly",
+                      iconClassName: "text-emerald-500",
+                      titleClassName: "text-emerald-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Snowflake className="size-4 text-sky-300" />,
+                      title: "Snow Removal Complete",
+                      description: "Driveway cleared at 6am",
+                      date: "This morning",
+                      iconClassName: "text-sky-500",
+                      titleClassName: "text-sky-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                      icon: <CreditCard className="size-4 text-violet-300" />,
+                      title: "Monthly Plan Active",
+                      description: "$159/mo - 8 services included",
+                      date: "Since January",
+                      iconClassName: "text-violet-500",
+                      titleClassName: "text-violet-500",
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* ══════════ PAIN POINTS ══════════ */}
       <section className="relative overflow-hidden bg-[#0a0a0f] py-16 sm:py-24">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/[0.06] via-transparent to-transparent" />
@@ -333,12 +389,8 @@ export default function HomePage() {
           </StaggerContainer>
 
           <FadeIn delay={0.4}>
-            <div className="mt-10 text-center sm:mt-12">
-              <Link href="/onboarding">
-                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
-                  Build Your Plan <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
+            <div className="mt-10 flex justify-center sm:mt-12">
+              <FlowButton text="Build Your Plan" href="/onboarding" className="h-12 px-10 text-base" />
             </div>
           </FadeIn>
         </div>

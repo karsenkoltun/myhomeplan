@@ -16,6 +16,7 @@ import {
   ShimmerButton,
   FloatingElement,
 } from "@/components/ui/motion";
+import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { Testimonials3D } from "@/components/marketing/testimonials-3d";
@@ -208,11 +209,7 @@ export default function HomeownersPage() {
               Tell us about your home and get a personalized plan in 2 minutes.
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link href="/onboarding?type=homeowner">
-                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
-                  Get Your Personalized Plan <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
+              <FlowButton text="Get Your Personalized Plan" href="/onboarding?type=homeowner" className="h-12 px-8 text-base border-white/30 text-white" />
               <Button variant="outline" size="lg" className="w-full border-white/30 text-white hover:bg-white/10 sm:w-auto" asChild>
                 <Link href="/plan-builder">View Pricing</Link>
               </Button>

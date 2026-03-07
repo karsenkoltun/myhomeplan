@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FadeIn, ShimmerButton } from "@/components/ui/motion";
+import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { Testimonials3D } from "@/components/marketing/testimonials-3d";
@@ -310,11 +311,9 @@ export default function ContractorsPage() {
               Join our growing network of Okanagan contractors. Free to apply,
               free to join, and your first jobs could be lined up within two weeks.
             </p>
-            <Link href="/onboarding?type=contractor">
-              <ShimmerButton className="mt-8 h-12 w-full px-10 text-base font-semibold sm:mt-10 sm:h-13 sm:w-auto">
-                Apply Now - Takes 10 Minutes <ArrowRight className="ml-2 h-4 w-4" />
-              </ShimmerButton>
-            </Link>
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <FlowButton text="Apply Now - Takes 10 Minutes" href="/onboarding?type=contractor" className="h-12 px-10 text-base font-semibold border-white/30 text-white" />
+            </div>
             <p className="mt-4 text-sm opacity-70">No fees. No commitments. No credit card required.</p>
           </div>
         </FadeIn>

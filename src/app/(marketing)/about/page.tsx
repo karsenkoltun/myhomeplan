@@ -11,6 +11,8 @@ import {
   ShimmerButton,
   FloatingElement,
 } from "@/components/ui/motion";
+import DisplayCards from "@/components/ui/display-cards";
+import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { BentoGrid } from "@/components/marketing/bento-grid";
@@ -72,6 +74,60 @@ export default function AboutPage() {
               </GlowCard>
             </FadeIn>
           </div>
+        </div>
+      </section>
+
+      {/* Company Milestones - DisplayCards */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
+              <div className="flex-1">
+                <DisplayCards
+                  cards={[
+                    {
+                      className:
+                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <MapPin className="size-4 text-emerald-300" />,
+                      title: "Okanagan Based",
+                      description: "Built for BC homeowners",
+                      date: "Kelowna, BC",
+                      iconClassName: "text-emerald-500",
+                      titleClassName: "text-emerald-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Shield className="size-4 text-sky-300" />,
+                      title: "15+ Services",
+                      description: "Every home need covered",
+                      date: "And growing",
+                      iconClassName: "text-sky-500",
+                      titleClassName: "text-sky-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                      icon: <Target className="size-4 text-amber-300" />,
+                      title: "First in Canada",
+                      description: "Home services subscription",
+                      date: "Category creator",
+                      iconClassName: "text-amber-500",
+                      titleClassName: "text-amber-500",
+                    },
+                  ]}
+                />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Building the Future of Home Care
+                </h2>
+                <p className="mt-3 text-muted-foreground sm:text-lg">
+                  We&apos;re creating a new category in Canada - making professional home maintenance as simple as a monthly subscription.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
         </div>
       </section>
 
@@ -139,12 +195,8 @@ export default function AboutPage() {
 
           {/* CTA */}
           <FadeIn delay={0.3}>
-            <div className="mt-8 text-center sm:mt-10">
-              <Link href="/plan-builder">
-                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
-                  Build Your Plan <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
+            <div className="mt-8 flex justify-center sm:mt-10">
+              <FlowButton text="Build Your Plan" href="/plan-builder" className="h-12 px-10 text-base" />
             </div>
           </FadeIn>
         </div>
