@@ -245,3 +245,16 @@ html {
 .dark .roadmap-milestone-dot {
   filter: drop-shadow(0 0 8px oklch(0.68 0.17 250 / 0.6));
 }
+
+/* Infinite marquee scroll */
+@keyframes marquee-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(calc(-100% - 1.5rem)); }
+}
+
+@media (min-width: 640px) {
+  @keyframes marquee-scroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(calc(-100% - 2rem)); }
+  }
+}

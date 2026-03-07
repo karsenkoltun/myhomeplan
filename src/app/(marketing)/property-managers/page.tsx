@@ -2,14 +2,16 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { SectionHeader } from "@/components/marketing/section-header";
+import { SocialProofBar } from "@/components/marketing/social-proof-bar";
+import { Testimonials3D } from "@/components/marketing/testimonials-3d";
+import { BentoGrid } from "@/components/marketing/bento-grid";
 import {
   FadeIn,
   StaggerContainer,
@@ -17,25 +19,23 @@ import {
   GlowCard,
   ShimmerButton,
   AnimatedCounter,
+  FloatingElement,
 } from "@/components/ui/motion";
+import { Badge } from "@/components/ui/badge";
 import {
   ArrowRight,
-  CheckCircle2,
   Building2,
   DollarSign,
   FileText,
-  Users,
   BarChart3,
+  Receipt,
   Phone,
   AlertTriangle,
-  Receipt,
   Clock,
-  Shield,
-  Star,
   TrendingUp,
   Layers,
-  ClipboardList,
   HeadphonesIcon,
+  Sparkles,
 } from "lucide-react";
 
 const painPoints = [
@@ -65,48 +65,56 @@ const painPoints = [
   },
 ];
 
-const benefits = [
+const benefitsBento = [
   {
     icon: Layers,
     title: "Portfolio-Wide Consolidation",
     description:
       "Every property, every service, one platform. Manage your entire portfolio's maintenance from a single dashboard instead of dozens of vendor relationships.",
-    color: "violet" as const,
+    color: "text-violet-600",
+    bg: "bg-violet-500/10",
+    span: "large" as const,
   },
   {
     icon: FileText,
     title: "One Invoice, Every Property",
     description:
       "Consolidated monthly billing across your entire portfolio. One invoice, one payment, one line item for your accounting. No more vendor invoice chaos.",
-    color: "violet" as const,
+    color: "text-violet-600",
+    bg: "bg-violet-500/10",
   },
   {
     icon: TrendingUp,
     title: "Reduce Tenant Complaints",
     description:
       "Proactive, scheduled maintenance prevents most issues before tenants even notice. Less reactive firefighting, more happy tenants and better retention.",
-    color: "violet" as const,
+    color: "text-emerald-600",
+    bg: "bg-emerald-500/10",
   },
   {
     icon: BarChart3,
     title: "Transparent Reporting",
     description:
       "Real-time dashboards showing service status, spend, and completion rates across every property. Pull reports for owners in seconds, not hours.",
-    color: "violet" as const,
+    color: "text-sky-600",
+    bg: "bg-sky-500/10",
   },
   {
     icon: DollarSign,
     title: "Volume Pricing at Scale",
     description:
       "The more properties you manage with us, the better your per-unit rate. Our network pricing beats what you'd negotiate property-by-property.",
-    color: "violet" as const,
+    color: "text-amber-600",
+    bg: "bg-amber-500/10",
+    span: "large" as const,
   },
   {
     icon: HeadphonesIcon,
     title: "Dedicated Account Manager",
     description:
       "One point of contact who knows your portfolio inside and out. No call centers, no ticket queues - just a real person who picks up the phone.",
-    color: "violet" as const,
+    color: "text-rose-600",
+    bg: "bg-rose-500/10",
   },
 ];
 
@@ -134,30 +142,6 @@ const howItWorks = [
     title: "Manage from one dashboard",
     description:
       "Track services, view reports, manage billing, and handle requests across your entire portfolio.",
-  },
-];
-
-const testimonials = [
-  {
-    name: "Rachel S.",
-    role: "Property Manager, 28 units",
-    quote:
-      "I went from managing 6 different vendor relationships per property to one. My admin time dropped by about 60% in the first month.",
-    rating: 5,
-  },
-  {
-    name: "James & Partners",
-    role: "PM Company, 120+ units",
-    quote:
-      "The consolidated billing alone saved us 15 hours a month in accounting. The quality improvement across our portfolio was the bonus we didn't expect.",
-    rating: 5,
-  },
-  {
-    name: "Lisa M.",
-    role: "Property Manager, 45 units",
-    quote:
-      "Tenant maintenance complaints dropped 40% after switching. Proactive scheduling catches things before they become problems.",
-    rating: 5,
   },
 ];
 
@@ -195,6 +179,7 @@ export default function PropertyManagersPage() {
       <section className="relative overflow-hidden py-20 sm:py-28">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.08] via-violet-500/[0.03] to-background" />
         <div className="absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-violet-500/[0.06] blur-3xl" />
+        <div className="absolute right-0 top-1/4 -z-10 h-[300px] w-[300px] rounded-full bg-violet-400/[0.04] blur-3xl" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <FadeIn>
             <Badge className="mb-6 bg-violet-500/10 text-violet-600 hover:bg-violet-500/15">
@@ -265,31 +250,23 @@ export default function PropertyManagersPage() {
         </div>
       </section>
 
+      {/* Social Proof Bar */}
+      <SocialProofBar />
+
       {/* Pain Points */}
-      <section className="border-y bg-muted/30 py-16 sm:py-20">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="text-center">
-              <Badge
-                variant="outline"
-                className="mb-4 border-red-300/50 text-red-500"
-              >
-                Sound Familiar?
-              </Badge>
-              <h2 className="text-2xl font-bold sm:text-3xl">
-                Portfolio maintenance doesn&apos;t have to be this hard
-              </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-                Every property manager hits the same wall. More properties means
-                more vendors, more invoices, and more fires to put out.
-              </p>
-            </div>
-          </FadeIn>
+          <SectionHeader
+            badge="Sound Familiar?"
+            badgeColor="rose"
+            title="Portfolio maintenance doesn't have to be this hard"
+            subtitle="Every property manager hits the same wall. More properties means more vendors, more invoices, and more fires to put out."
+          />
           <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6">
             {painPoints.map((point) => (
               <StaggerItem key={point.title}>
-                <Card className="h-full border-red-200/30 bg-red-500/[0.02]">
-                  <CardContent className="flex gap-4 p-5 sm:p-6">
+                <GlowCard glowColor="violet" className="h-full">
+                  <div className="flex gap-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10">
                       <point.icon className="h-5 w-5 text-red-500" />
                     </div>
@@ -301,44 +278,7 @@ export default function PropertyManagersPage() {
                         {point.description}
                       </p>
                     </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* Benefits */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="text-center">
-              <Badge className="mb-4 bg-violet-500/10 text-violet-600">
-                The My Home Plan Difference
-              </Badge>
-              <h2 className="text-2xl font-bold sm:text-3xl">
-                Built for property managers who want to scale
-              </h2>
-              <p className="mx-auto mt-3 max-w-2xl text-muted-foreground">
-                One platform that grows with your portfolio. Less vendor
-                management, more time for what actually grows your business.
-              </p>
-            </div>
-          </FadeIn>
-          <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
-            {benefits.map((benefit) => (
-              <StaggerItem key={benefit.title}>
-                <GlowCard glowColor={benefit.color} className="h-full">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10">
-                    <benefit.icon className="h-5 w-5 text-violet-600" />
                   </div>
-                  <h3 className="mt-4 text-sm font-semibold sm:text-base">
-                    {benefit.title}
-                  </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">
-                    {benefit.description}
-                  </p>
                 </GlowCard>
               </StaggerItem>
             ))}
@@ -346,84 +286,78 @@ export default function PropertyManagersPage() {
         </div>
       </section>
 
+      {/* Benefits - BentoGrid */}
+      <section className="border-y bg-muted/20 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="The My Home Plan Difference"
+            badgeColor="violet"
+            title="Built for property managers who want to scale"
+            subtitle="One platform that grows with your portfolio. Less vendor management, more time for what actually grows your business."
+          />
+          <div className="mt-10 sm:mt-12">
+            <BentoGrid items={benefitsBento} />
+          </div>
+        </div>
+      </section>
+
       {/* How It Works */}
-      <section
-        id="how-it-works"
-        className="border-y bg-muted/20 py-16 sm:py-20"
-      >
+      <section id="how-it-works" className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <h2 className="text-center text-2xl font-bold sm:text-3xl">
-              How portfolio plans work
-            </h2>
-            <p className="mx-auto mt-2 max-w-xl text-center text-muted-foreground">
-              From first call to fully managed in four straightforward steps.
-            </p>
-          </FadeIn>
+          <SectionHeader
+            badge="Simple Process"
+            badgeColor="violet"
+            title="How portfolio plans work"
+            subtitle="From first call to fully managed in four straightforward steps."
+          />
           <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6">
             {howItWorks.map((s) => (
               <StaggerItem key={s.step}>
-                <Card className="h-full border-border/50">
-                  <CardContent className="flex items-start gap-4 p-5">
+                <GlowCard glowColor="violet" className="h-full">
+                  <div className="flex items-start gap-4">
                     <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
                       {s.step}
                     </span>
                     <div>
-                      <h3 className="text-sm font-semibold">{s.title}</h3>
-                      <p className="mt-1.5 text-xs text-muted-foreground">
+                      <h3 className="text-sm font-semibold sm:text-base">
+                        {s.title}
+                      </h3>
+                      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                         {s.description}
                       </p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </GlowCard>
               </StaggerItem>
             ))}
           </StaggerContainer>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <FadeIn>
-          <h2 className="text-center text-2xl font-bold sm:text-3xl">
-            What property managers are saying
-          </h2>
-        </FadeIn>
-        <StaggerContainer className="mt-8 grid gap-5 sm:mt-12 sm:gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <StaggerItem key={t.name}>
-              <Card className="h-full border-border/50">
-                <CardContent className="flex h-full flex-col p-5 sm:p-6">
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-muted-foreground">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-4 border-t pt-3">
-                    <p className="text-sm font-semibold">{t.name}</p>
-                    <p className="text-xs text-muted-foreground">{t.role}</p>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+      {/* Testimonials - 3D Cards */}
+      <section className="border-y bg-muted/20 py-16 sm:py-24">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Real Results"
+            badgeColor="amber"
+            title="What property managers are saying"
+            subtitle="Don't take our word for it. Here's what PMs across the Okanagan are experiencing."
+          />
+          <div className="mt-10 sm:mt-12">
+            <Testimonials3D audience="pm" maxItems={3} />
+          </div>
+        </div>
       </section>
 
       {/* FAQ */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="py-16 sm:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <h2 className="text-center text-2xl font-bold sm:text-3xl">
-              Frequently Asked Questions
-            </h2>
-          </FadeIn>
+          <SectionHeader
+            badge="FAQ"
+            badgeColor="sky"
+            title="Frequently Asked Questions"
+            subtitle="Everything you need to know about managing your portfolio with My Home Plan."
+          />
           <FadeIn delay={0.1}>
             <Accordion type="single" collapsible className="mt-8 space-y-2">
               {faqs.map((faq, i) => (
@@ -446,29 +380,57 @@ export default function PropertyManagersPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-gradient-to-br from-violet-600 to-violet-800 py-16 text-white sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-violet-700 to-violet-900 py-16 text-white sm:py-24">
+        {/* Background pattern */}
+        <div className="absolute inset-0">
+          <div className="absolute left-0 top-0 h-[400px] w-[400px] rounded-full bg-white/[0.04] blur-3xl" />
+          <div className="absolute bottom-0 right-0 h-[300px] w-[300px] rounded-full bg-violet-400/[0.08] blur-3xl" />
+          <div
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+              backgroundSize: "32px 32px",
+            }}
+          />
+        </div>
         <FadeIn>
-          <div className="mx-auto max-w-3xl px-4 text-center">
-            <Building2 className="mx-auto h-10 w-10 opacity-80" />
-            <h2 className="mt-4 text-2xl font-bold sm:text-3xl md:text-4xl">
+          <div className="relative mx-auto max-w-3xl px-4 text-center">
+            <FloatingElement amplitude={6} duration={5}>
+              <Building2 className="mx-auto h-12 w-12 opacity-80" />
+            </FloatingElement>
+            <h2 className="mt-6 text-2xl font-bold sm:text-3xl md:text-4xl">
               Ready to simplify your portfolio maintenance?
             </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed opacity-90 sm:text-lg">
+            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed text-white/80 sm:text-lg">
               Tell us about your portfolio and get a custom plan with
               consolidated pricing. Most managers are fully onboarded within two
               weeks.
             </p>
-            <Button
-              size="lg"
-              variant="secondary"
-              className="mt-8 h-12 px-8 text-base text-violet-700"
-              asChild
-            >
-              <Link href="/onboarding?type=property-manager">
-                Get a Portfolio Quote{" "}
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+              <Button
+                size="lg"
+                variant="secondary"
+                className="h-12 px-8 text-base text-violet-700"
+                asChild
+              >
+                <Link href="/onboarding?type=property-manager">
+                  Get a Portfolio Quote{" "}
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="h-12 border-white/30 bg-transparent px-8 text-base text-white hover:bg-white/10"
+                asChild
+              >
+                <Link href="/contact">
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Talk to Our Team
+                </Link>
+              </Button>
+            </div>
           </div>
         </FadeIn>
       </section>

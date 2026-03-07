@@ -19,9 +19,16 @@ import {
   ShimmerButton,
   AnimatedCounter,
 } from "@/components/ui/motion";
+import { SectionHeader } from "@/components/marketing/section-header";
+import { SocialProofBar } from "@/components/marketing/social-proof-bar";
+import { Testimonials3D } from "@/components/marketing/testimonials-3d";
+import { BentoGrid } from "@/components/marketing/bento-grid";
+import {
+  InfiniteMarquee,
+  MarqueeServiceItem,
+} from "@/components/marketing/infinite-marquee";
 import { motion } from "framer-motion";
 import {
-  CheckCircle2,
   ArrowRight,
   ArrowDown,
   DollarSign,
@@ -60,14 +67,15 @@ import {
 
 // ---- Data ----
 
-const benefits = [
+const benefitItems = [
   {
     icon: Target,
     title: "Free Leads, Every Month",
     description:
       "We send you qualified, ready-to-book homeowners at zero cost. No bidding wars, no pay-per-lead fees, no wasted time on tire-kickers.",
     color: "text-emerald-500",
-    bgColor: "bg-emerald-500/10",
+    bg: "bg-emerald-500/10",
+    span: "large" as const,
   },
   {
     icon: Briefcase,
@@ -75,7 +83,7 @@ const benefits = [
     description:
       "No more feast-or-famine cycles. We keep your calendar full through every season so you can plan ahead with confidence.",
     color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    bg: "bg-blue-500/10",
   },
   {
     icon: ShieldCheck,
@@ -83,7 +91,7 @@ const benefits = [
     description:
       "Stop chasing invoices. We guarantee payment for every completed job - deposited directly to your account on schedule.",
     color: "text-violet-500",
-    bgColor: "bg-violet-500/10",
+    bg: "bg-violet-500/10",
   },
   {
     icon: ClipboardCheck,
@@ -91,7 +99,7 @@ const benefits = [
     description:
       "Scheduling, customer communication, invoicing, follow-ups - we take care of everything so you can focus on the work.",
     color: "text-rose-500",
-    bgColor: "bg-rose-500/10",
+    bg: "bg-rose-500/10",
   },
   {
     icon: Star,
@@ -99,7 +107,8 @@ const benefits = [
     description:
       "Every job builds your verified profile with real reviews. The better you perform, the more premium jobs you unlock.",
     color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
+    bg: "bg-amber-500/10",
+    span: "large" as const,
   },
   {
     icon: CalendarClock,
@@ -107,7 +116,7 @@ const benefits = [
     description:
       "You decide when you work, how much you take on, and which areas you serve. Full flexibility, zero pressure.",
     color: "text-cyan-500",
-    bgColor: "bg-cyan-500/10",
+    bg: "bg-cyan-500/10",
   },
 ];
 
@@ -199,16 +208,16 @@ const comparisonRows = [
 ];
 
 const serviceCategories = [
-  { name: "Lawn Care & Landscaping", icon: Scissors, hiring: true },
-  { name: "Snow Removal", icon: Snowflake, hiring: true },
-  { name: "House Cleaning", icon: Sparkles, hiring: true },
-  { name: "HVAC & Mechanical", icon: Thermometer, hiring: false },
-  { name: "Plumbing", icon: Wrench, hiring: true },
-  { name: "Electrical", icon: Zap, hiring: false },
-  { name: "Pest Control", icon: Bug, hiring: false },
-  { name: "Handyman Services", icon: Hammer, hiring: true },
-  { name: "Painting", icon: Paintbrush, hiring: false },
-  { name: "Window & Gutter Cleaning", icon: Sun, hiring: true },
+  { name: "Lawn Care & Landscaping", icon: Scissors, hiring: true, color: "text-emerald-500" },
+  { name: "Snow Removal", icon: Snowflake, hiring: true, color: "text-sky-500" },
+  { name: "House Cleaning", icon: Sparkles, hiring: true, color: "text-violet-500" },
+  { name: "HVAC & Mechanical", icon: Thermometer, hiring: false, color: "text-rose-500" },
+  { name: "Plumbing", icon: Wrench, hiring: true, color: "text-blue-500" },
+  { name: "Electrical", icon: Zap, hiring: false, color: "text-amber-500" },
+  { name: "Pest Control", icon: Bug, hiring: false, color: "text-orange-500" },
+  { name: "Handyman Services", icon: Hammer, hiring: true, color: "text-cyan-500" },
+  { name: "Painting", icon: Paintbrush, hiring: false, color: "text-pink-500" },
+  { name: "Window & Gutter Cleaning", icon: Sun, hiring: true, color: "text-yellow-500" },
 ];
 
 const timelineSteps = [
@@ -243,30 +252,6 @@ const timelineSteps = [
     title: "Start Working",
     description: "Begin receiving job assignments in your service area.",
     timing: "Week 2-3",
-  },
-];
-
-const testimonials = [
-  {
-    quote:
-      "I used to spend $500/month on advertising. Now I get more work than ever and it costs me nothing.",
-    name: "Mike T.",
-    trade: "Landscaping",
-    rating: 5,
-  },
-  {
-    quote:
-      "The steady scheduling is a game changer. I know exactly what my week looks like every Monday.",
-    name: "Sarah K.",
-    trade: "House Cleaning",
-    rating: 5,
-  },
-  {
-    quote:
-      "Getting paid on time, every time. That alone was worth joining.",
-    name: "Dave R.",
-    trade: "Handyman",
-    rating: 5,
   },
 ];
 
@@ -366,13 +351,16 @@ export default function ContractorsPage() {
         </FadeIn>
       </section>
 
-      {/* ==================== 2. BIG STAT CARDS ==================== */}
-      <section className="relative -mt-12 z-10 mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* ==================== 2. SOCIAL PROOF BAR ==================== */}
+      <SocialProofBar />
+
+      {/* ==================== 3. BIG STAT CARDS ==================== */}
+      <section className="mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
         <StaggerContainer className="grid gap-4 sm:grid-cols-3 sm:gap-6">
           {statCards.map((stat) => (
             <StaggerItem key={stat.label}>
               <ScaleOnHover scale={1.03}>
-                <Card className={`border-2 ${stat.borderColor} bg-gradient-to-br ${stat.color} backdrop-blur-sm shadow-lg`}>
+                <GlowCard className={`border-2 ${stat.borderColor} bg-gradient-to-br ${stat.color} backdrop-blur-sm shadow-lg`}>
                   <CardContent className="flex flex-col items-center p-6 text-center sm:p-8">
                     <div className={`flex h-12 w-12 items-center justify-center rounded-full ${stat.textColor} bg-background/80 mb-3`}>
                       <stat.icon className="h-6 w-6" />
@@ -387,48 +375,6 @@ export default function ContractorsPage() {
                       {stat.description}
                     </p>
                   </CardContent>
-                </Card>
-              </ScaleOnHover>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
-      </section>
-
-      {/* ==================== 3. BENEFITS ==================== */}
-      <section
-        id="benefits"
-        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
-      >
-        <FadeIn>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-              Everything You Need to Succeed.
-              <br />
-              <span className="text-primary">Nothing You Don't.</span>
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:mt-4 sm:text-base md:text-lg">
-              We built this platform to eliminate the biggest headaches
-              contractors deal with every single day.
-            </p>
-          </div>
-        </FadeIn>
-
-        <StaggerContainer className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {benefits.map((b) => (
-            <StaggerItem key={b.title}>
-              <ScaleOnHover scale={1.02}>
-                <GlowCard className="h-full">
-                  <CardContent className="p-5 sm:p-6">
-                    <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${b.bgColor} sm:h-12 sm:w-12`}>
-                      <b.icon className={`h-5 w-5 ${b.color} sm:h-6 sm:w-6`} />
-                    </div>
-                    <h3 className="mt-4 text-base font-semibold sm:text-lg">
-                      {b.title}
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                      {b.description}
-                    </p>
-                  </CardContent>
                 </GlowCard>
               </ScaleOnHover>
             </StaggerItem>
@@ -436,127 +382,137 @@ export default function ContractorsPage() {
         </StaggerContainer>
       </section>
 
-      {/* ==================== 4. COMPARISON TABLE ==================== */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
-        <FadeIn>
-          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-            <h2 className="text-center text-2xl font-bold sm:text-3xl">
-              My Home Plan vs. Traditional Lead Sources
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
-              See how we stack up against the alternatives.
-            </p>
+      {/* ==================== 4. BENEFITS (BentoGrid) ==================== */}
+      <section
+        id="benefits"
+        className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8"
+      >
+        <SectionHeader
+          badge="Why Join Us"
+          badgeColor="emerald"
+          title="Everything You Need to Succeed. Nothing You Don't."
+          subtitle="We built this platform to eliminate the biggest headaches contractors deal with every single day."
+        />
 
-            <div className="mx-auto mt-8 max-w-3xl overflow-x-auto sm:mt-10">
-              <div className="min-w-[480px] overflow-hidden rounded-2xl border">
-                <table className="w-full text-xs sm:text-sm">
-                  <thead>
-                    <tr className="border-b bg-muted/50">
-                      <th className="p-3 text-left font-medium sm:p-4">
-                        Feature
-                      </th>
-                      <th className="p-3 text-center sm:p-4">
-                        <span className="font-semibold text-primary">
-                          My Home Plan
-                        </span>
-                      </th>
-                      <th className="p-3 text-center text-muted-foreground sm:p-4">
-                        Lead Sites
-                      </th>
-                      <th className="p-3 text-center text-muted-foreground sm:p-4">
-                        Word of Mouth
-                      </th>
+        <div className="mt-10 sm:mt-14">
+          <BentoGrid items={benefitItems} />
+        </div>
+      </section>
+
+      {/* ==================== 5. COMPARISON TABLE ==================== */}
+      <section className="border-y bg-muted/20 py-16 sm:py-24">
+        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Side by Side"
+            badgeColor="primary"
+            title="My Home Plan vs. Traditional Lead Sources"
+            subtitle="See how we stack up against the alternatives."
+          />
+
+          <div className="mx-auto mt-8 max-w-3xl overflow-x-auto sm:mt-10">
+            <div className="min-w-[480px] overflow-hidden rounded-2xl border">
+              <table className="w-full text-xs sm:text-sm">
+                <thead>
+                  <tr className="border-b bg-muted/50">
+                    <th className="p-3 text-left font-medium sm:p-4">
+                      Feature
+                    </th>
+                    <th className="p-3 text-center sm:p-4">
+                      <span className="font-semibold text-primary">
+                        My Home Plan
+                      </span>
+                    </th>
+                    <th className="p-3 text-center text-muted-foreground sm:p-4">
+                      Lead Sites
+                    </th>
+                    <th className="p-3 text-center text-muted-foreground sm:p-4">
+                      Word of Mouth
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {comparisonRows.map((row) => (
+                    <tr key={row.feature} className="border-b last:border-0">
+                      <td className="p-3 font-medium sm:p-4">
+                        {row.feature}
+                      </td>
+                      <td className="p-3 text-center sm:p-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <ComparisonIcon good={row.mhpGood} />
+                          <span className="text-xs text-primary">
+                            {row.mhp}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center sm:p-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <ComparisonIcon good={row.leadsGood} />
+                          <span className="text-xs text-muted-foreground">
+                            {row.leads}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="p-3 text-center sm:p-4">
+                        <div className="flex flex-col items-center gap-1">
+                          <ComparisonIcon good={row.womGood} />
+                          <span className="text-xs text-muted-foreground">
+                            {row.wom}
+                          </span>
+                        </div>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {comparisonRows.map((row) => (
-                      <tr key={row.feature} className="border-b last:border-0">
-                        <td className="p-3 font-medium sm:p-4">
-                          {row.feature}
-                        </td>
-                        <td className="p-3 text-center sm:p-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <ComparisonIcon good={row.mhpGood} />
-                            <span className="text-xs text-primary">
-                              {row.mhp}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-3 text-center sm:p-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <ComparisonIcon good={row.leadsGood} />
-                            <span className="text-xs text-muted-foreground">
-                              {row.leads}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="p-3 text-center sm:p-4">
-                          <div className="flex flex-col items-center gap-1">
-                            <ComparisonIcon good={row.womGood} />
-                            <span className="text-xs text-muted-foreground">
-                              {row.wom}
-                            </span>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
-        </FadeIn>
+        </div>
       </section>
 
-      {/* ==================== 5. SERVICE CATEGORIES ==================== */}
+      {/* ==================== 6. SERVICE CATEGORIES (InfiniteMarquee) ==================== */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <FadeIn>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              Services We're Hiring For
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              We're actively recruiting skilled contractors across these
-              categories.
-            </p>
-          </div>
-        </FadeIn>
+        <SectionHeader
+          badge="Now Recruiting"
+          badgeColor="sky"
+          title="Services We're Hiring For"
+          subtitle="We're actively recruiting skilled contractors across these categories."
+        />
 
-        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl grid-cols-2 gap-3 sm:mt-12 sm:grid-cols-3 sm:gap-4 md:grid-cols-5">
-          {serviceCategories.map((svc) => (
-            <StaggerItem key={svc.name}>
-              <ScaleOnHover scale={1.04}>
-                <div className="relative flex flex-col items-center gap-2.5 rounded-xl border bg-card p-4 text-center sm:p-5">
-                  {svc.hiring && (
-                    <Badge className="absolute -right-1.5 -top-2 bg-emerald-600 px-1.5 py-0.5 text-[10px] text-white hover:bg-emerald-600">
-                      Now Hiring
-                    </Badge>
-                  )}
-                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 sm:h-12 sm:w-12">
-                    <svc.icon className="h-5 w-5 text-primary sm:h-6 sm:w-6" />
-                  </div>
-                  <span className="text-xs font-medium leading-tight sm:text-sm">
-                    {svc.name}
-                  </span>
-                </div>
-              </ScaleOnHover>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <div className="mt-8 sm:mt-12">
+          <InfiniteMarquee speed={35} direction="left">
+            {serviceCategories.map((svc) => (
+              <MarqueeServiceItem
+                key={svc.name}
+                icon={svc.icon}
+                label={svc.hiring ? `${svc.name} - Now Hiring` : svc.name}
+                color={svc.color}
+              />
+            ))}
+          </InfiniteMarquee>
+        </div>
+
+        <div className="mt-4">
+          <InfiniteMarquee speed={40} direction="right">
+            {serviceCategories.map((svc) => (
+              <MarqueeServiceItem
+                key={`r-${svc.name}`}
+                icon={svc.icon}
+                label={svc.name}
+                color={svc.color}
+              />
+            ))}
+          </InfiniteMarquee>
+        </div>
       </section>
 
-      {/* ==================== 6. APPLICATION PROCESS TIMELINE ==================== */}
+      {/* ==================== 7. APPLICATION PROCESS TIMELINE ==================== */}
       <section className="border-y bg-muted/20 py-16 sm:py-24">
-        <FadeIn>
-          <div className="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              How the Application Process Works
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              From application to your first job in as little as two weeks.
-            </p>
-          </div>
-        </FadeIn>
+        <SectionHeader
+          badge="Get Started"
+          badgeColor="violet"
+          title="How the Application Process Works"
+          subtitle="From application to your first job in as little as two weeks."
+        />
 
         {/* Desktop: horizontal timeline */}
         <div className="mx-auto mt-12 hidden max-w-5xl px-4 md:block lg:px-8">
@@ -614,67 +570,29 @@ export default function ContractorsPage() {
         </div>
       </section>
 
-      {/* ==================== 7. TESTIMONIALS ==================== */}
+      {/* ==================== 8. TESTIMONIALS (Testimonials3D) ==================== */}
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <FadeIn>
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-              What Our Contractors Say
-            </h2>
-            <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-              Hear from professionals who have already joined the network.
-            </p>
-          </div>
-        </FadeIn>
+        <SectionHeader
+          badge="Contractor Stories"
+          badgeColor="amber"
+          title="What Our Contractors Say"
+          subtitle="Hear from professionals who have already joined the network."
+        />
 
-        <StaggerContainer className="mx-auto mt-8 grid max-w-5xl gap-5 sm:mt-12 sm:gap-6 md:grid-cols-3">
-          {testimonials.map((t) => (
-            <StaggerItem key={t.name}>
-              <Card className="h-full border-border/50">
-                <CardContent className="flex h-full flex-col p-5 sm:p-6">
-                  <div className="mb-3 flex gap-0.5">
-                    {Array.from({ length: t.rating }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="h-4 w-4 fill-amber-400 text-amber-400"
-                      />
-                    ))}
-                  </div>
-                  <Quote className="mb-3 h-6 w-6 text-primary/30" />
-                  <p className="flex-1 text-sm leading-relaxed italic text-muted-foreground">
-                    &ldquo;{t.quote}&rdquo;
-                  </p>
-                  <div className="mt-4 flex items-center gap-3 border-t pt-4">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-sm font-semibold text-primary">
-                      {t.name.charAt(0)}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {t.trade}
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <div className="mx-auto mt-8 max-w-5xl sm:mt-12">
+          <Testimonials3D audience="contractor" maxItems={3} />
+        </div>
       </section>
 
-      {/* ==================== 8. FAQ ==================== */}
+      {/* ==================== 9. FAQ ==================== */}
       <section className="border-t bg-muted/20 py-16 sm:py-24">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="text-center">
-              <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                Frequently Asked Questions
-              </h2>
-              <p className="mt-3 text-sm text-muted-foreground sm:text-base">
-                Everything you need to know about joining as a contractor.
-              </p>
-            </div>
-          </FadeIn>
+          <SectionHeader
+            badge="Questions?"
+            badgeColor="rose"
+            title="Frequently Asked Questions"
+            subtitle="Everything you need to know about joining as a contractor."
+          />
 
           <FadeIn delay={0.1}>
             <Accordion
@@ -697,10 +615,14 @@ export default function ContractorsPage() {
         </div>
       </section>
 
-      {/* ==================== 9. FINAL CTA ==================== */}
-      <section className="bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-16 text-white sm:py-24">
+      {/* ==================== 10. FINAL CTA ==================== */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-24">
+        {/* Radial gradient overlay */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-sky-400/10 via-transparent to-transparent" />
+
         <FadeIn>
-          <div className="mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
+          <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
             <motion.div
               className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm"
               animate={{ scale: [1, 1.08, 1] }}
