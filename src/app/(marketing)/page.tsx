@@ -2,17 +2,12 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   FadeIn,
   StaggerContainer,
   StaggerItem,
-  AnimatedCounter,
-  ScaleOnHover,
-  GlowCard,
   ShimmerButton,
   FloatingElement,
-  SlideIn,
 } from "@/components/ui/motion";
 import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
@@ -31,7 +26,6 @@ import {
   ArrowRight,
   CheckCircle2,
   DollarSign,
-  Star,
   Scissors,
   Snowflake,
   Thermometer,
@@ -49,10 +43,7 @@ import {
   PhoneOff,
   CalendarX,
   Receipt,
-  Sofa,
   ShieldCheck,
-  Lock,
-  BadgeCheck,
   Heart,
   Droplets,
   PaintBucket,
@@ -63,11 +54,9 @@ import {
 
 const painPoints = [
   { text: "Searching for contractors on Google and hoping they're legit", icon: Search },
-  { text: "Getting 3 quotes for one simple job and none of them match", icon: Receipt },
   { text: "Contractors who don't show up, don't call, don't care", icon: PhoneOff },
   { text: "Juggling 8 different service providers with 8 different schedules", icon: CalendarX },
-  { text: "Surprise bills that are double what you were quoted", icon: DollarSign },
-  { text: "Spending your weekends doing maintenance instead of living", icon: Sofa },
+  { text: "Surprise bills that are double what you were quoted", icon: Receipt },
 ];
 
 const benefitsBento = [
@@ -154,37 +143,6 @@ const steps = [
     title: "Enjoy Your Home",
     description: "Spend your weekends living, not maintaining.",
     icon: Heart,
-  },
-];
-
-const guarantees = [
-  {
-    title: "Satisfaction Guarantee",
-    description: "Not happy? We'll redo it free or credit your account.",
-    icon: Star,
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-  },
-  {
-    title: "Price Lock",
-    description: "Your price is your price. No hidden charges, no fine print.",
-    icon: Lock,
-    color: "text-primary",
-    bg: "bg-primary/10",
-  },
-  {
-    title: "Cancel Anytime",
-    description: "No contracts on monthly plans. Stay because it works.",
-    icon: ShieldCheck,
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    title: "Licensed Pros Only",
-    description: "Every contractor is vetted, licensed, insured, and background-checked.",
-    icon: BadgeCheck,
-    color: "text-sky-500",
-    bg: "bg-sky-500/10",
   },
 ];
 
@@ -401,38 +359,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════ GUARANTEES ══════════ */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Our Promise"
-            badgeColor="emerald"
-            title="Our Guarantees"
-            subtitle="We put our money where our mouth is."
-          />
-          <StaggerContainer
-            className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4"
-            staggerDelay={0.1}
-          >
-            {guarantees.map((g) => (
-              <StaggerItem key={g.title}>
-                <GlowCard glowColor="primary" className="h-full">
-                  <div className={`mb-4 flex h-12 w-12 items-center justify-center rounded-xl ${g.bg}`}>
-                    <g.icon className={`h-6 w-6 ${g.color}`} />
-                  </div>
-                  <h3 className="text-base font-bold sm:text-lg">{g.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {g.description}
-                  </p>
-                </GlowCard>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
       {/* ══════════ FINAL CTA ══════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
         <FadeIn>
           <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">

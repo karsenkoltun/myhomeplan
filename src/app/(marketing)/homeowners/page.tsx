@@ -20,11 +20,6 @@ import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { Testimonials3D } from "@/components/marketing/testimonials-3d";
 import { BentoGrid } from "@/components/marketing/bento-grid";
-import { CostComparison } from "@/components/marketing/cost-comparison";
-import {
-  InfiniteMarquee,
-  MarqueeServiceItem,
-} from "@/components/marketing/infinite-marquee";
 import {
   ArrowRight,
   DollarSign,
@@ -38,14 +33,6 @@ import {
   Receipt,
   Smile,
   Home,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Hammer,
-  Wrench,
-  Zap,
 } from "lucide-react";
 
 const painPoints = [
@@ -64,17 +51,6 @@ const benefits = [
   { title: "Book Anything From Your Dashboard", description: "Schedule any service in seconds. We handle the contractor coordination.", icon: CalendarCheck, color: "text-rose-500", bg: "bg-rose-500/10" },
 ];
 
-const marqueeServices = [
-  { icon: Scissors, label: "Lawn Care", color: "text-green-600" },
-  { icon: Snowflake, label: "Snow Removal", color: "text-sky-500" },
-  { icon: Thermometer, label: "HVAC", color: "text-orange-500" },
-  { icon: Sparkles, label: "Cleaning", color: "text-violet-500" },
-  { icon: Bug, label: "Pest Control", color: "text-rose-500" },
-  { icon: Hammer, label: "Handyman", color: "text-amber-600" },
-  { icon: Wrench, label: "Plumbing", color: "text-cyan-600" },
-  { icon: Zap, label: "Electrical", color: "text-yellow-500" },
-];
-
 const howItWorks = [
   { step: "01", title: "Tell us about your home", description: "Square footage, lot size, what services you need. Takes 2 minutes.", icon: Home },
   { step: "02", title: "Get your custom plan & price", description: "We calculate your exact price based on your property. No guessing.", icon: ClipboardList },
@@ -85,9 +61,7 @@ const howItWorks = [
 const faqs = [
   { q: "What services are included?", a: "15+ home maintenance services including lawn care, snow removal, HVAC tune-ups, house cleaning, window washing, gutter cleaning, pest control, plumbing inspections, electrical checks, pressure washing, painting, and handyman services." },
   { q: "How does pricing work?", a: "Your price is calculated based on your specific property - home size, lot size, number of services, and frequency. No hidden fees. You see your exact monthly price before you subscribe." },
-  { q: "Can I change my plan?", a: "Absolutely. Add or remove services anytime. Your monthly price adjusts automatically. No penalties." },
   { q: "What if I'm not satisfied?", a: "We guarantee quality. If you're not satisfied, we'll send a different contractor to redo it at no additional cost." },
-  { q: "What area do you serve?", a: "The Okanagan Valley including Kelowna, West Kelowna, Lake Country, Peachland, Penticton, Vernon, and surrounding areas." },
   { q: "Is there a contract?", a: "No long-term contracts required. Cancel anytime. We offer monthly, quarterly (save 5%), and annual (save 15%) billing." },
 ];
 
@@ -95,7 +69,7 @@ export default function HomeownersPage() {
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* Hero */}
-      <section className="relative overflow-hidden py-16 sm:py-24">
+      <section className="relative overflow-hidden py-16 sm:py-20">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.06] via-background to-background" />
         <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
           <FadeIn>
@@ -111,7 +85,7 @@ export default function HomeownersPage() {
             </p>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
               <Link href="/onboarding?type=homeowner">
-                <ShimmerButton className="h-12 px-8 text-base">
+                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
                   Get Your Plan in 2 Minutes <ArrowRight className="ml-2 inline h-4 w-4" />
                 </ShimmerButton>
               </Link>
@@ -148,7 +122,7 @@ export default function HomeownersPage() {
       </section>
 
       {/* Benefits - Bento Grid */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
         <SectionHeader
           badge="Why Switch"
           badgeColor="emerald"
@@ -160,22 +134,8 @@ export default function HomeownersPage() {
         </div>
       </section>
 
-      {/* Services Marquee */}
-      <section className="border-y bg-muted/20 py-10 sm:py-12">
-        <FadeIn>
-          <p className="mb-6 text-center text-sm font-medium uppercase tracking-widest text-muted-foreground">
-            All Your Services, One Subscription
-          </p>
-        </FadeIn>
-        <InfiniteMarquee speed={30}>
-          {marqueeServices.map((s) => (
-            <MarqueeServiceItem key={s.label} icon={s.icon} label={s.label} color={s.color} />
-          ))}
-        </InfiniteMarquee>
-      </section>
-
       {/* How It Works */}
-      <section className="py-16 sm:py-20">
+      <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Simple Process"
@@ -201,11 +161,8 @@ export default function HomeownersPage() {
         </div>
       </section>
 
-      {/* Cost Comparison */}
-      <CostComparison />
-
       {/* Testimonials */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Real Stories"
@@ -220,7 +177,7 @@ export default function HomeownersPage() {
       </section>
 
       {/* FAQ */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title="Frequently Asked Questions" />
           <FadeIn delay={0.1}>
@@ -237,7 +194,7 @@ export default function HomeownersPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
         <FadeIn>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
@@ -250,11 +207,16 @@ export default function HomeownersPage() {
             <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed opacity-90 sm:text-lg">
               Tell us about your home and get a personalized plan in 2 minutes.
             </p>
-            <Button size="lg" variant="secondary" className="mt-8 h-12 px-8 text-base text-primary" asChild>
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
               <Link href="/onboarding?type=homeowner">
-                Get Your Personalized Plan <ArrowRight className="ml-2 h-4 w-4" />
+                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
+                  Get Your Personalized Plan <ArrowRight className="ml-2 inline h-4 w-4" />
+                </ShimmerButton>
               </Link>
-            </Button>
+              <Button variant="outline" size="lg" className="w-full border-white/30 text-white hover:bg-white/10 sm:w-auto" asChild>
+                <Link href="/plan-builder">View Pricing</Link>
+              </Button>
+            </div>
             <p className="mt-4 text-sm opacity-70">No commitment required</p>
           </div>
         </FadeIn>

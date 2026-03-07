@@ -46,7 +46,7 @@ export default function AboutPage() {
       </section>
 
       {/* Problem / Solution */}
-      <section className="border-y bg-muted/20 py-12 sm:py-16">
+      <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <div className="grid gap-8 sm:gap-12 md:grid-cols-2">
             <FadeIn direction="left">
@@ -86,7 +86,7 @@ export default function AboutPage() {
       {/* Numbers */}
       <SocialProofBar />
 
-      <section className="py-12 sm:py-16">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title="The Okanagan Home Services Market" />
           <StaggerContainer className="mt-6 grid grid-cols-2 gap-4 sm:mt-8 sm:gap-6 md:grid-cols-4">
@@ -112,7 +112,7 @@ export default function AboutPage() {
       </section>
 
       {/* Contact */}
-      <section id="contact" className="border-t bg-muted/20 py-12 sm:py-16">
+      <section id="contact" className="border-t bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             title="Get In Touch"

@@ -162,14 +162,6 @@ const faqs = [
     q: "What reporting do property owners get?",
     a: "We provide detailed monthly reports showing services completed, costs, and upcoming schedules. You can pull these from your dashboard anytime or set up automatic owner reports.",
   },
-  {
-    q: "Is there a minimum portfolio size?",
-    a: "We work with property managers of all sizes, from 5 units to 500+. However, our platform provides the most value at 10+ units where consolidation savings really add up.",
-  },
-  {
-    q: "What area do you currently serve?",
-    a: "We currently serve the Okanagan Valley including Kelowna, West Kelowna, Lake Country, Peachland, Penticton, Vernon, and surrounding areas. Expanding to more BC communities soon.",
-  },
 ];
 
 export default function PropertyManagersPage() {
@@ -200,7 +192,7 @@ export default function PropertyManagersPage() {
           <FadeIn delay={0.2}>
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
               <Link href="/onboarding?type=property-manager">
-                <ShimmerButton className="h-12 bg-violet-600 px-8 text-base hover:bg-violet-700">
+                <ShimmerButton className="h-12 w-full bg-violet-600 px-8 text-base hover:bg-violet-700 sm:w-auto">
                   Get a Portfolio Quote{" "}
                   <ArrowRight className="ml-2 inline h-4 w-4" />
                 </ShimmerButton>
@@ -335,7 +327,7 @@ export default function PropertyManagersPage() {
       </section>
 
       {/* Testimonials - 3D Cards */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
+      <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Real Results"
@@ -350,7 +342,7 @@ export default function PropertyManagersPage() {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="FAQ"
@@ -380,20 +372,8 @@ export default function PropertyManagersPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-violet-600 via-violet-700 to-violet-900 py-16 text-white sm:py-24">
-        {/* Background pattern */}
-        <div className="absolute inset-0">
-          <div className="absolute left-0 top-0 h-[400px] w-[400px] rounded-full bg-white/[0.04] blur-3xl" />
-          <div className="absolute bottom-0 right-0 h-[300px] w-[300px] rounded-full bg-violet-400/[0.08] blur-3xl" />
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-              backgroundSize: "32px 32px",
-            }}
-          />
-        </div>
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
         <FadeIn>
           <div className="relative mx-auto max-w-3xl px-4 text-center">
             <FloatingElement amplitude={6} duration={5}>

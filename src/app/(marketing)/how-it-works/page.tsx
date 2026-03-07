@@ -24,29 +24,22 @@ import {
   CheckCircle2,
   XCircle,
   Unlock,
-  TrendingDown,
-  Route,
-  Handshake,
   Home,
 } from "lucide-react";
 
 const oldWay = [
   "Research contractors on Google",
   "Call around for quotes (and wait days)",
-  "Compare prices and hope they're fair",
   "Schedule each service separately",
   "Chase contractors who don't show up",
   "Deal with surprise charges",
-  "Repeat for every single service",
 ];
 
 const newWay = [
   "Tell us about your home once",
-  "We match you with vetted local pros",
   "One plan, one predictable price",
   "We schedule everything for you",
   "Guaranteed service, guaranteed quality",
-  "No surprises, no hidden fees",
   "Everything handled, nothing forgotten",
 ];
 
@@ -57,11 +50,6 @@ const guarantees = [
   { icon: Unlock, title: "Flexibility Guarantee", description: "Upgrade, downgrade, add services, or cancel anytime. No lock-in." },
 ];
 
-const savingsReasons = [
-  { icon: TrendingDown, title: "Bulk Rates", description: "Volume pricing from our contractor network" },
-  { icon: Route, title: "Route Efficiency", description: "Planned scheduling = less drive time = lower costs" },
-  { icon: Handshake, title: "Steady Work", description: "Contractors get reliable income, you get reliable prices" },
-];
 
 export default function HowItWorksPage() {
   return (
@@ -80,7 +68,7 @@ export default function HowItWorksPage() {
       <SocialProofBar />
 
       {/* Old Way vs New Way */}
-      <section className="bg-muted/30 py-16 sm:py-24">
+      <section className="bg-muted/30 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             title="There's a Better Way to Manage Your Home"
@@ -127,7 +115,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* 6-Step Scroll Roadmap */}
-      <section className="py-16 sm:py-24">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="The Process"
@@ -140,7 +128,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Guarantees */}
-      <section className="border-y bg-muted/30 py-16 sm:py-24">
+      <section className="border-y bg-muted/30 py-16 sm:py-20">
         <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Our Promise"
@@ -164,8 +152,8 @@ export default function HowItWorksPage() {
         </div>
       </section>
 
-      {/* Why We're Cheaper */}
-      <section className="py-16 sm:py-24">
+      {/* Cost Comparison */}
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             title="Why Plan Members Pay Less"
@@ -174,24 +162,11 @@ export default function HowItWorksPage() {
           <div className="mt-10">
             <CostComparison compact />
           </div>
-          <StaggerContainer className="mt-10 grid gap-5 sm:mt-14 sm:gap-6 md:grid-cols-3">
-            {savingsReasons.map((r) => (
-              <StaggerItem key={r.title}>
-                <GlowCard className="h-full text-center" glowColor="emerald">
-                  <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
-                    <r.icon className="h-6 w-6 text-emerald-600" />
-                  </div>
-                  <h3 className="text-base font-semibold">{r.title}</h3>
-                  <p className="mt-2 text-sm text-muted-foreground">{r.description}</p>
-                </GlowCard>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
         </div>
       </section>
 
       {/* Testimonials */}
-      <section className="border-y bg-muted/30 py-16 sm:py-24">
+      <section className="border-y bg-muted/30 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Real Stories"
@@ -205,7 +180,7 @@ export default function HowItWorksPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
         <FadeIn>
           <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
@@ -220,7 +195,7 @@ export default function HowItWorksPage() {
             </p>
             <div className="mt-8">
               <Link href="/onboarding">
-                <ShimmerButton className="h-12 px-8 text-base">
+                <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
                   Get Started <ArrowRight className="ml-2 inline h-4 w-4" />
                 </ShimmerButton>
               </Link>

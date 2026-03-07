@@ -38,10 +38,8 @@ import { CostComparison } from "@/components/marketing/cost-comparison";
 
 const FAQ_ITEMS = [
   { question: "Can I switch plans later?", answer: "Yes, upgrade or downgrade anytime. Upgrades are prorated so you only pay for what you use. Downgrades take effect at your next billing cycle." },
-  { question: "What happens if I need a service outside my plan?", answer: "Add individual services a la carte anytime, or upgrade to a plan that includes it. One-off services are billed separately." },
   { question: "Are there any hidden fees or contracts?", answer: "No hidden fees, ever. Monthly plans have zero contracts. Quarterly and annual plans are prorated if you cancel early." },
   { question: "How does the Price Lock Guarantee work?", answer: "Once you subscribe, your rate is locked for 12 months regardless of price changes. We notify you 30 days before any adjustments." },
-  { question: "What area do you serve?", answer: "The Okanagan Valley including Kelowna, West Kelowna, Lake Country, Peachland, Penticton, and Vernon. Expanding soon." },
   { question: "How are the contractors vetted?", answer: "Every contractor is licensed, insured, and background-checked. We verify references and conduct ongoing quality audits." },
 ];
 
@@ -221,7 +219,7 @@ export default function PricingPage() {
       <SocialProofBar />
 
       {/* Guarantees */}
-      <section className="py-12 sm:py-16">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Every Plan Includes"

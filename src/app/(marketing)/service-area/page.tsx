@@ -49,7 +49,7 @@ export default function ServiceAreaPage() {
       </div>
 
       {/* Cities Marquee */}
-      <section className="py-8 sm:py-10">
+      <section className="py-10 sm:py-14">
         <InfiniteMarquee speed={40} direction="right">
           {[...activeCities.map(c => c.name), ...comingSoon].map((city) => (
             <MarqueeCityItem key={city} city={city} />
