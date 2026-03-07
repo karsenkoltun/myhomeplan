@@ -78,7 +78,7 @@ export function ContractorDashboard({
   );
   const totalEarnings = bookings
     .filter((b) => b.status === "completed")
-    .reduce((sum, b) => sum + (b.price || 0), 0);
+    .reduce((sum, b) => sum + (b.contractor_payout ?? (b.price || 0) * 0.75), 0);
 
   const getServiceName = (serviceId: string) =>
     SERVICES.find((s) => s.id === serviceId)?.name ?? serviceId;
@@ -229,7 +229,7 @@ export function ContractorDashboard({
                               {format(parseISO(b.scheduled_date), "MMM d, yyyy")}
                             </p>
                           </div>
-                          <span className="font-semibold text-green-600">${(b.price || 0).toFixed(0)}</span>
+                          <span className="font-semibold text-green-600">${(b.contractor_payout ?? (b.price || 0) * 0.75).toFixed(0)}</span>
                         </div>
                       ))}
                     <Separator className="my-3" />

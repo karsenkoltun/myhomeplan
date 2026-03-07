@@ -14,6 +14,7 @@ import {
   createNotification,
   getAvailableContractorsForService,
 } from "@/lib/supabase/queries";
+import { calculateContractorPayout } from "@/lib/pricing";
 import { FadeIn } from "@/components/ui/motion";
 import { format, parseISO } from "date-fns";
 
@@ -44,6 +45,9 @@ export function StepConfirm() {
         // No contractor assigned - that's ok
       }
 
+      const customerPrice = draft.price ?? 0;
+      const contractorPayout = calculateContractorPayout(customerPrice);
+
       const booking = await createBooking({
         property_id: property.id,
         service_id: draft.serviceId,
@@ -51,7 +55,8 @@ export function StepConfirm() {
         scheduled_time: draft.scheduledTime,
         notes,
         contractor_profile_id: contractorProfileId,
-        price: draft.price ?? 0,
+        price: customerPrice,
+        contractor_payout: contractorPayout,
       });
 
       // Notify contractor if assigned

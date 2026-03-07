@@ -451,12 +451,25 @@ export type Database = {
           completed_at: string | null;
           notes: string;
           price: number;
+          contractor_payout: number | null;
           payment_status: "pending" | "succeeded" | "failed" | "refunded";
           created_at: string;
           updated_at: string;
         };
         Insert: Partial<Database["public"]["Tables"]["service_bookings"]["Row"]> & { property_id: string; service_id: string; scheduled_date: string; scheduled_time: string };
         Update: Partial<Database["public"]["Tables"]["service_bookings"]["Row"]>;
+      };
+      contractor_service_rates: {
+        Row: {
+          id: string;
+          contractor_profile_id: string;
+          service_id: string;
+          individual_rate: number;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["contractor_service_rates"]["Row"]> & { contractor_profile_id: string; service_id: string; individual_rate: number };
+        Update: Partial<Database["public"]["Tables"]["contractor_service_rates"]["Row"]>;
       };
       notifications: {
         Row: {

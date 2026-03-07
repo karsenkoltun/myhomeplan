@@ -36,26 +36,13 @@ import { useUserStore } from "@/stores/user-store";
 import { usePropertyStore } from "@/stores/property-store";
 import { usePlanStore } from "@/stores/plan-store";
 import { STRATA_SERVICES, calculateStrataServicePrice, STRATA_PLAN_DISCOUNTS } from "@/data/strata-services";
+import { calculateVolumeDiscount, applyVolumeDiscount } from "@/lib/pricing";
 import { SpringNumber, ShimmerButton } from "@/components/ui/motion";
 import { toast } from "sonner";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Waves, Droplets, Sun, Car, ArrowUpDown,
 };
-
-// Volume discount tiers
-function getVolumeDiscount(units: number): { percent: number; label: string } | null {
-  if (units >= 200) return { percent: 15, label: "200+ Units: 15% Off" };
-  if (units >= 100) return { percent: 10, label: "100+ Units: 10% Off" };
-  if (units >= 50) return { percent: 5, label: "50+ Units: 5% Off" };
-  return null;
-}
-
-function applyDiscount(price: number, units: number): number {
-  const discount = getVolumeDiscount(units);
-  if (!discount) return price;
-  return price * (1 - discount.percent / 100);
-}
 
 const buildingTypeLabels: Record<string, string> = {
   townhouse: "Townhouse Complex",
@@ -94,7 +81,7 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
 
   const unitCount = strata.unitCount;
   const commonArea = strata.commonAreaSqft;
-  const volumeDiscount = getVolumeDiscount(unitCount);
+  const volumeDiscount = calculateVolumeDiscount(unitCount);
 
   const selectedStrataServices = STRATA_SERVICES.filter((s) => selectedServices.includes(s.id));
 
@@ -102,7 +89,7 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
     (sum, s) => sum + calculateStrataServicePrice(s, unitCount, commonArea),
     0
   );
-  const afterVolumeDiscount = applyDiscount(subtotalMonthly, unitCount);
+  const afterVolumeDiscount = applyVolumeDiscount(subtotalMonthly, unitCount);
 
   // Payment interval discount
   const intervalKey = planInterval as keyof typeof STRATA_PLAN_DISCOUNTS;
@@ -394,7 +381,7 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
               {selectedStrataServices.map((service) => {
                 const Icon = ICON_MAP[service.icon] || CheckCircle2;
                 const rawPrice = calculateStrataServicePrice(service, unitCount, commonArea);
-                const price = applyDiscount(rawPrice, unitCount);
+                const price = applyVolumeDiscount(rawPrice, unitCount);
                 const servicePerUnit = unitCount > 0 ? price / unitCount : 0;
                 return (
                   <div key={service.id} className="flex items-center justify-between text-sm">

@@ -356,6 +356,40 @@ export async function calculatePlanTotal(
   return { items, subtotal, discount, discountAmount, total, withoutPlan, annualSavings };
 }
 
+// ============================================================
+// Contractor & comparison helpers
+// ============================================================
+
+/** Calculate what the contractor gets paid for a service at plan price */
+export function calculateContractorPayout(planPrice: number, config?: PricingConfig): number {
+  const cfg = config ?? _syncDefaults();
+  return planPrice * (1 - pc(cfg, "contractor_margin"));
+}
+
+/** Calculate the individual (non-plan) comparison price */
+export function calculateIndividualComparison(planPrice: number, config?: PricingConfig): number {
+  const cfg = config ?? _syncDefaults();
+  return planPrice * pc(cfg, "comparison_markup");
+}
+
+/** Get volume discount percentage for strata/PM based on unit count */
+export function calculateVolumeDiscount(unitCount: number, config?: PricingConfig): { percent: number; label: string } | null {
+  const cfg = config ?? _syncDefaults();
+  const discount100 = pc(cfg, "strata_discount_100_units");
+  const discount50 = pc(cfg, "strata_discount_50_units");
+  if (unitCount >= 200) return { percent: discount100 * 100, label: `200+ Units: ${(discount100 * 100).toFixed(0)}% Off` };
+  if (unitCount >= 100) return { percent: discount100 * 100, label: `100+ Units: ${(discount100 * 100).toFixed(0)}% Off` };
+  if (unitCount >= 50) return { percent: discount50 * 100, label: `50+ Units: ${(discount50 * 100).toFixed(0)}% Off` };
+  return null;
+}
+
+/** Apply volume discount to a price based on unit count */
+export function applyVolumeDiscount(price: number, unitCount: number, config?: PricingConfig): number {
+  const discount = calculateVolumeDiscount(unitCount, config);
+  if (!discount) return price;
+  return price * (1 - discount.percent / 100);
+}
+
 // Sync version for backward compatibility - uses defaults if config not loaded
 function _syncDefaults(): PricingConfig {
   return {

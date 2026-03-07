@@ -22,6 +22,8 @@ import {
   TrendingDown,
   Check,
 } from "lucide-react";
+import { SERVICES, FREQUENCY_MULTIPLIERS, type ServiceFrequency } from "@/data/services";
+import { calculateIndividualComparison } from "@/lib/pricing";
 
 // -------------------------------------------------------------------
 // Usage:
@@ -40,16 +42,43 @@ interface ComparisonService {
   planCost: number;
 }
 
-const comparisonData: ComparisonService[] = [
-  { name: "Lawn Mowing (bi-weekly, 7 months)", individualCost: 770, planCost: 530 },
-  { name: "Snow Removal (seasonal)", individualCost: 1300, planCost: 845 },
-  { name: "Spring & Fall Cleanup", individualCost: 500, planCost: 360 },
-  { name: "House Cleaning (monthly)", individualCost: 3120, planCost: 2340 },
-  { name: "Gutter Cleaning (bi-annual)", individualCost: 400, planCost: 330 },
-  { name: "HVAC Tune-Up (bi-annual)", individualCost: 350, planCost: 290 },
-  { name: "Window Washing (bi-annual)", individualCost: 450, planCost: 350 },
-  { name: "Pest Control (quarterly)", individualCost: 680, planCost: 540 },
+// Services to show in comparison (curated subset with friendly labels)
+const COMPARISON_SERVICE_IDS = [
+  "lawn-mowing",
+  "snow-removal",
+  "spring-fall-cleanup",
+  "house-cleaning",
+  "gutter-cleaning",
+  "hvac-tuneup",
+  "window-washing",
+  "pest-control",
 ];
+
+const FRIENDLY_LABELS: Record<string, string> = {
+  "lawn-mowing": "Lawn Mowing (bi-weekly, 7 months)",
+  "snow-removal": "Snow Removal (seasonal)",
+  "spring-fall-cleanup": "Spring & Fall Cleanup",
+  "house-cleaning": "House Cleaning (monthly)",
+  "gutter-cleaning": "Gutter Cleaning (bi-annual)",
+  "hvac-tuneup": "HVAC Tune-Up (bi-annual)",
+  "window-washing": "Window Washing (bi-annual)",
+  "pest-control": "Pest Control (quarterly)",
+};
+
+const comparisonData: ComparisonService[] = COMPARISON_SERVICE_IDS
+  .map((id) => {
+    const service = SERVICES.find((s) => s.id === id);
+    if (!service) return null;
+    const annualEvents = FREQUENCY_MULTIPLIERS[service.frequency as ServiceFrequency] ?? 1;
+    const planCost = Math.round(service.basePrice * annualEvents);
+    const individualCost = Math.round(calculateIndividualComparison(planCost));
+    return {
+      name: FRIENDLY_LABELS[id] || service.name,
+      individualCost,
+      planCost,
+    };
+  })
+  .filter((d): d is ComparisonService => d !== null);
 
 const individualTotal = comparisonData.reduce((sum, s) => sum + s.individualCost, 0);
 const planTotal = comparisonData.reduce((sum, s) => sum + s.planCost, 0);

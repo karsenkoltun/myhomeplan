@@ -14,7 +14,8 @@ import { usePlanStore } from "@/stores/plan-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { SERVICES, PLAN_DISCOUNTS } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
-import { updateProfile, upsertProperty, upsertContractorProfile, saveContractorReferences, createSubscription } from "@/lib/supabase/queries";
+import { updateProfile, upsertProperty, upsertContractorProfile, saveContractorReferences, saveContractorServiceRates, createSubscription } from "@/lib/supabase/queries";
+import { calculateContractorPayout } from "@/lib/pricing";
 import { SpringNumber, ShimmerButton } from "@/components/ui/motion";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -544,6 +545,14 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
 
         if (savedContractor) {
           await saveContractorReferences(savedContractor.id, contractor.references);
+
+          // Save individual service rates if any were entered
+          const rateEntries = Object.entries(contractor.serviceRates)
+            .filter(([, rate]) => rate > 0)
+            .map(([serviceId, rate]) => ({ service_id: serviceId, individual_rate: rate }));
+          if (rateEntries.length > 0) {
+            await saveContractorServiceRates(savedContractor.id, rateEntries);
+          }
         }
       }
 
@@ -796,6 +805,31 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
                   <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
                   <span className="text-muted-foreground">Rate range:</span>
                   <span className="font-medium">${contractor.hourlyRateMin} - ${contractor.hourlyRateMax}/hr</span>
+                </div>
+              </>
+            )}
+
+            {/* Network payout summary */}
+            {Object.keys(contractor.serviceRates).some((k) => contractor.serviceRates[k] > 0) && (
+              <>
+                <Separator className="my-3" />
+                <p className="text-xs font-medium text-muted-foreground mb-2">Network Payout per Service</p>
+                <div className="space-y-1">
+                  {SERVICES.filter((s) => contractor.servicesOffered.includes(s.id)).map((s) => {
+                    const payout = calculateContractorPayout(s.basePrice);
+                    const rate = contractor.serviceRates[s.id];
+                    return (
+                      <div key={s.id} className="flex items-center justify-between text-xs">
+                        <span className="text-muted-foreground">{s.name}</span>
+                        <div className="flex items-center gap-2">
+                          {rate > 0 && (
+                            <span className="text-muted-foreground line-through">${rate}</span>
+                          )}
+                          <span className="font-medium text-sky-600">${payout.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </>
             )}

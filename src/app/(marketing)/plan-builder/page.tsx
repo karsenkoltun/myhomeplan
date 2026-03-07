@@ -50,7 +50,7 @@ import {
   type PlanInterval,
   type ServiceCategory,
 } from "@/data/services";
-import { calculateServicePrice } from "@/lib/pricing";
+import { calculateServicePrice, calculateIndividualComparison } from "@/lib/pricing";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
@@ -82,7 +82,7 @@ export default function PlanBuilderPage() {
     const discount = PLAN_DISCOUNTS[planInterval].discount;
     const discountAmount = subtotal * discount;
     const total = subtotal - discountAmount;
-    const withoutPlan = subtotal * 1.25;
+    const withoutPlan = items.reduce((sum, item) => sum + calculateIndividualComparison(item.monthlyPrice), 0);
     const annualSavings = (withoutPlan - total) * 12;
     return { items, subtotal, discount, discountAmount, total, withoutPlan, annualSavings };
   }, [selectedServices, propertySqft, lotSqft, planInterval]);

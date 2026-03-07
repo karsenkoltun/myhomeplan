@@ -25,6 +25,7 @@ import {
 import { STRATA_SERVICES, calculateStrataServicePrice, type StrataService } from "@/data/strata-services";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
+import { calculateVolumeDiscount, applyVolumeDiscount } from "@/lib/pricing";
 import { SpringNumber } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -45,20 +46,6 @@ const frequencyOptions = [
   { value: "as-needed", label: "As needed" },
 ];
 
-// Volume discount tiers
-function getVolumeDiscount(units: number): { percent: number; label: string } | null {
-  if (units >= 200) return { percent: 15, label: "200+ Units: 15% Off" };
-  if (units >= 100) return { percent: 10, label: "100+ Units: 10% Off" };
-  if (units >= 50) return { percent: 5, label: "50+ Units: 5% Off" };
-  return null;
-}
-
-function applyDiscount(price: number, units: number): number {
-  const discount = getVolumeDiscount(units);
-  if (!discount) return price;
-  return price * (1 - discount.percent / 100);
-}
-
 export const StepStrataServices = forwardRef<StepValidationRef>(function StepStrataServices(_props, ref) {
   const { selectedServices, toggleService } = usePlanStore();
   const { strata, serviceSpecs, setServiceSpec } = usePropertyStore();
@@ -67,7 +54,7 @@ export const StepStrataServices = forwardRef<StepValidationRef>(function StepStr
 
   const unitCount = strata.unitCount;
   const commonArea = strata.commonAreaSqft;
-  const volumeDiscount = getVolumeDiscount(unitCount);
+  const volumeDiscount = calculateVolumeDiscount(unitCount);
 
   // Calculate totals
   const selectedStrataServices = STRATA_SERVICES.filter((s) => selectedServices.includes(s.id));
@@ -75,7 +62,7 @@ export const StepStrataServices = forwardRef<StepValidationRef>(function StepStr
     (sum, s) => sum + calculateStrataServicePrice(s, unitCount, commonArea),
     0
   );
-  const totalMonthly = applyDiscount(totalMonthlyBeforeDiscount, unitCount);
+  const totalMonthly = applyVolumeDiscount(totalMonthlyBeforeDiscount, unitCount);
   const perUnitMonthly = unitCount > 0 ? totalMonthly / unitCount : 0;
 
   const validate = useCallback(() => {
@@ -155,7 +142,7 @@ export const StepStrataServices = forwardRef<StepValidationRef>(function StepStr
           const Icon = ICON_MAP[service.icon] || CheckCircle2;
           const isSelected = selectedServices.includes(service.id);
           const rawPrice = calculateStrataServicePrice(service, unitCount, commonArea);
-          const price = applyDiscount(rawPrice, unitCount);
+          const price = applyVolumeDiscount(rawPrice, unitCount);
           const perUnit = unitCount > 0 ? price / unitCount : 0;
           const customFrequency = serviceSpecs[service.id]?.frequency as string | undefined;
 

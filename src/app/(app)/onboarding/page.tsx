@@ -29,6 +29,7 @@ import { StepContractorServiceArea } from "@/components/onboarding/step-contract
 import { StepContractorAvailability } from "@/components/onboarding/step-contractor-availability";
 import { StepContractorReferences } from "@/components/onboarding/step-contractor-references";
 import { StepContractorAgreements } from "@/components/onboarding/step-contractor-agreements";
+import { StepContractorRates } from "@/components/onboarding/step-contractor-rates";
 
 // Steps - Strata
 import { StepStrataInfo } from "@/components/onboarding/step-strata-info";
@@ -72,6 +73,7 @@ const contractorSteps = [
   "contractor-business",
   "contractor-insurance",
   "contractor-services",
+  "contractor-rates",
   "contractor-service-area",
   "contractor-availability",
   "contractor-references",
@@ -261,6 +263,8 @@ function OnboardingContent() {
         return <StepContractorInsurance />;
       case "contractor-services":
         return <StepContractorServices />;
+      case "contractor-rates":
+        return <StepContractorRates />;
       case "contractor-service-area":
         return <StepContractorServiceArea />;
       case "contractor-availability":

@@ -435,6 +435,7 @@ export async function createBooking(booking: {
   notes?: string;
   contractor_profile_id?: string;
   price?: number;
+  contractor_payout?: number;
   subscription_id?: string;
 }) {
   const { data, error } = await supabase()
@@ -634,7 +635,7 @@ export async function getContractorClients(contractorProfileId: string) {
 export async function getContractorMonthlyEarnings(contractorProfileId: string) {
   const { data, error } = await supabase()
     .from("service_bookings")
-    .select("scheduled_date, price")
+    .select("scheduled_date, price, contractor_payout")
     .eq("contractor_profile_id", contractorProfileId)
     .eq("status", "completed")
     .order("scheduled_date", { ascending: true });
@@ -643,10 +644,46 @@ export async function getContractorMonthlyEarnings(contractorProfileId: string) 
   const monthlyMap: Record<string, number> = {};
   (data ?? []).forEach((b) => {
     const month = b.scheduled_date.substring(0, 7); // YYYY-MM
-    monthlyMap[month] = (monthlyMap[month] || 0) + (b.price || 0);
+    const payout = b.contractor_payout ?? (b.price || 0) * 0.75;
+    monthlyMap[month] = (monthlyMap[month] || 0) + payout;
   });
 
   return Object.entries(monthlyMap).map(([month, total]) => ({ month, total }));
+}
+
+// ---- CONTRACTOR SERVICE RATES ----
+
+export async function saveContractorServiceRates(
+  contractorProfileId: string,
+  rates: { service_id: string; individual_rate: number }[]
+) {
+  await supabase()
+    .from("contractor_service_rates")
+    .delete()
+    .eq("contractor_profile_id", contractorProfileId);
+
+  const validRates = rates.filter((r) => r.individual_rate > 0);
+  if (validRates.length === 0) return;
+
+  const { error } = await supabase()
+    .from("contractor_service_rates")
+    .insert(
+      validRates.map((r) => ({
+        contractor_profile_id: contractorProfileId,
+        service_id: r.service_id,
+        individual_rate: r.individual_rate,
+      }))
+    );
+  if (error) throw error;
+}
+
+export async function getContractorServiceRates(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_service_rates")
+    .select("*")
+    .eq("contractor_profile_id", contractorProfileId);
+  if (error) throw error;
+  return data ?? [];
 }
 
 // ---- CONTRACTOR METRICS ----

@@ -240,6 +240,9 @@ export interface ContractorProfile {
   agreedToDrugTest: boolean;
   agreePrivacy: boolean;
   agreeIndependentContractor: boolean;
+
+  // Service rates (individual rates the contractor charges on their own)
+  serviceRates: Record<string, number>;
 }
 
 // Property Management types (all new)
@@ -524,6 +527,8 @@ const defaultContractor: ContractorProfile = {
   agreedToDrugTest: false,
   agreePrivacy: false,
   agreeIndependentContractor: false,
+
+  serviceRates: {},
 };
 
 const defaultPM: PMProfile = {

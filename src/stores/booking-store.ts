@@ -8,6 +8,7 @@ interface BookingDraft {
   notes: string;
   contractorId?: string;
   price?: number;
+  contractorPayout?: number;
 }
 
 interface BookingState {
