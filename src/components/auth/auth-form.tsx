@@ -103,6 +103,7 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
         provider: "google",
         options: {
           redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+          scopes: "openid email profile",
         },
       });
       if (error) throw error;
