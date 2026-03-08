@@ -10,17 +10,6 @@ import { FeatureSectionGrid } from "@/components/marketing/feature-section-grid"
 import { BLOG_CATEGORIES, type BlogCategory } from "@/types/blog";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
-import {
-  Leaf,
-  Thermometer,
-  Flower2,
-  Snowflake,
-  Bug,
-  Sparkles,
-  Hammer,
-  Wifi,
-  DollarSign,
-} from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Home Maintenance Blog | Tips, Guides & Cost Breakdowns | My Home Plan",
@@ -126,7 +115,7 @@ export default function BlogPage() {
             subtitle="Find expert guides, checklists, and cost breakdowns for every area of your home."
             items={[
               {
-                icon: Leaf,
+                icon: "Leaf",
                 title: "Seasonal Maintenance",
                 description:
                   "Month-by-month checklists and seasonal prep guides to keep your home ready year-round.",
@@ -135,7 +124,7 @@ export default function BlogPage() {
                 bg: "bg-emerald-500/10",
               },
               {
-                icon: Thermometer,
+                icon: "Thermometer",
                 title: "HVAC & Climate",
                 description:
                   "Furnace, AC, and heat pump maintenance tips to stay comfortable and energy-efficient.",
@@ -144,7 +133,7 @@ export default function BlogPage() {
                 bg: "bg-blue-500/10",
               },
               {
-                icon: Flower2,
+                icon: "Flower2",
                 title: "Lawn & Garden",
                 description:
                   "Lawn care schedules, landscaping ideas, and outdoor maintenance for every season.",
@@ -153,7 +142,7 @@ export default function BlogPage() {
                 bg: "bg-green-500/10",
               },
               {
-                icon: Snowflake,
+                icon: "Snowflake",
                 title: "Snow & Ice",
                 description:
                   "Snow removal tips, ice dam prevention, and winterization guides for Okanagan winters.",
@@ -162,7 +151,7 @@ export default function BlogPage() {
                 bg: "bg-cyan-500/10",
               },
               {
-                icon: Bug,
+                icon: "Bug",
                 title: "Pest Control",
                 description:
                   "Prevention strategies, treatment options, and when to call a professional exterminator.",
@@ -171,7 +160,7 @@ export default function BlogPage() {
                 bg: "bg-amber-500/10",
               },
               {
-                icon: Sparkles,
+                icon: "Sparkles",
                 title: "Cleaning",
                 description:
                   "Deep cleaning schedules, carpet care, window washing, and indoor maintenance tips.",
@@ -180,7 +169,7 @@ export default function BlogPage() {
                 bg: "bg-violet-500/10",
               },
               {
-                icon: Hammer,
+                icon: "Hammer",
                 title: "Home Improvement",
                 description:
                   "DIY projects, handyman tips, and when it makes sense to hire a professional.",
@@ -189,7 +178,7 @@ export default function BlogPage() {
                 bg: "bg-orange-500/10",
               },
               {
-                icon: Wifi,
+                icon: "Wifi",
                 title: "Smart Home",
                 description:
                   "Smart thermostats, security systems, and tech upgrades to modernize your home.",
@@ -198,7 +187,7 @@ export default function BlogPage() {
                 bg: "bg-indigo-500/10",
               },
               {
-                icon: DollarSign,
+                icon: "DollarSign",
                 title: "Budgeting & Costs",
                 description:
                   "Cost breakdowns, pricing comparisons, and budgeting tools for every home service.",

@@ -4,11 +4,40 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { easings } from "@/lib/animations";
-import { type LucideIcon } from "lucide-react";
+import {
+  Leaf,
+  Thermometer,
+  Flower2,
+  Snowflake,
+  Bug,
+  Sparkles,
+  Hammer,
+  Wifi,
+  DollarSign,
+  Home,
+  Shield,
+  Wrench,
+  type LucideIcon,
+} from "lucide-react";
 import Link from "next/link";
 
-interface FeatureItem {
-  icon: LucideIcon;
+const ICON_MAP: Record<string, LucideIcon> = {
+  Leaf,
+  Thermometer,
+  Flower2,
+  Snowflake,
+  Bug,
+  Sparkles,
+  Hammer,
+  Wifi,
+  DollarSign,
+  Home,
+  Shield,
+  Wrench,
+};
+
+export interface FeatureItem {
+  icon: string;
   title: string;
   description: string;
   href?: string;
@@ -27,7 +56,7 @@ interface FeatureSectionGridProps {
 function FeatureCard({ item, index }: { item: FeatureItem; index: number }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
-  const Icon = item.icon;
+  const Icon = ICON_MAP[item.icon] || Home;
 
   const content = (
     <motion.div
