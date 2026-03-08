@@ -12,54 +12,115 @@ export interface Testimonial {
 
 // Master testimonial bank
 export const ALL_TESTIMONIALS: Testimonial[] = [
-  // Homeowner testimonials
+  // ── Homeowner testimonials ──────────────────────────────────────────
   {
     name: "Sarah M.",
     role: "Busy Parent",
     location: "Kelowna, BC",
     quote:
-      "Between the kids, work, and just life - I had zero time to deal with home maintenance. My Home Plan handles everything. I haven't called a contractor in 8 months.",
+      "I was juggling three different contractors for lawn, gutters, and furnace servicing. Half the time they'd no-show. My Home Plan took all of that off my plate. I haven't made a single maintenance call in seven months.",
     rating: 5,
     audience: "homeowner",
-    highlight: "8 months contractor-free",
+    highlight: "7 months contractor-free",
   },
   {
     name: "Greg & Linda T.",
     role: "Snowbirds",
     location: "Penticton, BC",
     quote:
-      "We spend winters in Arizona. Before My Home Plan, we'd come back to a disaster every spring. Now everything happens automatically. Total peace of mind.",
+      "We spend November through March in Arizona. Last year we came home to burst pipes and a yard that looked abandoned. This year, My Home Plan handled the winterization, snow clearing, and spring startup. Came back to a perfect house.",
     rating: 5,
     audience: "homeowner",
-    highlight: "Total peace of mind",
+    highlight: "No more spring surprises",
   },
   {
     name: "Jordan K.",
     role: "First-Time Homeowner",
     location: "Vernon, BC",
     quote:
-      "I had no idea how much maintenance a house needed. My Home Plan was a lifesaver. They told me what I needed, scheduled it all, and I save over $200/month.",
+      "Bought my first house last spring and honestly had no clue what maintenance even needed to happen. MHP basically gave me a checklist for the whole year and then just did it all. I would've missed half this stuff on my own.",
     rating: 5,
     audience: "homeowner",
-    highlight: "Saves $200/month",
+    highlight: "First-year confidence",
   },
   {
     name: "Michelle D.",
     role: "Working Professional",
     location: "West Kelowna, BC",
     quote:
-      "I used to spend every Saturday dealing with yard work and house stuff. Now I actually have my weekends back. Worth every penny.",
+      "Every Saturday used to be yard work and errands. Now my lawn, gutters, and seasonal stuff just happens. I actually went hiking three weekends in a row. That never happened before.",
     rating: 5,
     audience: "homeowner",
     highlight: "Weekends back",
   },
-  // Contractor testimonials
+  {
+    name: "Rob & Trish P.",
+    role: "Retirees",
+    location: "Summerland, BC",
+    quote:
+      "We're both in our 70s and climbing ladders to clean gutters isn't an option anymore. The monthly cost is less than what we were paying individual contractors, and we don't have to coordinate anything. Our daughter set it up and we haven't worried about the house since.",
+    rating: 5,
+    audience: "homeowner",
+    highlight: "Safer & cheaper",
+  },
+  {
+    name: "Anika L.",
+    role: "Busy Parent",
+    location: "Lake Country, BC",
+    quote:
+      "With two kids under five, I barely have time to shower, let alone research who should service our HVAC. My Home Plan sends vetted people on schedule. One less thing to think about.",
+    rating: 4,
+    audience: "homeowner",
+    highlight: "One less thing",
+  },
+  {
+    name: "Derek H.",
+    role: "First-Time Homeowner",
+    location: "Kelowna, BC",
+    quote:
+      "Got hit with a $1,400 furnace repair in my first winter because I never changed the filter. If I'd had MHP from day one, that wouldn't have happened. Signed up immediately after. Predictable monthly cost beats surprise bills every time.",
+    rating: 5,
+    audience: "homeowner",
+    highlight: "No more surprise bills",
+  },
+  {
+    name: "Pat & Sharon W.",
+    role: "Snowbirds",
+    location: "Peachland, BC",
+    quote:
+      "Our neighbor's pipes froze while they were away last January. Ours didn't because MHP had already winterized everything in October. That alone paid for a full year of the plan.",
+    rating: 5,
+    audience: "homeowner",
+    highlight: "Winterization saved us",
+  },
+  {
+    name: "Nina C.",
+    role: "Working Professional",
+    location: "Penticton, BC",
+    quote:
+      "I work remote and the last thing I want after a long day is to figure out why my dryer vent smells weird. I just message MHP and someone's there within the week. Simple.",
+    rating: 4,
+    audience: "homeowner",
+    highlight: "Quick response",
+  },
+  {
+    name: "Marcus J.",
+    role: "Retiree",
+    location: "Vernon, BC",
+    quote:
+      "Fixed income means I need to know exactly what I'm spending. The flat monthly rate is a game changer. No more $300 surprise from the plumber or $500 from the HVAC guy. I budget it and forget it.",
+    rating: 5,
+    audience: "homeowner",
+    highlight: "Predictable budgeting",
+  },
+
+  // ── Contractor testimonials ─────────────────────────────────────────
   {
     name: "Dave R.",
     role: "Landscaping Pro",
     location: "Kelowna, BC",
     quote:
-      "I used to spend 15 hours a week marketing and chasing leads. Now MHP sends me steady work, I get paid on time every time, and I can focus on what I'm good at.",
+      "I used to spend 15 hours a week on marketing and chasing leads. Now MHP sends me consistent work in my area. I get paid on time, every time, and I can actually focus on the work itself.",
     rating: 5,
     audience: "contractor",
     highlight: "15 hrs/week saved",
@@ -69,28 +130,29 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     role: "Cleaning Services",
     location: "Lake Country, BC",
     quote:
-      "The consistency is what sold me. I know exactly what my month looks like. No more feast-or-famine. My income has been stable since I joined.",
+      "The consistency is what sold me. I know exactly what my month looks like. No more feast or famine. Revenue has been stable since I joined and I've been able to hire another cleaner.",
     rating: 5,
     audience: "contractor",
-    highlight: "Stable income",
+    highlight: "Stable enough to hire",
   },
   {
     name: "Tyler B.",
     role: "HVAC Technician",
     location: "Penticton, BC",
     quote:
-      "Zero cost to join, guaranteed payment, and I don't have to deal with billing or scheduling. I just show up, do great work, and get paid. Simple.",
+      "Zero cost to join, guaranteed payment, and I never chase invoices. I show up, do great work, and the money's in my account. That's all I wanted.",
     rating: 5,
     audience: "contractor",
     highlight: "$0 cost to join",
   },
-  // Strata testimonials
+
+  // ── Strata testimonials ─────────────────────────────────────────────
   {
     name: "Pinnacle Strata Council",
     role: "48-Unit Complex",
     location: "Kelowna, BC",
     quote:
-      "Managing 6 different vendors was a nightmare. My Home Plan consolidated everything into one contract. Our costs dropped 30% and quality went up.",
+      "We had six separate vendor contracts for landscaping, snow, cleaning, pest control, gutters, and HVAC. My Home Plan consolidated everything into one agreement. Admin time dropped immediately and our costs came down about 30%.",
     rating: 5,
     audience: "strata",
     highlight: "30% cost reduction",
@@ -100,7 +162,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     role: "120-Unit Building",
     location: "West Kelowna, BC",
     quote:
-      "The volume pricing alone saved us over $40,000 annually. But the real win is having one point of contact for everything. Our property manager loves it.",
+      "The volume pricing saved us over $40,000 annually, but honestly the bigger win is having one point of contact. Our property manager isn't fielding calls from five different companies anymore.",
     rating: 5,
     audience: "strata",
     highlight: "$40K annual savings",
@@ -110,18 +172,19 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     role: "75-Unit Complex",
     location: "Vernon, BC",
     quote:
-      "Quality consistency across all our common areas improved dramatically. Residents notice the difference and complaints about maintenance have dropped to near zero.",
+      "Resident complaints about maintenance were a regular agenda item at council meetings. Since switching to MHP, we've had maybe two in six months. The common areas look consistently good and nothing falls through the cracks.",
     rating: 5,
     audience: "strata",
     highlight: "Near-zero complaints",
   },
-  // PM testimonials
+
+  // ── Property Manager testimonials ───────────────────────────────────
   {
     name: "Rachel F.",
     role: "Portfolio Manager (35 properties)",
     location: "Kelowna, BC",
     quote:
-      "I manage 35 rental properties. Before MHP, I had a spreadsheet of 40+ contractors. Now I have one dashboard, one invoice, and 60% less admin time.",
+      "I manage 35 rental properties across the valley. Before MHP, I had a spreadsheet with 40+ contractor contacts. Now it's one dashboard, one invoice, and about 60% less time on maintenance coordination.",
     rating: 5,
     audience: "pm",
     highlight: "60% less admin",
@@ -131,19 +194,19 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     role: "Property Management Co.",
     location: "Penticton, BC",
     quote:
-      "Tenant satisfaction scores went up 25% since we switched to My Home Plan. Maintenance requests get handled faster and our owners are thrilled with the cost savings.",
+      "Tenant satisfaction scores went up noticeably after we onboarded with My Home Plan. Maintenance requests get handled faster and our owners are happy with what they're spending. It's a win all around.",
     rating: 5,
     audience: "pm",
-    highlight: "25% higher satisfaction",
+    highlight: "Higher tenant satisfaction",
   },
   {
     name: "James W.",
     role: "Independent PM (12 properties)",
     location: "Lake Country, BC",
     quote:
-      "As a solo property manager, I was drowning in maintenance coordination. MHP gave me my life back. My clients get better service and I have time to grow my business.",
+      "As a solo property manager, I was drowning in maintenance calls. MHP gave me my life back. My clients get better service and I finally have bandwidth to take on new properties.",
     rating: 5,
     audience: "pm",
-    highlight: "Time to grow",
+    highlight: "Room to grow",
   },
 ];
