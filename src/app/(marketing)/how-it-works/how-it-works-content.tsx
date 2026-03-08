@@ -13,6 +13,7 @@ import {
   FloatingElement,
 } from "@/components/ui/motion";
 import { FlowButton } from "@/components/ui/flow-button";
+import DisplayCards from "@/components/ui/display-cards";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 
@@ -33,10 +34,12 @@ import {
   ArrowRight,
   Shield,
   Clock,
+  ClipboardList,
   DollarSign,
   CheckCircle2,
   XCircle,
   Unlock,
+  Users,
   Home,
 } from "lucide-react";
 
@@ -75,6 +78,60 @@ export function HowItWorksContent() {
           title="Managing Your Home Shouldn't Feel Like a Second Job"
           subtitle="We built My Home Plan so you never have to research, negotiate, schedule, or chase down a contractor again."
         />
+      </section>
+
+      {/* Process Preview - DisplayCards */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Three Steps to a Stress-Free Home
+                </h2>
+                <p className="mt-3 text-muted-foreground sm:text-lg">
+                  Pick your services, we match you with vetted contractors, and your home stays maintained year-round.
+                </p>
+              </div>
+              <div className="flex-1">
+                <DisplayCards
+                  cards={[
+                    {
+                      className:
+                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <ClipboardList className="size-4 text-sky-300" />,
+                      title: "Choose Services",
+                      description: "Pick exactly what your home needs",
+                      date: "Step 1",
+                      iconClassName: "text-sky-500",
+                      titleClassName: "text-sky-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Users className="size-4 text-emerald-300" />,
+                      title: "We Match Contractors",
+                      description: "Vetted pros assigned to your home",
+                      date: "Step 2",
+                      iconClassName: "text-emerald-500",
+                      titleClassName: "text-emerald-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                      icon: <CheckCircle2 className="size-4 text-violet-300" />,
+                      title: "Home Maintained",
+                      description: "Everything handled automatically",
+                      date: "Ongoing",
+                      iconClassName: "text-violet-500",
+                      titleClassName: "text-violet-500",
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
       </section>
 
       {/* Social Proof */}

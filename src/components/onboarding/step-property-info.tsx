@@ -32,6 +32,7 @@ import {
   TreePine,
   Car,
 } from "lucide-react";
+import { FileInput } from "@/components/ui/file-input";
 import { easings } from "@/lib/animations";
 
 // --- Validation schemas ---
@@ -192,32 +193,74 @@ export const StepPropertyBasics = forwardRef<StepValidationRef>(function StepPro
       <div className={cn("mt-8 space-y-6", shaking && "animate-shake")}>
         <Card>
           <CardContent className="grid gap-5 p-5 sm:grid-cols-2 sm:p-6">
-            <div className="space-y-2">
-              <RequiredLabel>Home Size (sq ft)</RequiredLabel>
-              <Input
-                type="number"
-                value={property.homeSqft}
-                onChange={(e) => {
-                  setProperty({ homeSqft: Number(e.target.value) });
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <RequiredLabel>Home Size</RequiredLabel>
+                <div className="flex items-center gap-1">
+                  <Input
+                    inputMode="numeric"
+                    value={property.homeSqft}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      if (!isNaN(v)) {
+                        setProperty({ homeSqft: Math.max(0, v) });
+                        clearError("homeSqft");
+                      }
+                    }}
+                    className={cn("w-24 text-right h-9 transition-colors duration-200", errors.homeSqft && "ring-2 ring-red-500 border-red-500")}
+                  />
+                  <span className="text-sm text-muted-foreground">sq ft</span>
+                </div>
+              </div>
+              <Slider
+                value={[Math.min(Math.max(property.homeSqft, 500), 10000)]}
+                onValueChange={([v]) => {
+                  setProperty({ homeSqft: v });
                   clearError("homeSqft");
                 }}
-                min={200}
-                className={cn("h-11 transition-colors duration-200", errors.homeSqft && "ring-2 ring-red-500 border-red-500")}
+                min={500}
+                max={10000}
+                step={100}
               />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>500 sq ft</span>
+                <span>10,000 sq ft</span>
+              </div>
               <FieldError message={errors.homeSqft} />
             </div>
-            <div className="space-y-2">
-              <RequiredLabel>Lot Size (sq ft)</RequiredLabel>
-              <Input
-                type="number"
-                value={property.lotSqft}
-                onChange={(e) => {
-                  setProperty({ lotSqft: Number(e.target.value) });
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <RequiredLabel>Lot Size</RequiredLabel>
+                <div className="flex items-center gap-1">
+                  <Input
+                    inputMode="numeric"
+                    value={property.lotSqft}
+                    onChange={(e) => {
+                      const v = Number(e.target.value);
+                      if (!isNaN(v)) {
+                        setProperty({ lotSqft: Math.max(0, v) });
+                        clearError("lotSqft");
+                      }
+                    }}
+                    className={cn("w-24 text-right h-9 transition-colors duration-200", errors.lotSqft && "ring-2 ring-red-500 border-red-500")}
+                  />
+                  <span className="text-sm text-muted-foreground">sq ft</span>
+                </div>
+              </div>
+              <Slider
+                value={[Math.min(Math.max(property.lotSqft, 1000), 50000)]}
+                onValueChange={([v]) => {
+                  setProperty({ lotSqft: v });
                   clearError("lotSqft");
                 }}
-                min={100}
-                className={cn("h-11 transition-colors duration-200", errors.lotSqft && "ring-2 ring-red-500 border-red-500")}
+                min={1000}
+                max={50000}
+                step={500}
               />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>1,000 sq ft</span>
+                <span>50,000 sq ft</span>
+              </div>
               <FieldError message={errors.lotSqft} />
             </div>
             <div className="space-y-2">
@@ -252,6 +295,25 @@ export const StepPropertyBasics = forwardRef<StepValidationRef>(function StepPro
                 </SelectContent>
               </Select>
               <FieldError message={errors.homeType} />
+            </div>
+
+            {/* Optional floor plan upload */}
+            <div className="sm:col-span-2">
+              <FileInput
+                label="Floor Plan"
+                description="Upload your home's floor plan for more accurate service quotes (optional)"
+                accept="image/*,.pdf"
+                maxSize={10}
+                onFileChange={(file) => {
+                  // Store locally - actual upload happens on final submission
+                  // Using window to persist across re-renders without adding to Zustand
+                  if (file) {
+                    (window as unknown as Record<string, unknown>).__mhp_floorPlan = file;
+                  } else {
+                    delete (window as unknown as Record<string, unknown>).__mhp_floorPlan;
+                  }
+                }}
+              />
             </div>
           </CardContent>
         </Card>

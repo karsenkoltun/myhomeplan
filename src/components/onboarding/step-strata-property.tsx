@@ -4,10 +4,12 @@ import { useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
 import { motion } from "framer-motion";
 import { Building, Building2, Hotel, TowerControl, Blocks, Waves, Dumbbell, PartyPopper, Flower2, Baby, CircleParking, ArrowUpDown, Sun, Check } from "lucide-react";
+import { FileInput } from "@/components/ui/file-input";
 import { usePropertyStore, type StrataBuildingType, type StrataAmenity } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -165,43 +167,101 @@ export const StepStrataProperty = forwardRef<StepValidationRef>(function StepStr
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2">
-              <div className="space-y-2">
-                <RequiredLabel>Number of Units</RequiredLabel>
-                <Input
-                  type="number"
-                  value={strata.unitCount}
-                  onChange={(e) => {
-                    setStrata({ unitCount: Number(e.target.value) });
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <RequiredLabel>Number of Units</RequiredLabel>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      inputMode="numeric"
+                      value={strata.unitCount}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (!isNaN(v)) {
+                          setStrata({ unitCount: Math.max(0, v) });
+                          clearError("unitCount");
+                        }
+                      }}
+                      className={cn("w-20 text-right h-9 transition-colors duration-200", errors.unitCount && "ring-2 ring-red-500 border-red-500")}
+                    />
+                  </div>
+                </div>
+                <Slider
+                  value={[Math.min(Math.max(strata.unitCount, 4), 500)]}
+                  onValueChange={([v]) => {
+                    setStrata({ unitCount: v });
                     clearError("unitCount");
                   }}
-                  min={2}
-                  className={cn("h-11 transition-colors duration-200", errors.unitCount && "ring-2 ring-red-500 border-red-500")}
+                  min={4}
+                  max={500}
+                  step={1}
                 />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>4 units</span>
+                  <span>500 units</span>
+                </div>
                 <FieldError message={errors.unitCount} />
               </div>
-              <div className="space-y-2">
-                <RequiredLabel>Number of Buildings</RequiredLabel>
-                <Input
-                  type="number"
-                  value={strata.buildingCount}
-                  onChange={(e) => {
-                    setStrata({ buildingCount: Number(e.target.value) });
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <RequiredLabel>Number of Buildings</RequiredLabel>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      inputMode="numeric"
+                      value={strata.buildingCount}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (!isNaN(v)) {
+                          setStrata({ buildingCount: Math.max(0, v) });
+                          clearError("buildingCount");
+                        }
+                      }}
+                      className={cn("w-20 text-right h-9 transition-colors duration-200", errors.buildingCount && "ring-2 ring-red-500 border-red-500")}
+                    />
+                  </div>
+                </div>
+                <Slider
+                  value={[Math.min(Math.max(strata.buildingCount, 1), 50)]}
+                  onValueChange={([v]) => {
+                    setStrata({ buildingCount: v });
                     clearError("buildingCount");
                   }}
                   min={1}
-                  className={cn("h-11 transition-colors duration-200", errors.buildingCount && "ring-2 ring-red-500 border-red-500")}
+                  max={50}
+                  step={1}
                 />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>1 building</span>
+                  <span>50 buildings</span>
+                </div>
                 <FieldError message={errors.buildingCount} />
               </div>
-              <div className="space-y-2">
-                <Label>Common Area (sq ft)</Label>
-                <Input
-                  type="number"
-                  value={strata.commonAreaSqft}
-                  onChange={(e) => setStrata({ commonAreaSqft: Number(e.target.value) })}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label>Common Area</Label>
+                  <div className="flex items-center gap-1">
+                    <Input
+                      inputMode="numeric"
+                      value={strata.commonAreaSqft}
+                      onChange={(e) => {
+                        const v = Number(e.target.value);
+                        if (!isNaN(v)) setStrata({ commonAreaSqft: Math.max(0, v) });
+                      }}
+                      className="w-24 text-right h-9"
+                    />
+                    <span className="text-sm text-muted-foreground">sq ft</span>
+                  </div>
+                </div>
+                <Slider
+                  value={[Math.min(Math.max(strata.commonAreaSqft, 0), 50000)]}
+                  onValueChange={([v]) => setStrata({ commonAreaSqft: v })}
                   min={0}
-                  className="h-11"
+                  max={50000}
+                  step={500}
                 />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>0 sq ft</span>
+                  <span>50,000 sq ft</span>
+                </div>
               </div>
               <div className="space-y-2">
                 <RequiredLabel>Year Built</RequiredLabel>
@@ -440,6 +500,29 @@ export const StepStrataProperty = forwardRef<StepValidationRef>(function StepStr
                 );
               })}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Building Plans */}
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Building Plans</h3>
+            <p className="mb-4 text-xs text-muted-foreground">
+              Uploading your strata or building floor plan helps contractors provide more accurate quotes (optional).
+            </p>
+            <FileInput
+              label="Strata Plan / Building Floor Plan"
+              description="PDF or image of your registered strata plan or building layout"
+              accept="image/*,.pdf"
+              maxSize={10}
+              onFileChange={(file) => {
+                if (file) {
+                  (window as unknown as Record<string, unknown>).__mhp_strataPlan = file;
+                } else {
+                  delete (window as unknown as Record<string, unknown>).__mhp_strataPlan;
+                }
+              }}
+            />
           </CardContent>
         </Card>
       </div>

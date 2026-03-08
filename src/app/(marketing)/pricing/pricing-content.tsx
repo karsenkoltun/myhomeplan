@@ -6,12 +6,7 @@ import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FAQ } from "@/components/ui/faq-tabs";
 import {
   CheckCircle2,
   ArrowRight,
@@ -21,6 +16,9 @@ import {
   XCircle,
   HelpCircle,
   Clock,
+  Home,
+  Users,
+  DollarSign,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -31,6 +29,7 @@ import {
   GlowCard,
   ShimmerButton,
 } from "@/components/ui/motion";
+import DisplayCards from "@/components/ui/display-cards";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { PLAN_TIERS, PLAN_DISCOUNTS, type PlanInterval } from "@/data/services";
@@ -45,18 +44,21 @@ const CostComparison = dynamic(
   { ssr: false }
 );
 
-const FAQ_ITEMS = [
-  { question: "Can I switch plans later?", answer: "Yes, upgrade or downgrade anytime. Upgrades are prorated so you only pay for what you use. Downgrades take effect at your next billing cycle." },
-  { question: "Are there any hidden fees or contracts?", answer: "No hidden fees, ever. Monthly plans have zero contracts. Quarterly and annual plans are prorated if you cancel early." },
-  { question: "How does the Price Lock Guarantee work?", answer: "Once you subscribe, your rate is locked for 12 months regardless of price changes. We notify you 30 days before any adjustments." },
-  { question: "How are the contractors vetted?", answer: "Every contractor is licensed, insured, and background-checked. We verify references and conduct ongoing quality audits." },
-  { question: "What if I'm not satisfied with a service?", answer: "We stand behind our work. If you're not happy, we'll send the contractor back to redo it at no extra cost. If the issue persists, we'll assign a different contractor." },
-  { question: "How is pricing calculated?", answer: "Pricing is based on your property size (home square footage and lot size), the services you select, and how frequently you need them. Use our Plan Builder to see exact pricing for your property." },
-  { question: "Can I add or remove services during my plan?", answer: "Absolutely. You can customize your service lineup anytime. Added services are prorated for the current billing period, and removed services take effect at the next cycle." },
-  { question: "Do you serve my area?", answer: "We currently serve 7 cities in the Okanagan Valley: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland. We're expanding soon to more BC cities." },
-  { question: "What payment methods do you accept?", answer: "We accept all major credit cards (Visa, Mastercard, American Express) and bank transfers. All payments are processed securely through Stripe." },
-  { question: "Is there a minimum commitment?", answer: "Monthly plans have zero commitment - cancel anytime. Quarterly plans have a 3-month minimum and annual plans a 12-month minimum, but both come with significant savings." },
-];
+const faqCategories = { general: "General" };
+const faqDataItems = {
+  general: [
+    { question: "Can I switch plans later?", answer: "Yes, upgrade or downgrade anytime. Upgrades are prorated so you only pay for what you use. Downgrades take effect at your next billing cycle." },
+    { question: "Are there any hidden fees or contracts?", answer: "No hidden fees, ever. Monthly plans have zero contracts. Quarterly and annual plans are prorated if you cancel early." },
+    { question: "How does the Price Lock Guarantee work?", answer: "Once you subscribe, your rate is locked for 12 months regardless of price changes. We notify you 30 days before any adjustments." },
+    { question: "How are the contractors vetted?", answer: "Every contractor is licensed, insured, and background-checked. We verify references and conduct ongoing quality audits." },
+    { question: "What if I'm not satisfied with a service?", answer: "We stand behind our work. If you're not happy, we'll send the contractor back to redo it at no extra cost. If the issue persists, we'll assign a different contractor." },
+    { question: "How is pricing calculated?", answer: "Pricing is based on your property size (home square footage and lot size), the services you select, and how frequently you need them. Use our Plan Builder to see exact pricing for your property." },
+    { question: "Can I add or remove services during my plan?", answer: "Absolutely. You can customize your service lineup anytime. Added services are prorated for the current billing period, and removed services take effect at the next cycle." },
+    { question: "Do you serve my area?", answer: "We currently serve 7 cities in the Okanagan Valley: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland. We're expanding soon to more BC cities." },
+    { question: "What payment methods do you accept?", answer: "We accept all major credit cards (Visa, Mastercard, American Express) and bank transfers. All payments are processed securely through Stripe." },
+    { question: "Is there a minimum commitment?", answer: "Monthly plans have zero commitment - cancel anytime. Quarterly plans have a 3-month minimum and annual plans a 12-month minimum, but both come with significant savings." },
+  ],
+};
 
 export default function PricingContent() {
   const [interval, setInterval] = useState<PlanInterval>("monthly");
@@ -261,6 +263,60 @@ export default function PricingContent() {
         </div>
       </section>
 
+      {/* Trust Milestones - DisplayCards */}
+      <section className="border-t bg-muted/20 py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
+              <div className="flex-1">
+                <DisplayCards
+                  cards={[
+                    {
+                      className:
+                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Home className="size-4 text-emerald-300" />,
+                      title: "200+ Homes Served",
+                      description: "Across the Okanagan Valley",
+                      date: "And growing",
+                      iconClassName: "text-emerald-500",
+                      titleClassName: "text-emerald-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Users className="size-4 text-sky-300" />,
+                      title: "50+ Contractors",
+                      description: "Vetted, licensed, and insured",
+                      date: "Okanagan-wide",
+                      iconClassName: "text-sky-500",
+                      titleClassName: "text-sky-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                      icon: <DollarSign className="size-4 text-amber-300" />,
+                      title: "$0 Hidden Fees",
+                      description: "Transparent pricing, always",
+                      date: "Guaranteed",
+                      iconClassName: "text-amber-500",
+                      titleClassName: "text-amber-500",
+                    },
+                  ]}
+                />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Trusted by Okanagan Homeowners
+                </h2>
+                <p className="mt-3 text-muted-foreground sm:text-lg">
+                  Real savings, real contractors, and zero surprises. Our members save 20-40% compared to managing services on their own.
+                </p>
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
+
       {/* Testimonials */}
       <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -279,16 +335,13 @@ export default function PricingContent() {
       <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title="Frequently Asked Questions" subtitle="Everything you need to know about our pricing." />
-          <div className="mt-6 sm:mt-8">
-            <Accordion type="single" collapsible className="w-full space-y-2">
-              {FAQ_ITEMS.map((item, index) => (
-                <AccordionItem key={index} value={`faq-${index}`} className="rounded-xl border bg-card px-4">
-                  <AccordionTrigger className="min-h-[44px] text-left text-sm font-semibold hover:no-underline sm:text-base">{item.question}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">{item.answer}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </div>
+          <FAQ
+            title=""
+            subtitle=""
+            categories={faqCategories}
+            faqData={faqDataItems}
+            className="w-full py-0"
+          />
         </div>
       </section>
     </div>

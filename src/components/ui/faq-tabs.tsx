@@ -45,11 +45,13 @@ export const FAQ = ({
       {...props}
     >
       <FAQHeader title={title} subtitle={subtitle} />
-      <FAQTabs
-        categories={categories}
-        selected={selectedCategory}
-        setSelected={setSelectedCategory}
-      />
+      {categoryKeys.length > 1 && (
+        <FAQTabs
+          categories={categories}
+          selected={selectedCategory}
+          setSelected={setSelectedCategory}
+        />
+      )}
       <FAQList faqData={faqData} selected={selectedCategory} />
     </section>
   )

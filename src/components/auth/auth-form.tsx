@@ -7,10 +7,9 @@ import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent } from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
-import { Home, Mail, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -26,17 +25,23 @@ function GoogleIcon({ className }: { className?: string }) {
 }
 
 interface AuthFormProps {
-  mode: "login" | "signup";
+  mode?: "login" | "signup";
+  /** When true, hides the outer full-screen wrapper (used inside modals) */
+  embedded?: boolean;
+  /** Callback fired after successful login (used by modal to close itself) */
+  onSuccess?: () => void;
 }
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode: initialMode = "login", embedded = false, onSuccess }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") || "/onboarding";
+  const [mode, setMode] = useState<"login" | "signup">(initialMode);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const supabase = createClient();
 
@@ -80,6 +85,8 @@ export function AuthForm({ mode }: AuthFormProps) {
           }
           router.refresh();
         }
+
+        onSuccess?.();
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Something went wrong";
@@ -106,6 +113,208 @@ export function AuthForm({ mode }: AuthFormProps) {
     }
   };
 
+  const formContent = (
+    <div className="w-full max-w-sm">
+      {/* Logo */}
+      <Link href="/" className="mx-auto mb-6 flex items-center justify-center gap-2.5">
+        <Image src="/icon-192.png" alt="My Home Plan" width={40} height={40} className="h-10 w-10" />
+        <span className="text-xl font-bold tracking-tight">My Home Plan</span>
+      </Link>
+
+      {/* Glassmorphic Card */}
+      <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/80 to-card/40 p-6 shadow-xl backdrop-blur-xl sm:p-8">
+        {/* Header */}
+        <div className="mb-6 text-center">
+          <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
+            {mode === "login" ? "Welcome back" : "Create your account"}
+          </h1>
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {mode === "login"
+              ? "Sign in to manage your home services"
+              : "Get started with your home service plan"}
+          </p>
+        </div>
+
+        {/* Google OAuth */}
+        <Button
+          variant="outline"
+          className="h-12 w-full gap-2.5 rounded-xl border-border/60 bg-background/50 text-sm font-medium transition-all hover:bg-background/80 hover:shadow-sm"
+          onClick={handleGoogleAuth}
+          disabled={googleLoading}
+        >
+          {googleLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <GoogleIcon className="h-5 w-5" />
+          )}
+          Continue with Google
+        </Button>
+
+        {/* OR Divider */}
+        <div className="relative my-6 flex items-center">
+          <div className="flex-1 border-t border-border/40" />
+          <span className="mx-4 flex h-7 items-center rounded-full bg-muted/60 px-3 text-[11px] font-semibold uppercase tracking-widest text-muted-foreground">
+            OR
+          </span>
+          <div className="flex-1 border-t border-border/40" />
+        </div>
+
+        {/* Email + Password Form */}
+        <form onSubmit={handleEmailAuth} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="auth-email" className="text-xs font-medium text-muted-foreground">
+              Email
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+              <Input
+                id="auth-email"
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                className="h-12 rounded-xl border-border/40 bg-muted/50 pl-10 text-sm transition-all focus-visible:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                required
+              />
+            </div>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="auth-password" className="text-xs font-medium text-muted-foreground">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+              <Input
+                id="auth-password"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder={mode === "signup" ? "Create a password (min 6 chars)" : "Your password"}
+                className="h-12 rounded-xl border-border/40 bg-muted/50 pl-10 pr-10 text-sm transition-all focus-visible:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                required
+                minLength={6}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/60 transition-colors hover:text-muted-foreground"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+          </div>
+
+          {mode === "login" && (
+            <div className="flex justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary"
+              >
+                Forgot password?
+              </Link>
+            </div>
+          )}
+
+          <Button
+            type="submit"
+            className="h-12 w-full rounded-full text-sm font-semibold shadow-lg shadow-primary/25 transition-all hover:shadow-xl hover:shadow-primary/30"
+            disabled={loading}
+          >
+            {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            {mode === "login" ? "Sign in" : "Create account"}
+          </Button>
+        </form>
+
+        {/* Mode Toggle */}
+        <p className="mt-6 text-center text-sm text-muted-foreground">
+          {mode === "login" ? (
+            <>
+              Don&apos;t have an account?{" "}
+              {embedded ? (
+                <button
+                  type="button"
+                  onClick={() => setMode("signup")}
+                  className="font-semibold text-primary transition-colors hover:text-primary/80"
+                >
+                  Sign up
+                </button>
+              ) : (
+                <Link href="/signup" className="font-semibold text-primary transition-colors hover:text-primary/80">
+                  Sign up
+                </Link>
+              )}
+            </>
+          ) : (
+            <>
+              Already have an account?{" "}
+              {embedded ? (
+                <button
+                  type="button"
+                  onClick={() => setMode("login")}
+                  className="font-semibold text-primary transition-colors hover:text-primary/80"
+                >
+                  Sign in
+                </button>
+              ) : (
+                <Link href="/login" className="font-semibold text-primary transition-colors hover:text-primary/80">
+                  Sign in
+                </Link>
+              )}
+            </>
+          )}
+        </p>
+      </div>
+
+      {/* Social Proof */}
+      <div className="mt-6 flex flex-col items-center gap-2.5">
+        <div className="flex -space-x-2">
+          {[
+            "bg-emerald-500",
+            "bg-sky-500",
+            "bg-amber-500",
+            "bg-rose-500",
+            "bg-violet-500",
+          ].map((color, i) => (
+            <div
+              key={i}
+              className={cn(
+                "flex h-7 w-7 items-center justify-center rounded-full border-2 border-background text-[10px] font-bold text-white",
+                color
+              )}
+            >
+              {String.fromCharCode(65 + i)}
+            </div>
+          ))}
+          <div className="flex h-7 w-7 items-center justify-center rounded-full border-2 border-background bg-muted text-[10px] font-semibold text-muted-foreground">
+            +
+          </div>
+        </div>
+        <p className="text-xs font-medium text-muted-foreground">
+          Join <span className="text-foreground">200+</span> Okanagan homeowners
+        </p>
+      </div>
+
+      {/* Terms */}
+      <p className="mt-4 text-center text-[11px] leading-relaxed text-muted-foreground/70">
+        By continuing, you agree to our{" "}
+        <Link href="/terms" className="underline transition-colors hover:text-foreground">
+          Terms of Service
+        </Link>{" "}
+        and{" "}
+        <Link href="/privacy" className="underline transition-colors hover:text-foreground">
+          Privacy Policy
+        </Link>
+      </p>
+    </div>
+  );
+
+  // If embedded (inside a modal), skip the full-screen wrapper + animations
+  if (embedded) {
+    return formContent;
+  }
+
   return (
     <div className="flex min-h-screen items-center justify-center px-4 py-12">
       <motion.div
@@ -114,126 +323,7 @@ export function AuthForm({ mode }: AuthFormProps) {
         transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
         className="w-full max-w-sm"
       >
-        {/* Logo */}
-        <Link href="/" className="mx-auto mb-8 flex items-center justify-center gap-2">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-            <Home className="h-5 w-5 text-primary-foreground" />
-          </div>
-          <span className="text-xl font-bold tracking-tight">My Home Plan</span>
-        </Link>
-
-        <Card>
-          <CardContent className="p-6">
-            <h1 className="text-center text-xl font-bold">
-              {mode === "login" ? "Welcome back" : "Create your account"}
-            </h1>
-            <p className="mt-1 text-center text-sm text-muted-foreground">
-              {mode === "login"
-                ? "Sign in to manage your home services"
-                : "Get started with your home service plan"}
-            </p>
-
-            {/* Google OAuth */}
-            <Button
-              variant="outline"
-              className="mt-6 h-11 w-full gap-2"
-              onClick={handleGoogleAuth}
-              disabled={googleLoading}
-            >
-              {googleLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <GoogleIcon className="h-4 w-4" />
-              )}
-              Continue with Google
-            </Button>
-
-            <div className="relative my-6">
-              <Separator />
-              <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                or
-              </span>
-            </div>
-
-            {/* Email + Password */}
-            <form onSubmit={handleEmailAuth} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="email">Email</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
-                    className="h-11 pl-9"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder={mode === "signup" ? "Create a password (min 6 chars)" : "Your password"}
-                  className="h-11"
-                  required
-                  minLength={6}
-                />
-              </div>
-
-              <Button type="submit" className="h-11 w-full" disabled={loading}>
-                {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {mode === "login" ? "Sign in" : "Create account"}
-              </Button>
-
-              {mode === "login" && (
-                <div className="mt-2 text-center">
-                  <Link
-                    href="/forgot-password"
-                    className="text-sm text-muted-foreground hover:text-primary hover:underline"
-                  >
-                    Forgot your password?
-                  </Link>
-                </div>
-              )}
-            </form>
-
-            <p className="mt-6 text-center text-sm text-muted-foreground">
-              {mode === "login" ? (
-                <>
-                  Don&apos;t have an account?{" "}
-                  <Link href="/signup" className="font-medium text-primary hover:underline">
-                    Sign up
-                  </Link>
-                </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <Link href="/login" className="font-medium text-primary hover:underline">
-                    Sign in
-                  </Link>
-                </>
-              )}
-            </p>
-          </CardContent>
-        </Card>
-
-        <p className="mt-4 text-center text-xs text-muted-foreground">
-          By continuing, you agree to our{" "}
-          <Link href="/terms" className="underline hover:text-foreground">
-            Terms of Service
-          </Link>{" "}
-          and{" "}
-          <Link href="/privacy" className="underline hover:text-foreground">
-            Privacy Policy
-          </Link>
-        </p>
+        {formContent}
       </motion.div>
     </div>
   );

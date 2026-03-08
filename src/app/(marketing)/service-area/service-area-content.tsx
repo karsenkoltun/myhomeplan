@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
 import {
   FadeIn,
   StaggerContainer,
   StaggerItem,
   GlowCard,
-  ShimmerButton,
 } from "@/components/ui/motion";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
@@ -17,6 +16,22 @@ import {
   MarqueeCityItem,
 } from "@/components/marketing/infinite-marquee";
 import { CheckCircle2, MapPin, ArrowRight, Clock } from "lucide-react";
+
+const ServiceMap = dynamic(() => import("@/components/ui/service-map"), {
+  ssr: false,
+  loading: () => (
+    <div className="flex h-[400px] items-center justify-center rounded-2xl border bg-muted/20 sm:h-[500px]">
+      <div className="flex flex-col items-center gap-2 text-muted-foreground">
+        <MapPin className="h-8 w-8 animate-pulse" />
+        <span className="text-sm">Loading map...</span>
+      </div>
+    </div>
+  ),
+});
+
+const ExpandMap = dynamic(() => import("@/components/ui/expand-map"), {
+  ssr: false,
+});
 
 const activeCities = [
   { name: "Kelowna", population: "150,000+", contractors: "Growing network" },
@@ -86,35 +101,20 @@ export default function ServiceAreaContent() {
         </StaggerContainer>
       </section>
 
-      {/* Map Area - Static representation */}
+      {/* Interactive Map */}
       <FadeIn delay={0.2}>
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <Card className="overflow-hidden">
-            <div className="relative flex h-64 items-center justify-center bg-gradient-to-br from-emerald-50 to-sky-50 dark:from-emerald-950/20 dark:to-sky-950/20 sm:h-96">
-              {/* Stylized map representation */}
-              <div className="absolute inset-0 opacity-10">
-                <div className="absolute left-[20%] top-[30%] h-32 w-32 rounded-full bg-primary/40 blur-3xl" />
-                <div className="absolute left-[50%] top-[40%] h-24 w-24 rounded-full bg-sky-500/40 blur-3xl" />
-                <div className="absolute left-[35%] top-[60%] h-28 w-28 rounded-full bg-emerald-500/40 blur-3xl" />
-              </div>
-              <div className="relative z-10 text-center">
-                <div className="mb-4 flex flex-wrap justify-center gap-2">
-                  {activeCities.map((city) => (
-                    <span
-                      key={city.name}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-background/80 px-3 py-1.5 text-xs font-medium shadow-sm backdrop-blur-sm sm:text-sm"
-                    >
-                      <span className="h-2 w-2 rounded-full bg-primary" />
-                      {city.name}
-                    </span>
-                  ))}
-                </div>
-                <p className="mt-4 text-sm text-muted-foreground sm:text-base">
-                  Covering the Okanagan Valley from Vernon to Penticton
-                </p>
-              </div>
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-primary" />
+              <h2 className="text-xl font-bold sm:text-2xl">Service Area</h2>
             </div>
-          </Card>
+            <ExpandMap />
+          </div>
+          <ServiceMap />
+          <p className="mt-3 text-center text-xs text-muted-foreground sm:text-sm">
+            Click any marker to see city details. Scroll to zoom is disabled - use the controls or pinch to zoom.
+          </p>
         </div>
       </FadeIn>
 

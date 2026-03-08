@@ -9,6 +9,7 @@ import { usePropertyStore } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { UserCircle } from "lucide-react";
+import { FileInput } from "@/components/ui/file-input";
 import { RequiredLabel, FieldError, type StepValidationRef } from "./shared";
 
 const provinces = ["AB", "BC", "MB", "NB", "NL", "NS", "NT", "NU", "ON", "PE", "QC", "SK", "YT"];
@@ -196,6 +197,44 @@ export const StepContractorPersonal = forwardRef<StepValidationRef>(function Ste
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Documents */}
+        <Card>
+          <CardContent className="p-5 sm:p-6">
+            <h3 className="mb-4 text-sm font-semibold text-muted-foreground uppercase tracking-wider">Documents</h3>
+            <p className="mb-4 text-xs text-muted-foreground">
+              Upload your credentials so homeowners know you are verified. These are optional during onboarding but may be required before accepting jobs.
+            </p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <FileInput
+                label="Business License"
+                description="Your municipal or provincial business license"
+                accept="image/*,.pdf"
+                maxSize={10}
+                onFileChange={(file) => {
+                  if (file) {
+                    (window as unknown as Record<string, unknown>).__mhp_businessLicense = file;
+                  } else {
+                    delete (window as unknown as Record<string, unknown>).__mhp_businessLicense;
+                  }
+                }}
+              />
+              <FileInput
+                label="Insurance Certificate"
+                description="Proof of liability or WCB coverage"
+                accept="image/*,.pdf"
+                maxSize={10}
+                onFileChange={(file) => {
+                  if (file) {
+                    (window as unknown as Record<string, unknown>).__mhp_insuranceCert = file;
+                  } else {
+                    delete (window as unknown as Record<string, unknown>).__mhp_insuranceCert;
+                  }
+                }}
+              />
             </div>
           </CardContent>
         </Card>

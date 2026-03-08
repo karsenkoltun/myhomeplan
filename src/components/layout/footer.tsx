@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Home } from "lucide-react";
+import Image from "next/image";
 
 const footerLinks = {
   Platform: [
@@ -37,9 +37,7 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 md:col-span-1">
             <Link href="/" className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-                <Home className="h-4 w-4 text-primary-foreground" />
-              </div>
+              <Image src="/icon-192.png" alt="My Home Plan" width={32} height={32} className="h-8 w-8" />
               <span className="font-bold">My Home Plan</span>
             </Link>
             <p className="mt-3 text-sm text-muted-foreground break-words">

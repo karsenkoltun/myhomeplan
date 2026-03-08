@@ -3,12 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FAQ } from "@/components/ui/faq-tabs";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { BentoGrid } from "@/components/marketing/bento-grid";
@@ -151,24 +146,27 @@ const howItWorks = [
   },
 ];
 
-const faqs = [
-  {
-    q: "How does portfolio pricing work?",
-    a: "Pricing is per-unit per month, based on property types, services selected, and total portfolio size. Larger portfolios get better per-unit rates. We provide a custom quote after understanding your specific needs.",
-  },
-  {
-    q: "Can I add properties to my plan over time?",
-    a: "Absolutely. Add new properties anytime. Your per-unit rate may actually decrease as your portfolio grows with us. We handle all onboarding for new properties.",
-  },
-  {
-    q: "How do you handle different property types?",
-    a: "We tailor services to each property type - residential, commercial, mixed-use. Each property gets a customized maintenance scope while you still get one consolidated bill.",
-  },
-  {
-    q: "What reporting do property owners get?",
-    a: "We provide detailed monthly reports showing services completed, costs, and upcoming schedules. You can pull these from your dashboard anytime or set up automatic owner reports.",
-  },
-];
+const faqCategories = { general: "General" };
+const faqData = {
+  general: [
+    {
+      question: "How does portfolio pricing work?",
+      answer: "Pricing is per-unit per month, based on property types, services selected, and total portfolio size. Larger portfolios get better per-unit rates. We provide a custom quote after understanding your specific needs.",
+    },
+    {
+      question: "Can I add properties to my plan over time?",
+      answer: "Absolutely. Add new properties anytime. Your per-unit rate may actually decrease as your portfolio grows with us. We handle all onboarding for new properties.",
+    },
+    {
+      question: "How do you handle different property types?",
+      answer: "We tailor services to each property type - residential, commercial, mixed-use. Each property gets a customized maintenance scope while you still get one consolidated bill.",
+    },
+    {
+      question: "What reporting do property owners get?",
+      answer: "We provide detailed monthly reports showing services completed, costs, and upcoming schedules. You can pull these from your dashboard anytime or set up automatic owner reports.",
+    },
+  ],
+};
 
 export function PropertyManagersContent() {
   return (
@@ -356,24 +354,13 @@ export function PropertyManagersContent() {
             title="Frequently Asked Questions"
             subtitle="Everything you need to know about managing your portfolio with My Home Plan."
           />
-          <FadeIn delay={0.1}>
-            <Accordion type="single" collapsible className="mt-8 space-y-2">
-              {faqs.map((faq, i) => (
-                <AccordionItem
-                  key={i}
-                  value={`faq-${i}`}
-                  className="rounded-xl border bg-card px-4"
-                >
-                  <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">
-                    {faq.q}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">
-                    {faq.a}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </FadeIn>
+          <FAQ
+            title=""
+            subtitle=""
+            categories={faqCategories}
+            faqData={faqData}
+            className="w-full py-0"
+          />
         </div>
       </section>
 

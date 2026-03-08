@@ -417,6 +417,17 @@ export async function getBookingsForProperty(propertyId: string) {
   return data ?? [];
 }
 
+export async function getBookingsForProperties(propertyIds: string[]) {
+  if (propertyIds.length === 0) return [];
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("*")
+    .in("property_id", propertyIds)
+    .order("scheduled_date", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
 export async function getBookingsForContractor(contractorProfileId: string) {
   const { data, error } = await supabase()
     .from("service_bookings")

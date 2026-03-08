@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
+import ContactTestimonials from "./contact-testimonials";
+import ContactMap from "./contact-map";
 
 export const metadata: Metadata = {
   title: "Contact Us | My Home Plan",
@@ -82,6 +84,32 @@ export default function ContactPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Service Area Map */}
+      <div className="mt-12">
+        <h2 className="text-center text-xl font-bold sm:text-2xl">
+          Our Service Area
+        </h2>
+        <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted-foreground">
+          Currently serving 7 cities across the Okanagan Valley, BC.
+        </p>
+        <div className="mt-6">
+          <ContactMap />
+        </div>
+      </div>
+
+      {/* Testimonials */}
+      <div className="mt-16">
+        <h2 className="text-center text-xl font-bold sm:text-2xl">
+          Trusted Across the Okanagan
+        </h2>
+        <p className="mx-auto mt-2 max-w-lg text-center text-sm text-muted-foreground">
+          Hear from homeowners and contractors who use My Home Plan.
+        </p>
+        <div className="mt-8">
+          <ContactTestimonials />
+        </div>
       </div>
 
       <div className="mt-16">

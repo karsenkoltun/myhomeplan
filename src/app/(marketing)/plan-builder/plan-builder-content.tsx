@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
 import {
   Select,
   SelectContent,
@@ -15,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -36,6 +38,7 @@ import {
   ArrowRight,
   Receipt,
   TrendingDown,
+  AlertTriangle,
   type LucideIcon,
   Armchair,
   ShoppingCart,
@@ -63,6 +66,7 @@ export default function PlanBuilderContent() {
   const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set());
   const [planInterval, setPlanInterval] = useState<PlanInterval>("monthly");
   const [mobileReceiptOpen, setMobileReceiptOpen] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   const toggleService = (id: string) => {
     setSelectedServices((prev) => {
@@ -71,6 +75,8 @@ export default function PlanBuilderContent() {
       else next.add(id);
       return next;
     });
+    // Clear the "no services" error when a service is selected
+    if (validationError) setValidationError(null);
   };
 
   const receipt = useMemo(() => {
@@ -116,31 +122,65 @@ export default function PlanBuilderContent() {
               <CardHeader className="pb-3 sm:pb-4">
                 <CardTitle className="text-base sm:text-lg">Property Details</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-4 sm:grid-cols-2 sm:gap-6">
-                <div className="space-y-2">
-                  <Label htmlFor="property-size" className="text-sm">Home Size (sq ft)</Label>
-                  <Input
-                    id="property-size"
-                    type="number"
-                    inputMode="numeric"
-                    value={propertySqft}
-                    onChange={(e) => setPropertySqft(Number(e.target.value))}
-                    min={0}
-                    className="h-11"
+              <CardContent className="grid gap-6 sm:grid-cols-2 sm:gap-8">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="property-size" className="text-sm">Home Size</Label>
+                    <div className="flex items-center gap-1">
+                      <Input
+                        id="property-size"
+                        inputMode="numeric"
+                        value={propertySqft}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (!isNaN(v)) setPropertySqft(Math.max(0, v));
+                        }}
+                        className="w-24 text-right h-9"
+                      />
+                      <span className="text-sm text-muted-foreground">sq ft</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={[Math.min(Math.max(propertySqft, 500), 10000)]}
+                    onValueChange={([v]) => setPropertySqft(v)}
+                    min={500}
+                    max={10000}
+                    step={100}
                   />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>500 sq ft</span>
+                    <span>10,000 sq ft</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">Affects indoor service pricing</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="lot-size" className="text-sm">Lot Size (sq ft)</Label>
-                  <Input
-                    id="lot-size"
-                    type="number"
-                    inputMode="numeric"
-                    value={lotSqft}
-                    onChange={(e) => setLotSqft(Number(e.target.value))}
-                    min={0}
-                    className="h-11"
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="lot-size" className="text-sm">Lot Size</Label>
+                    <div className="flex items-center gap-1">
+                      <Input
+                        id="lot-size"
+                        inputMode="numeric"
+                        value={lotSqft}
+                        onChange={(e) => {
+                          const v = Number(e.target.value);
+                          if (!isNaN(v)) setLotSqft(Math.max(0, v));
+                        }}
+                        className="w-24 text-right h-9"
+                      />
+                      <span className="text-sm text-muted-foreground">sq ft</span>
+                    </div>
+                  </div>
+                  <Slider
+                    value={[Math.min(Math.max(lotSqft, 1000), 50000)]}
+                    onValueChange={([v]) => setLotSqft(v)}
+                    min={1000}
+                    max={50000}
+                    step={500}
                   />
+                  <div className="flex justify-between text-xs text-muted-foreground">
+                    <span>1,000 sq ft</span>
+                    <span>50,000 sq ft</span>
+                  </div>
                   <p className="text-xs text-muted-foreground">Affects outdoor service pricing</p>
                 </div>
               </CardContent>
@@ -234,6 +274,19 @@ export default function PlanBuilderContent() {
               planInterval={planInterval}
               setPlanInterval={setPlanInterval}
               selectedCount={selectedServices.size}
+              validationError={validationError}
+              onGetStarted={() => {
+                if (selectedServices.size === 0) {
+                  setValidationError("Please select at least one service to build your plan");
+                  return;
+                }
+                if (!propertySqft || !lotSqft) {
+                  setValidationError("Please enter your property and lot size to calculate pricing");
+                  return;
+                }
+                setValidationError(null);
+                // proceed with get started action
+              }}
             />
           </div>
         </div>
@@ -262,6 +315,18 @@ export default function PlanBuilderContent() {
                   planInterval={planInterval}
                   setPlanInterval={setPlanInterval}
                   selectedCount={selectedServices.size}
+                  validationError={validationError}
+                  onGetStarted={() => {
+                    if (selectedServices.size === 0) {
+                      setValidationError("Please select at least one service to build your plan");
+                      return;
+                    }
+                    if (!propertySqft || !lotSqft) {
+                      setValidationError("Please enter your property and lot size to calculate pricing");
+                      return;
+                    }
+                    setValidationError(null);
+                  }}
                   isMobile
                 />
               </div>
@@ -302,8 +367,20 @@ export default function PlanBuilderContent() {
               </button>
               <Button
                 size="lg"
-                disabled={selectedServices.size === 0}
                 className="shrink-0"
+                onClick={() => {
+                  if (selectedServices.size === 0) {
+                    setValidationError("Please select at least one service to build your plan");
+                    setMobileReceiptOpen(true);
+                    return;
+                  }
+                  if (!propertySqft || !lotSqft) {
+                    setValidationError("Please enter your property and lot size to calculate pricing");
+                    setMobileReceiptOpen(true);
+                    return;
+                  }
+                  setValidationError(null);
+                }}
               >
                 Get Started
               </Button>
@@ -323,6 +400,8 @@ function ReceiptPanel({
   planInterval,
   setPlanInterval,
   selectedCount,
+  validationError,
+  onGetStarted,
   isMobile = false,
 }: {
   receipt: {
@@ -337,6 +416,8 @@ function ReceiptPanel({
   planInterval: PlanInterval;
   setPlanInterval: (v: PlanInterval) => void;
   selectedCount: number;
+  validationError: string | null;
+  onGetStarted: () => void;
   isMobile?: boolean;
 }) {
   const Wrapper = isMobile ? "div" : Card;
@@ -475,7 +556,22 @@ function ReceiptPanel({
 
         {!isMobile && (
           <>
-            <Button className="mt-6 w-full" size="lg" disabled={selectedCount === 0}>
+            <AnimatePresence>
+              {validationError && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-4"
+                >
+                  <Alert variant="warning" icon={<AlertTriangle className="h-4 w-4" />}>
+                    <AlertDescription>{validationError}</AlertDescription>
+                  </Alert>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            <Button className="mt-4 w-full" size="lg" onClick={onGetStarted}>
               Get Started
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -483,6 +579,17 @@ function ReceiptPanel({
               No commitment - cancel anytime on monthly plans
             </p>
           </>
+        )}
+        {isMobile && validationError && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-4"
+          >
+            <Alert variant="warning" icon={<AlertTriangle className="h-4 w-4" />}>
+              <AlertDescription>{validationError}</AlertDescription>
+            </Alert>
+          </motion.div>
         )}
       </div>
     </>

@@ -5,10 +5,12 @@ import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useUserStore } from "@/stores/user-store";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { User } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { User, AlertTriangle } from "lucide-react";
 import { RequiredLabel, FieldError, type StepValidationRef } from "./shared";
 
 const personalInfoSchema = z.object({
@@ -28,6 +30,7 @@ export const StepPersonalInfo = forwardRef<StepValidationRef>(function StepPerso
   const [preferredContact, setPreferredContact] = useState<"email" | "phone" | "text">(account?.preferredContact || "email");
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [shaking, setShaking] = useState(false);
+  const [validationAlert, setValidationAlert] = useState<string | null>(null);
 
   const validate = useCallback(() => {
     const result = personalInfoSchema.safeParse({ firstName, lastName, email, phone });
@@ -35,17 +38,24 @@ export const StepPersonalInfo = forwardRef<StepValidationRef>(function StepPerso
     if (!result.success) {
       const fieldErrors = result.error.flatten().fieldErrors;
       const mapped: Record<string, string> = {};
+      const missing: string[] = [];
       for (const [key, msgs] of Object.entries(fieldErrors)) {
-        if (msgs && msgs.length > 0) mapped[key] = msgs[0];
+        if (msgs && msgs.length > 0) {
+          mapped[key] = msgs[0];
+          const labels: Record<string, string> = { firstName: "first name", lastName: "last name", email: "email", phone: "phone number" };
+          missing.push(labels[key] || key);
+        }
       }
       setErrors(mapped);
       setShaking(true);
       setTimeout(() => setShaking(false), 500);
+      setValidationAlert(`Please provide your ${missing.join(", ")}`);
       toast.error("Please fill in all required fields");
       return false;
     }
 
     setErrors({});
+    setValidationAlert(null);
     setAccount({
       ...(account || {
         dateOfBirth: "",
@@ -76,6 +86,8 @@ export const StepPersonalInfo = forwardRef<StepValidationRef>(function StepPerso
       setErrors((prev) => {
         const next = { ...prev };
         delete next[field];
+        // Clear the alert when all field errors are resolved
+        if (Object.keys(next).length === 0) setValidationAlert(null);
         return next;
       });
     }
@@ -90,6 +102,22 @@ export const StepPersonalInfo = forwardRef<StepValidationRef>(function StepPerso
         <h2 className="text-center text-2xl font-bold sm:text-3xl">About You</h2>
         <p className="mt-2 text-center text-muted-foreground">Let's start with your basic information.</p>
       </div>
+
+      <AnimatePresence>
+        {validationAlert && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-6"
+          >
+            <Alert variant="warning" icon={<AlertTriangle className="h-4 w-4" />}>
+              <AlertDescription>{validationAlert}</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={cn("mt-8 space-y-6", shaking && "animate-shake")}>
         <Card>

@@ -62,6 +62,7 @@ import {
   Droplets,
   PaintBucket,
   Wind,
+  Flower2,
 } from "lucide-react";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -131,6 +132,17 @@ const marqueeServices = [
   { icon: Droplets, label: "Pressure Washing", color: "text-blue-500" },
   { icon: Wind, label: "Gutter Cleaning", color: "text-teal-500" },
   { icon: PaintBucket, label: "Painting", color: "text-pink-500" },
+];
+
+const contractorNetwork = [
+  { icon: Wrench, label: "Licensed Plumbers", color: "text-blue-500" },
+  { icon: Thermometer, label: "Certified HVAC Technicians", color: "text-red-500" },
+  { icon: Zap, label: "Insured Electricians", color: "text-yellow-500" },
+  { icon: Flower2, label: "Professional Landscapers", color: "text-green-500" },
+  { icon: Home, label: "Expert Roofers", color: "text-orange-500" },
+  { icon: Sparkles, label: "Certified Cleaners", color: "text-purple-500" },
+  { icon: Snowflake, label: "Snow Removal Pros", color: "text-cyan-500" },
+  { icon: Bug, label: "Pest Control Experts", color: "text-amber-500" },
 ];
 
 const steps = [
@@ -343,6 +355,30 @@ export default function HomePage() {
             </Button>
           </div>
         </FadeIn>
+      </section>
+
+      {/* ══════════ TRUSTED CONTRACTOR NETWORK ══════════ */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Vetted & Certified"
+            badgeColor="emerald"
+            title="Our Trusted Contractor Network"
+            subtitle="Every contractor is licensed, insured, and background-checked before joining our network."
+          />
+        </div>
+        <div className="mt-8 sm:mt-10">
+          <InfiniteMarquee speed={40} direction="right">
+            {contractorNetwork.map((c) => (
+              <MarqueeServiceItem
+                key={c.label}
+                icon={c.icon}
+                label={c.label}
+                color={c.color}
+              />
+            ))}
+          </InfiniteMarquee>
+        </div>
       </section>
 
       {/* ══════════ COST COMPARISON ══════════ */}

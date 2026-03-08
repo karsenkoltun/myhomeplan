@@ -8,6 +8,7 @@ import {
   endOfWeek,
   format,
   getDay,
+  isBefore,
   isEqual,
   isSameDay,
   isSameMonth,
@@ -28,20 +29,23 @@ import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { useMediaQuery } from "@/hooks/use-media-query"
 
-interface CalendarEvent {
+export interface CalendarEvent {
   id: number
   name: string
   time: string
   datetime: string
 }
 
-interface CalendarData {
+export interface CalendarData {
   day: Date
   events: CalendarEvent[]
 }
 
 interface FullScreenCalendarProps {
   data: CalendarData[]
+  onDateSelect?: (date: Date) => void
+  selectedDate?: Date | null
+  disablePastDates?: boolean
 }
 
 const colStartClasses = [
@@ -54,9 +58,14 @@ const colStartClasses = [
   "col-start-7",
 ]
 
-export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
+export function FullScreenCalendar({ data, onDateSelect, selectedDate, disablePastDates }: FullScreenCalendarProps) {
   const today = startOfToday()
-  const [selectedDay, setSelectedDay] = React.useState(today)
+  const [selectedDay, setSelectedDay] = React.useState(selectedDate ?? today)
+
+  // Sync external selectedDate prop
+  React.useEffect(() => {
+    if (selectedDate) setSelectedDay(selectedDate)
+  }, [selectedDate])
   const [currentMonth, setCurrentMonth] = React.useState(
     format(today, "MMM-yyyy"),
   )
@@ -80,6 +89,16 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
 
   function goToToday() {
     setCurrentMonth(format(today, "MMM-yyyy"))
+  }
+
+  function handleDayClick(day: Date) {
+    if (disablePastDates && isBefore(day, today)) return
+    setSelectedDay(day)
+    onDateSelect?.(day)
+  }
+
+  function isDayDisabled(day: Date) {
+    return disablePastDates ? isBefore(day, today) : false
   }
 
   return (
@@ -175,7 +194,8 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
             {days.map((day, dayIdx) =>
               !isDesktop ? (
                 <button
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => handleDayClick(day)}
+                  disabled={isDayDisabled(day)}
                   key={dayIdx}
                   type="button"
                   className={cn(
@@ -190,6 +210,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                       "text-muted-foreground",
                     (isEqual(day, selectedDay) || isToday(day)) &&
                       "font-semibold",
+                    isDayDisabled(day) && "cursor-not-allowed opacity-40",
                     "flex h-14 flex-col border-b border-r px-3 py-2 hover:bg-muted focus:z-10",
                   )}
                 >
@@ -231,7 +252,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
               ) : (
                 <div
                   key={dayIdx}
-                  onClick={() => setSelectedDay(day)}
+                  onClick={() => handleDayClick(day)}
                   className={cn(
                     dayIdx === 0 && colStartClasses[getDay(day)],
                     !isEqual(day, selectedDay) &&
@@ -240,6 +261,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                       "bg-accent/50 text-muted-foreground",
                     "relative flex flex-col border-b border-r hover:bg-muted focus:z-10",
                     !isEqual(day, selectedDay) && "hover:bg-accent/75",
+                    isDayDisabled(day) && "cursor-not-allowed opacity-40",
                   )}
                 >
                   <header className="flex items-center justify-between p-2.5">
@@ -305,7 +327,8 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
           <div className="isolate grid w-full grid-cols-7 grid-rows-5 border-x lg:hidden">
             {days.map((day, dayIdx) => (
               <button
-                onClick={() => setSelectedDay(day)}
+                onClick={() => handleDayClick(day)}
+                disabled={isDayDisabled(day)}
                 key={dayIdx}
                 type="button"
                 className={cn(
@@ -319,6 +342,7 @@ export function FullScreenCalendar({ data }: FullScreenCalendarProps) {
                     !isSameMonth(day, firstDayCurrentMonth) &&
                     "text-muted-foreground",
                   (isEqual(day, selectedDay) || isToday(day)) && "font-semibold",
+                  isDayDisabled(day) && "cursor-not-allowed opacity-40",
                   "flex h-14 flex-col border-b border-r px-3 py-2 hover:bg-muted focus:z-10",
                 )}
               >

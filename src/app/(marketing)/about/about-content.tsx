@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import {
   FadeIn,
@@ -26,6 +27,11 @@ import {
   Mail,
   Home,
 } from "lucide-react";
+
+const Testimonials3D = dynamic(
+  () => import("@/components/marketing/testimonials-3d").then((mod) => ({ default: mod.Testimonials3D })),
+  { ssr: false }
+);
 
 const values = [
   { icon: Heart, title: "Fair for Everyone", description: "Contractors deserve fair pay. Homeowners deserve fair prices. Our model ensures both sides win.", color: "text-rose-500", bg: "bg-rose-500/10" },
@@ -164,6 +170,21 @@ export default function AboutContent() {
               </StaggerItem>
             ))}
           </StaggerContainer>
+        </div>
+      </section>
+
+      {/* Testimonials */}
+      <section className="border-t bg-muted/20 py-16 sm:py-20">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            title="What People Are Saying"
+            subtitle="Homeowners and contractors across the Okanagan trust My Home Plan."
+          />
+          <FadeIn delay={0.2}>
+            <div className="mt-8 sm:mt-10">
+              <Testimonials3D audience="all" maxItems={3} />
+            </div>
+          </FadeIn>
         </div>
       </section>
 

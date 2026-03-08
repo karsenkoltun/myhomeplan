@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -24,6 +25,7 @@ import {
   getRecentActivity,
   getServiceCredits,
 } from "@/lib/supabase/queries";
+import { parseISO } from "date-fns";
 import { SERVICES, PLAN_DISCOUNTS, PLAN_TIERS } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
 import { DashboardShell } from "./dashboard-shell";
@@ -34,6 +36,15 @@ import { ActivityFeed } from "./activity-feed";
 import { CreditBalance } from "./credit-balance";
 import { FadeIn, SpringNumber } from "@/components/ui/motion";
 import type { Database } from "@/lib/supabase/types";
+import type { CalendarData } from "@/components/ui/fullscreen-calendar";
+
+const FullScreenCalendar = dynamic(
+  () =>
+    import("@/components/ui/fullscreen-calendar").then((mod) => ({
+      default: mod.FullScreenCalendar,
+    })),
+  { ssr: false }
+);
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
@@ -129,6 +140,24 @@ export function HomeownerDashboard({
     (b) => b.status !== "completed" && b.status !== "cancelled"
   );
   const completedCount = bookings.filter((b) => b.status === "completed").length;
+
+  // Map bookings to calendar events for the FullScreenCalendar
+  const calendarData: CalendarData[] = useMemo(() => {
+    return bookings
+      .filter((b) => b.status !== "cancelled")
+      .map((b) => {
+        const serviceName = SERVICES.find((s) => s.id === b.service_id)?.name ?? b.service_id;
+        return {
+          day: parseISO(b.scheduled_date),
+          events: [{
+            id: Math.random(),
+            name: serviceName,
+            time: b.scheduled_time,
+            datetime: b.scheduled_date,
+          }],
+        };
+      });
+  }, [bookings]);
 
   return (
     <DashboardShell
@@ -274,6 +303,26 @@ export function HomeownerDashboard({
             </Card>
           </FadeIn>
         )}
+
+        {/* Service Calendar */}
+        <FadeIn delay={0.36} className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-base">Service Calendar</CardTitle>
+                {upcomingBookings.length > 0 && (
+                  <Badge variant="secondary" className="ml-auto text-[10px]">
+                    {upcomingBookings.length} upcoming
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <FullScreenCalendar data={calendarData} />
+            </CardContent>
+          </Card>
+        </FadeIn>
 
         {/* Bookings */}
         <div className="md:col-span-2">

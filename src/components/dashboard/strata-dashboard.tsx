@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -8,14 +9,26 @@ import {
   Building2, ClipboardList, DollarSign, Calendar, Users, Wrench,
   Shield, FileText, Flame, AlertTriangle,
 } from "lucide-react";
-import { getStrataProperty, getSubscriptionWithUsage } from "@/lib/supabase/queries";
+import { parseISO } from "date-fns";
+import { getStrataProperty, getSubscriptionWithUsage, getBookingsForProperty } from "@/lib/supabase/queries";
+import { SERVICES } from "@/data/services";
 import { DashboardShell } from "./dashboard-shell";
 import { StatCard } from "./stat-card";
 import { UsageOverview } from "./usage-overview";
 import { StrataServiceProviders } from "./strata-service-providers";
 import { FadeIn } from "@/components/ui/motion";
 import type { Database, Json } from "@/lib/supabase/types";
+import type { CalendarData } from "@/components/ui/fullscreen-calendar";
 
+const FullScreenCalendar = dynamic(
+  () =>
+    import("@/components/ui/fullscreen-calendar").then((mod) => ({
+      default: mod.FullScreenCalendar,
+    })),
+  { ssr: false }
+);
+
+type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 type StrataProperty = Database["public"]["Tables"]["strata_properties"]["Row"];
 
 interface CouncilContact {
@@ -42,6 +55,7 @@ export function StrataDashboard({
   profile: Record<string, unknown>;
 }) {
   const [strata, setStrata] = useState<StrataProperty | null>(null);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [usageData, setUsageData] = useState<{ serviceId: string; frequency: string; monthlyPrice: number; used: number }[]>([]);
   const [periodStart, setPeriodStart] = useState("");
   const [periodEnd, setPeriodEnd] = useState("");
@@ -52,6 +66,12 @@ export function StrataDashboard({
         const userId = profile.id as string;
         const data = await getStrataProperty(userId);
         setStrata(data);
+
+        // Load bookings for the strata property
+        if (data) {
+          const bookingsData = await getBookingsForProperty(data.id);
+          setBookings(bookingsData);
+        }
 
         const usage = await getSubscriptionWithUsage(userId);
         if (usage) {
@@ -72,6 +92,28 @@ export function StrataDashboard({
   const priorityAreas = (strata?.priority_areas as string[] | null) ?? [];
   const currentProviders = strata?.current_providers as Record<string, string> | null;
   const contractEndDates = strata?.current_contract_end_dates as Record<string, string> | null;
+
+  // Map bookings to calendar events
+  const calendarData: CalendarData[] = useMemo(() => {
+    return bookings
+      .filter((b) => b.status !== "cancelled")
+      .map((b) => {
+        const serviceName = SERVICES.find((s) => s.id === b.service_id)?.name ?? b.service_id;
+        return {
+          day: parseISO(b.scheduled_date),
+          events: [{
+            id: Math.random(),
+            name: serviceName,
+            time: b.scheduled_time,
+            datetime: b.scheduled_date,
+          }],
+        };
+      });
+  }, [bookings]);
+
+  const upcomingBookingCount = bookings.filter(
+    (b) => b.status !== "completed" && b.status !== "cancelled"
+  ).length;
 
   return (
     <DashboardShell
@@ -222,6 +264,26 @@ export function StrataDashboard({
             contractEndDates={contractEndDates}
           />
         </div>
+
+        {/* Maintenance Calendar */}
+        <FadeIn delay={0.34} className="md:col-span-2">
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-base">Maintenance Schedule</CardTitle>
+                {upcomingBookingCount > 0 && (
+                  <Badge variant="secondary" className="ml-auto text-[10px]">
+                    {upcomingBookingCount} scheduled
+                  </Badge>
+                )}
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <FullScreenCalendar data={calendarData} />
+            </CardContent>
+          </Card>
+        </FadeIn>
 
         {/* Priority Areas */}
         {priorityAreas.length > 0 && (

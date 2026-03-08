@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -24,9 +25,16 @@ import { ContractorClients } from "./contractor-clients";
 import { ContractorAvailability } from "./contractor-availability";
 import { ContractorCredentials } from "./contractor-credentials";
 import { FadeIn } from "@/components/ui/motion";
-import { FullScreenCalendar } from "@/components/ui/fullscreen-calendar";
 import { format, parseISO, isSameMonth, startOfToday } from "date-fns";
 import type { Database } from "@/lib/supabase/types";
+
+const FullScreenCalendar = dynamic(
+  () =>
+    import("@/components/ui/fullscreen-calendar").then((mod) => ({
+      default: mod.FullScreenCalendar,
+    })),
+  { ssr: false }
+);
 
 type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 type ContractorProfile = Database["public"]["Tables"]["contractor_profiles"]["Row"];

@@ -1,17 +1,20 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import dynamic from "next/dynamic";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
-  Building, Home, DollarSign, ClipboardList, Users, MapPin,
+  Building, Home, DollarSign, ClipboardList, Users, MapPin, Calendar,
   CheckCircle2, XCircle, Bell, FileText, Building2, UserPlus,
 } from "lucide-react";
+import { parseISO } from "date-fns";
 import {
   getPMCompany,
   getPMContacts,
   getPMManagedProperties,
+  getBookingsForProperties,
 } from "@/lib/supabase/queries";
 import { SERVICES } from "@/data/services";
 import { DashboardShell } from "./dashboard-shell";
@@ -19,7 +22,17 @@ import { StatCard } from "./stat-card";
 import { PMBillingView } from "./pm-billing-view";
 import { FadeIn } from "@/components/ui/motion";
 import type { Database, Json } from "@/lib/supabase/types";
+import type { CalendarData } from "@/components/ui/fullscreen-calendar";
 
+const FullScreenCalendar = dynamic(
+  () =>
+    import("@/components/ui/fullscreen-calendar").then((mod) => ({
+      default: mod.FullScreenCalendar,
+    })),
+  { ssr: false }
+);
+
+type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 type PMCompany = Database["public"]["Tables"]["pm_companies"]["Row"];
 type PMContact = Database["public"]["Tables"]["pm_company_contacts"]["Row"];
 type PMProperty = Database["public"]["Tables"]["pm_managed_properties"]["Row"];
@@ -39,6 +52,7 @@ export function PMDashboard({
   const [company, setCompany] = useState<PMCompany | null>(null);
   const [contacts, setContacts] = useState<PMContact[]>([]);
   const [properties, setProperties] = useState<PMProperty[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
 
   useEffect(() => {
     async function load() {
@@ -52,6 +66,13 @@ export function PMDashboard({
           ]);
           setContacts(contactsData);
           setProperties(propsData);
+
+          // Load bookings across all managed properties
+          if (propsData.length > 0) {
+            const propertyIds = propsData.map((p) => p.id);
+            const bookingsData = await getBookingsForProperties(propertyIds);
+            setBookings(bookingsData);
+          }
         }
       } catch {
         // silent
@@ -66,6 +87,30 @@ export function PMDashboard({
     const svcs = (p.selected_services as string[] | null) ?? [];
     return sum + svcs.length;
   }, 0);
+
+  // Map bookings to calendar events
+  const calendarData: CalendarData[] = useMemo(() => {
+    return bookings
+      .filter((b) => b.status !== "cancelled")
+      .map((b) => {
+        const prop = properties.find((p) => p.id === b.property_id);
+        const serviceName = SERVICES.find((s) => s.id === b.service_id)?.name ?? b.service_id;
+        const label = prop ? `${serviceName} - ${prop.property_name || prop.address}` : serviceName;
+        return {
+          day: parseISO(b.scheduled_date),
+          events: [{
+            id: Math.random(),
+            name: label,
+            time: b.scheduled_time,
+            datetime: b.scheduled_date,
+          }],
+        };
+      });
+  }, [bookings, properties]);
+
+  const upcomingBookingCount = bookings.filter(
+    (b) => b.status !== "completed" && b.status !== "cancelled"
+  ).length;
 
   return (
     <DashboardShell
@@ -179,6 +224,26 @@ export function PMDashboard({
           annualSpend={company?.annual_maintenance_spend ?? 0}
         />
       </div>
+
+      {/* Maintenance Calendar */}
+      <FadeIn delay={0.32}>
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base">Maintenance Calendar</CardTitle>
+              {upcomingBookingCount > 0 && (
+                <Badge variant="secondary" className="ml-auto text-[10px]">
+                  {upcomingBookingCount} scheduled
+                </Badge>
+              )}
+            </div>
+          </CardHeader>
+          <CardContent className="p-0">
+            <FullScreenCalendar data={calendarData} />
+          </CardContent>
+        </Card>
+      </FadeIn>
 
       {/* Team Permissions Table */}
       <FadeIn delay={0.35}>

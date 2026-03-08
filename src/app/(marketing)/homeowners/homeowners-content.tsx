@@ -3,12 +3,7 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FAQ } from "@/components/ui/faq-tabs";
 import {
   FadeIn,
   StaggerContainer,
@@ -21,6 +16,10 @@ import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
 import { BentoGrid } from "@/components/marketing/bento-grid";
+import {
+  InfiniteMarquee,
+  MarqueeServiceItem,
+} from "@/components/marketing/infinite-marquee";
 
 // Lazy-load heavy below-fold component
 const Testimonials3D = dynamic(
@@ -40,6 +39,13 @@ import {
   Receipt,
   Smile,
   Home,
+  Wrench,
+  Thermometer,
+  Zap,
+  Flower2,
+  Sparkles,
+  Snowflake,
+  Bug,
 } from "lucide-react";
 
 const painPoints = [
@@ -65,11 +71,25 @@ const howItWorks = [
   { step: "04", title: "Book services anytime", description: "Need something done? Open your dashboard, pick a date, done.", icon: Smile },
 ];
 
-const faqs = [
-  { q: "What services are included?", a: "15+ home maintenance services including lawn care, snow removal, HVAC tune-ups, house cleaning, window washing, gutter cleaning, pest control, plumbing inspections, electrical checks, pressure washing, painting, and handyman services." },
-  { q: "How does pricing work?", a: "Your price is calculated based on your specific property - home size, lot size, number of services, and frequency. No hidden fees. You see your exact monthly price before you subscribe." },
-  { q: "What if I'm not satisfied?", a: "We guarantee quality. If you're not satisfied, we'll send a different contractor to redo it at no additional cost." },
-  { q: "Is there a contract?", a: "No long-term contracts required. Cancel anytime. We offer monthly, quarterly (save 5%), and annual (save 15%) billing." },
+const faqCategories = { general: "General" };
+const faqData = {
+  general: [
+    { question: "What services are included?", answer: "15+ home maintenance services including lawn care, snow removal, HVAC tune-ups, house cleaning, window washing, gutter cleaning, pest control, plumbing inspections, electrical checks, pressure washing, painting, and handyman services." },
+    { question: "How does pricing work?", answer: "Your price is calculated based on your specific property - home size, lot size, number of services, and frequency. No hidden fees. You see your exact monthly price before you subscribe." },
+    { question: "What if I'm not satisfied?", answer: "We guarantee quality. If you're not satisfied, we'll send a different contractor to redo it at no additional cost." },
+    { question: "Is there a contract?", answer: "No long-term contracts required. Cancel anytime. We offer monthly, quarterly (save 5%), and annual (save 15%) billing." },
+  ],
+};
+
+const contractorNetwork = [
+  { icon: Wrench, label: "Licensed Plumbers", color: "text-blue-500" },
+  { icon: Thermometer, label: "Certified HVAC Technicians", color: "text-red-500" },
+  { icon: Zap, label: "Insured Electricians", color: "text-yellow-500" },
+  { icon: Flower2, label: "Professional Landscapers", color: "text-green-500" },
+  { icon: Home, label: "Expert Roofers", color: "text-orange-500" },
+  { icon: Sparkles, label: "Certified Cleaners", color: "text-purple-500" },
+  { icon: Snowflake, label: "Snow Removal Pros", color: "text-cyan-500" },
+  { icon: Bug, label: "Pest Control Experts", color: "text-amber-500" },
 ];
 
 export function HomeownersContent() {
@@ -141,8 +161,32 @@ export function HomeownersContent() {
         </div>
       </section>
 
+      {/* Vetted Contractor Network */}
+      <section className="border-y bg-muted/20 py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Vetted & Certified"
+            badgeColor="emerald"
+            title="Your Contractors Are Vetted"
+            subtitle="Every pro in our network is licensed, insured, and background-checked. No more quality roulette."
+          />
+        </div>
+        <div className="mt-8 sm:mt-10">
+          <InfiniteMarquee speed={40} direction="left">
+            {contractorNetwork.map((c) => (
+              <MarqueeServiceItem
+                key={c.label}
+                icon={c.icon}
+                label={c.label}
+                color={c.color}
+              />
+            ))}
+          </InfiniteMarquee>
+        </div>
+      </section>
+
       {/* How It Works */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
+      <section className="py-16 sm:py-20">
         <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
           <SectionHeader
             badge="Simple Process"
@@ -187,16 +231,13 @@ export function HomeownersContent() {
       <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader title="Frequently Asked Questions" />
-          <FadeIn delay={0.1}>
-            <Accordion type="single" collapsible className="mt-8 space-y-2">
-              {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`faq-${i}`} className="rounded-xl border bg-card px-4">
-                  <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">{faq.q}</AccordionTrigger>
-                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </FadeIn>
+          <FAQ
+            title=""
+            subtitle=""
+            categories={faqCategories}
+            faqData={faqData}
+            className="w-full py-0"
+          />
         </div>
       </section>
 

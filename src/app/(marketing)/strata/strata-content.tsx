@@ -54,12 +54,7 @@ import {
   ShieldCheck,
   PhoneCall,
 } from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { FAQ } from "@/components/ui/faq-tabs";
 
 const painPoints = [
   {
@@ -180,11 +175,14 @@ const pricingTiers = [
   },
 ];
 
-const faqItems = [
-  { q: "How does strata pricing work?", a: "Pricing is per-unit per month, based on the services selected and building size. Common areas and special features are factored into the per-unit rate." },
-  { q: "What's included in the contract?", a: "Everything is clearly outlined: service frequency, scope, pricing, and quality guarantees. No hidden fees or surprise charges." },
-  { q: "How do you handle emergencies?", a: "Mid-size and large building plans include emergency response. We coordinate emergency contractors and notify the strata manager." },
-];
+const faqCategories = { general: "General" };
+const faqDataItems = {
+  general: [
+    { question: "How does strata pricing work?", answer: "Pricing is per-unit per month, based on the services selected and building size. Common areas and special features are factored into the per-unit rate." },
+    { question: "What's included in the contract?", answer: "Everything is clearly outlined: service frequency, scope, pricing, and quality guarantees. No hidden fees or surprise charges." },
+    { question: "How do you handle emergencies?", answer: "Mid-size and large building plans include emergency response. We coordinate emergency contractors and notify the strata manager." },
+  ],
+};
 
 const guarantees = [
   { icon: Shield, title: "Quality Guarantee", description: "If any service doesn't meet your standards, we'll re-do it at no cost. Period." },
@@ -425,16 +423,13 @@ export function StrataContent() {
       <section className="border-y bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
           <SectionHeader badge="Questions?" badgeColor="emerald" title="Strata FAQ" />
-          <FadeIn delay={0.1}>
-            <Accordion type="single" collapsible className="mt-8 space-y-2">
-              {faqItems.map((faq, i) => (
-                <AccordionItem key={i} value={`strata-${i}`} className="rounded-xl border bg-card px-4">
-                  <AccordionTrigger className="text-left text-sm font-semibold hover:no-underline">{faq.q}</AccordionTrigger>
-                  <AccordionContent className="text-sm text-muted-foreground">{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </FadeIn>
+          <FAQ
+            title=""
+            subtitle=""
+            categories={faqCategories}
+            faqData={faqDataItems}
+            className="w-full py-0"
+          />
         </div>
       </section>
 

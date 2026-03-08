@@ -4,8 +4,9 @@ import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { FAQ } from "@/components/ui/faq-tabs";
 import { FadeIn, ShimmerButton } from "@/components/ui/motion";
+import DisplayCards from "@/components/ui/display-cards";
 import { FlowButton } from "@/components/ui/flow-button";
 import { SectionHeader } from "@/components/marketing/section-header";
 import { SocialProofBar } from "@/components/marketing/social-proof-bar";
@@ -22,7 +23,7 @@ import {
   ArrowRight, ArrowDown, Star, Briefcase, ClipboardCheck, Phone, Rocket,
   FileText, UserCheck, Scissors, Snowflake, Sparkles, Thermometer, Wrench,
   Zap, Bug, Hammer, Paintbrush, Sun, Check, X, Minus, ShieldCheck, Target,
-  CalendarClock,
+  CalendarClock, DollarSign, Flower2, Home,
 } from "lucide-react";
 
 // ---- Data ----
@@ -63,12 +64,26 @@ const timelineSteps = [
   { icon: Rocket, title: "Start Working", description: "Begin receiving job assignments in your service area.", timing: "Week 2-3" },
 ];
 
-const faqs = [
-  { q: "Is there really no cost to join?", a: "Zero. No sign-up fees, no monthly subscriptions, no hidden costs. We make money from the homeowner side, not from you." },
-  { q: "How do I get paid?", a: "Direct deposit every two weeks for completed jobs. Payment is guaranteed for every job you complete - no chasing invoices." },
-  { q: "Can I set my own schedule?", a: "Absolutely. You set your available days, hours, and weekly capacity. Need to block off a week? Just update your availability and we handle the rest." },
-  { q: "What area do you serve?", a: "Currently serving the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, and surrounding areas. We're expanding rapidly." },
+const networkTrades = [
+  { icon: Wrench, label: "Licensed Plumbers", color: "text-blue-500" },
+  { icon: Thermometer, label: "Certified HVAC Technicians", color: "text-red-500" },
+  { icon: Zap, label: "Insured Electricians", color: "text-yellow-500" },
+  { icon: Flower2, label: "Professional Landscapers", color: "text-green-500" },
+  { icon: Home, label: "Expert Roofers", color: "text-orange-500" },
+  { icon: Sparkles, label: "Certified Cleaners", color: "text-purple-500" },
+  { icon: Snowflake, label: "Snow Removal Pros", color: "text-cyan-500" },
+  { icon: Bug, label: "Pest Control Experts", color: "text-amber-500" },
 ];
+
+const faqCategories = { general: "General" };
+const faqData = {
+  general: [
+    { question: "Is there really no cost to join?", answer: "Zero. No sign-up fees, no monthly subscriptions, no hidden costs. We make money from the homeowner side, not from you." },
+    { question: "How do I get paid?", answer: "Direct deposit every two weeks for completed jobs. Payment is guaranteed for every job you complete - no chasing invoices." },
+    { question: "Can I set my own schedule?", answer: "Absolutely. You set your available days, hours, and weekly capacity. Need to block off a week? Just update your availability and we handle the rest." },
+    { question: "What area do you serve?", answer: "Currently serving the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, and surrounding areas. We're expanding rapidly." },
+  ],
+};
 
 // ---- Helpers ----
 
@@ -143,6 +158,60 @@ export function ContractorsContent() {
 
       {/* ==================== SOCIAL PROOF BAR ==================== */}
       <SocialProofBar />
+
+      {/* ==================== KEY BENEFITS - DISPLAY CARDS ==================== */}
+      <section className="py-16 sm:py-20">
+        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+          <FadeIn>
+            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
+              <div className="flex-1 text-center md:text-left">
+                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
+                  Built for Contractors Who Want More
+                </h2>
+                <p className="mt-3 text-muted-foreground sm:text-lg">
+                  No chasing leads, no unpaid invoices, no wasted ad spend. Just steady work from qualified homeowners.
+                </p>
+              </div>
+              <div className="flex-1">
+                <DisplayCards
+                  cards={[
+                    {
+                      className:
+                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <Target className="size-4 text-emerald-300" />,
+                      title: "Free Leads",
+                      description: "Qualified jobs sent to you at $0",
+                      date: "No pay-per-lead",
+                      iconClassName: "text-emerald-500",
+                      titleClassName: "text-emerald-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
+                      icon: <DollarSign className="size-4 text-sky-300" />,
+                      title: "Guaranteed Pay",
+                      description: "Every completed job, paid on time",
+                      date: "Bi-weekly deposits",
+                      iconClassName: "text-sky-500",
+                      titleClassName: "text-sky-500",
+                    },
+                    {
+                      className:
+                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+                      icon: <Zap className="size-4 text-amber-300" />,
+                      title: "Zero Marketing Costs",
+                      description: "We handle all customer acquisition",
+                      date: "You just do great work",
+                      iconClassName: "text-amber-500",
+                      titleClassName: "text-amber-500",
+                    },
+                  ]}
+                />
+              </div>
+            </div>
+          </FadeIn>
+        </div>
+      </section>
 
       {/* ==================== BENEFITS ==================== */}
       <section id="benefits" className="mx-auto max-w-7xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
@@ -275,6 +344,30 @@ export function ContractorsContent() {
         </div>
       </section>
 
+      {/* ==================== JOIN OUR NETWORK MARQUEE ==================== */}
+      <section className="border-y bg-muted/20 py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            badge="Growing Network"
+            badgeColor="violet"
+            title="Join Our Growing Network"
+            subtitle="We're building the largest network of vetted home service professionals in the Okanagan."
+          />
+        </div>
+        <div className="mt-8 sm:mt-10">
+          <InfiniteMarquee speed={40} direction="right">
+            {networkTrades.map((t) => (
+              <MarqueeServiceItem
+                key={t.label}
+                icon={t.icon}
+                label={t.label}
+                color={t.color}
+              />
+            ))}
+          </InfiniteMarquee>
+        </div>
+      </section>
+
       {/* ==================== FAQ ==================== */}
       <section className="border-t bg-muted/20 py-16 sm:py-20">
         <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -284,16 +377,13 @@ export function ContractorsContent() {
             title="Frequently Asked Questions"
             subtitle="Everything you need to know about joining as a contractor."
           />
-          <FadeIn delay={0.1}>
-            <Accordion type="single" collapsible className="mt-8 sm:mt-10">
-              {faqs.map((faq, i) => (
-                <AccordionItem key={i} value={`faq-${i}`}>
-                  <AccordionTrigger className="text-left text-sm font-semibold sm:text-base">{faq.q}</AccordionTrigger>
-                  <AccordionContent className="text-sm leading-relaxed text-muted-foreground">{faq.a}</AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </FadeIn>
+          <FAQ
+            title=""
+            subtitle=""
+            categories={faqCategories}
+            faqData={faqData}
+            className="w-full py-0"
+          />
         </div>
       </section>
 

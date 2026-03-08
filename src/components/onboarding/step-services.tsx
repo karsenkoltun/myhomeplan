@@ -4,8 +4,9 @@ import { useState, useCallback, useImperativeHandle, forwardRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Check, CheckCircle2, ChevronDown, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Info, type LucideIcon } from "lucide-react";
+import { Check, CheckCircle2, ChevronDown, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Info, AlertTriangle, type LucideIcon } from "lucide-react";
 import { SERVICES, SERVICE_CATEGORIES, type ServiceCategory, type Service } from "@/data/services";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
@@ -128,17 +129,21 @@ export const StepServices = forwardRef<StepValidationRef>(function StepServices(
       </motion.div>
 
       {/* Error message */}
-      {showError && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mt-4 rounded-lg border border-red-200 bg-red-50 p-3 text-center dark:border-red-900 dark:bg-red-950/50"
-        >
-          <p className="text-sm font-medium text-red-600 dark:text-red-400">
-            Please select at least one service to continue
-          </p>
-        </motion.div>
-      )}
+      <AnimatePresence>
+        {showError && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="mt-4"
+          >
+            <Alert variant="warning" icon={<AlertTriangle className="h-4 w-4" />}>
+              <AlertDescription>Please select at least one service to continue</AlertDescription>
+            </Alert>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className={cn("mt-6 space-y-6", shaking && "animate-shake")}>
         {categories.map((category) => {
