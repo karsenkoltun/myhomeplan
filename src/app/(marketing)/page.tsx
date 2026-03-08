@@ -25,6 +25,14 @@ export const metadata: Metadata = {
     siteName: "My Home Plan",
     locale: "en_CA",
     type: "website",
+    images: [
+      {
+        url: "https://myhomeplan.ca/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "My Home Plan - One Plan. One Payment. Your Entire Home Handled.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",

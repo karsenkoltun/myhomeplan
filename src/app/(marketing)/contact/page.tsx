@@ -14,6 +14,14 @@ export const metadata: Metadata = {
       "Questions about our home maintenance plans? We're here to help. Serving the Okanagan Valley, BC.",
     url: "https://myhomeplan.ca/contact",
     type: "website",
+    images: [
+      {
+        url: "https://myhomeplan.ca/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "My Home Plan - One Plan. One Payment. Your Entire Home Handled.",
+      },
+    ],
   },
   alternates: {
     canonical: "https://myhomeplan.ca/contact",

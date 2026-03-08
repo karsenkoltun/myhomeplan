@@ -43,6 +43,14 @@ export const metadata: Metadata = {
       "Expert home maintenance tips, seasonal checklists, and cost guides for Okanagan homeowners.",
     url: "https://myhomeplan.ca/blog",
     type: "website",
+    images: [
+      {
+        url: "https://myhomeplan.ca/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "My Home Plan - One Plan. One Payment. Your Entire Home Handled.",
+      },
+    ],
   },
   alternates: {
     canonical: "https://myhomeplan.ca/blog",

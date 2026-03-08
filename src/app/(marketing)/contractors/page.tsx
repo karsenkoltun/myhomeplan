@@ -12,6 +12,14 @@ export const metadata: Metadata = {
     url: "https://myhomeplan.ca/contractors",
     siteName: "My Home Plan",
     type: "website",
+    images: [
+      {
+        url: "https://myhomeplan.ca/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "My Home Plan - One Plan. One Payment. Your Entire Home Handled.",
+      },
+    ],
   },
 };
 

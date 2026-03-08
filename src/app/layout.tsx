@@ -47,6 +47,21 @@ export const metadata: Metadata = {
     siteName: "My Home Plan",
     locale: "en_CA",
     type: "website",
+    images: [
+      {
+        url: "https://myhomeplan.ca/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "My Home Plan - One Plan. One Payment. Your Entire Home Handled.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "My Home Plan | All Your Home Services, One Monthly Plan",
+    description:
+      "One subscription. Every home service. Zero hassle. Serving the Okanagan Valley, BC.",
+    images: ["https://myhomeplan.ca/og-image.png"],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || undefined,
