@@ -9,47 +9,57 @@ export async function GET(request: Request) {
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
 
-      if (user) {
-        // Check if user has completed onboarding
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select("onboarding_complete, first_name, last_name, email")
-          .eq("id", user.id)
-          .maybeSingle();
+    if (error) {
+      console.error("Auth callback error:", error.message);
+      const url = new URL("/login", origin);
+      url.searchParams.set("error", error.message);
+      return NextResponse.redirect(url);
+    }
 
-        // Enrich profile with OAuth metadata (name, email) if missing
-        const meta = user.user_metadata;
-        if (profile) {
-          const updates: Record<string, string> = {};
-          if (!profile.first_name && meta?.full_name) {
-            const parts = (meta.full_name as string).split(" ");
-            updates.first_name = parts[0] || "";
-            updates.last_name = parts.slice(1).join(" ") || "";
-          }
-          if (!profile.email && user.email) {
-            updates.email = user.email;
-          }
-          if (Object.keys(updates).length > 0) {
-            await supabase
-              .from("profiles")
-              .update(updates)
-              .eq("id", user.id);
-          }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (user) {
+      // Check if user has completed onboarding
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_complete, first_name, last_name, email")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      // Enrich profile with OAuth metadata (name, email) if missing
+      const meta = user.user_metadata;
+      if (profile) {
+        const updates: Record<string, string> = {};
+        if (!profile.first_name && meta?.full_name) {
+          const parts = (meta.full_name as string).split(" ");
+          updates.first_name = parts[0] || "";
+          updates.last_name = parts.slice(1).join(" ") || "";
         }
-
-        if (profile?.onboarding_complete) {
-          return NextResponse.redirect(`${origin}/account`);
+        if (!profile.email && user.email) {
+          updates.email = user.email;
+        }
+        if (Object.keys(updates).length > 0) {
+          await supabase
+            .from("profiles")
+            .update(updates)
+            .eq("id", user.id);
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`);
+      if (profile?.onboarding_complete) {
+        return NextResponse.redirect(`${origin}/account`);
+      }
     }
+
+    return NextResponse.redirect(`${origin}${next}`);
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth`);
+  // No code parameter - redirect with error
+  console.error("Auth callback: no code parameter received");
+  const url = new URL("/login", origin);
+  url.searchParams.set("error", "no_code");
+  return NextResponse.redirect(url);
 }
