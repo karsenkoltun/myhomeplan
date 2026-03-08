@@ -3,14 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { AnimatedCounter } from "@/components/ui/motion";
-import { Home, Users, MapPin, TrendingDown } from "lucide-react";
-
-const stats = [
-  { icon: Home, value: 200, suffix: "+", label: "Homes Served", color: "text-primary" },
-  { icon: Users, value: 50, suffix: "+", label: "Vetted Contractors", color: "text-emerald-500" },
-  { icon: MapPin, value: 7, suffix: "", label: "Cities Covered", color: "text-sky-500" },
-  { icon: TrendingDown, value: 35, suffix: "%", label: "Avg. Savings", color: "text-amber-500" },
-];
+import { SOCIAL_PROOF_STATS } from "@/data/social-proof";
 
 export function SocialProofBar({ dark = false }: { dark?: boolean }) {
   const ref = useRef(null);
@@ -27,7 +20,7 @@ export function SocialProofBar({ dark = false }: { dark?: boolean }) {
     >
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-6 sm:gap-8 md:grid-cols-4">
-          {stats.map((stat, i) => (
+          {SOCIAL_PROOF_STATS.map((stat, i) => (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 16 }}

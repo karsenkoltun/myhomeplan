@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import {
   Briefcase, CheckCircle2, DollarSign, Star, Calendar as CalendarIcon, Clock, TrendingUp, Users,
+  Banknote,
 } from "lucide-react";
 import {
   getContractorProfile,
@@ -131,7 +132,7 @@ export function ContractorDashboard({
       {/* Main Tabs */}
       <FadeIn delay={0.3}>
         <Tabs defaultValue="jobs" className="mt-6">
-          <TabsList className="w-full justify-start">
+          <TabsList className="w-full justify-start overflow-x-auto">
             <TabsTrigger value="jobs">Jobs</TabsTrigger>
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="earnings">Earnings</TabsTrigger>
@@ -187,7 +188,7 @@ export function ContractorDashboard({
               </CardHeader>
               <CardContent>
                 {/* Monthly bar chart */}
-                {monthlyEarnings.length > 0 && (
+                {monthlyEarnings.length > 0 ? (
                   <div className="mb-6">
                     <p className="mb-3 text-sm font-medium text-muted-foreground">Monthly Earnings</p>
                     <div className="flex items-end gap-2" style={{ height: 120 }}>
@@ -208,14 +209,27 @@ export function ContractorDashboard({
                       })}
                     </div>
                   </div>
+                ) : (
+                  <div className="mb-6 flex flex-col items-center gap-2 py-6 text-center">
+                    <TrendingUp className="h-8 w-8 text-muted-foreground/50" />
+                    <p className="text-sm text-muted-foreground">
+                      Monthly earnings chart will appear once you have completed jobs.
+                    </p>
+                  </div>
                 )}
 
                 <Separator className="my-4" />
 
                 {bookings.filter((b) => b.status === "completed").length === 0 ? (
-                  <p className="py-6 text-center text-sm text-muted-foreground">
-                    No completed jobs yet
-                  </p>
+                  <div className="flex flex-col items-center gap-3 py-12 text-center">
+                    <Banknote className="h-10 w-10 text-muted-foreground/50" />
+                    <div>
+                      <p className="font-medium">No completed jobs yet</p>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Your earnings from completed jobs will appear here.
+                      </p>
+                    </div>
+                  </div>
                 ) : (
                   <div className="space-y-2">
                     {bookings

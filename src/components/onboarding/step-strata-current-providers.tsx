@@ -77,7 +77,7 @@ export function StepStrataCurrentProviders() {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeProvider(index)}
-                      className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500"
+                      className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 text-muted-foreground hover:text-red-500"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

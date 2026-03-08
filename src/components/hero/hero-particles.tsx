@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 
 const particles = Array.from({ length: 20 }, (_, i) => ({
   id: i,
@@ -12,6 +12,28 @@ const particles = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 export function HeroParticles() {
+  const shouldReduceMotion = useReducedMotion();
+
+  if (shouldReduceMotion) {
+    return (
+      <div className="absolute inset-0 overflow-hidden">
+        {particles.map((p) => (
+          <div
+            key={p.id}
+            className="absolute rounded-full bg-primary/10"
+            style={{
+              left: `${p.x}%`,
+              top: `${p.y}%`,
+              width: p.size,
+              height: p.size,
+              opacity: 0.3,
+            }}
+          />
+        ))}
+      </div>
+    );
+  }
+
   return (
     <div className="absolute inset-0 overflow-hidden">
       {particles.map((p) => (

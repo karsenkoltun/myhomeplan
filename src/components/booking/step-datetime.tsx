@@ -73,14 +73,14 @@ export function StepDatetime() {
           <CardContent className="p-4">
             {/* Week Navigation */}
             <div className="flex items-center justify-between">
-              <Button variant="ghost" size="icon" onClick={prevWeek}>
+              <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={prevWeek}>
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <div className="flex items-center gap-2 text-sm font-medium">
                 <CalendarIcon className="h-4 w-4 text-muted-foreground" />
                 {format(weekStart, "MMM d")} - {format(endOfWeek(weekStart, { weekStartsOn: 1 }), "MMM d, yyyy")}
               </div>
-              <Button variant="ghost" size="icon" onClick={nextWeek}>
+              <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={nextWeek}>
                 <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
@@ -99,13 +99,13 @@ export function StepDatetime() {
                       setSelectedTime(null);
                     }}
                     className={cn(
-                      "flex flex-col items-center rounded-lg border p-2 text-center transition-colors",
+                      "flex flex-col items-center rounded-lg border p-2 text-center transition-colors min-h-[44px] justify-center",
                       isPast && "cursor-not-allowed opacity-40",
                       !isPast && !isSelected && "hover:border-primary/30 hover:bg-muted/50",
                       isSelected && "border-primary bg-primary/10",
                     )}
                   >
-                    <span className="text-[10px] font-medium text-muted-foreground">
+                    <span className="text-xs font-medium text-muted-foreground">
                       {format(day, "EEE")}
                     </span>
                     <span className="text-sm font-semibold">{format(day, "d")}</span>
@@ -127,7 +127,7 @@ export function StepDatetime() {
                       key={time}
                       onClick={() => setSelectedTime(time)}
                       className={cn(
-                        "rounded-lg border px-3 py-2 text-sm transition-colors",
+                        "rounded-lg border px-3 py-2.5 text-sm transition-colors min-h-[44px]",
                         selectedTime === time
                           ? "border-primary bg-primary/10 font-medium text-primary"
                           : "hover:border-primary/30 hover:bg-muted/50",

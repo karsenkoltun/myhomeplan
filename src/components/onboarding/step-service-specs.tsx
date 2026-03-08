@@ -163,7 +163,7 @@ function SpecFieldInput({
             step={field.step}
             className="h-10"
           />
-          {field.pricingImpact && <p className="text-[10px] text-muted-foreground">{field.pricingImpact}</p>}
+          {field.pricingImpact && <p className="text-xs text-muted-foreground">{field.pricingImpact}</p>}
         </div>
       );
     case "select":
@@ -176,7 +176,7 @@ function SpecFieldInput({
               {field.options?.map((opt) => <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>)}
             </SelectContent>
           </Select>
-          {field.pricingImpact && <p className="text-[10px] text-muted-foreground">{field.pricingImpact}</p>}
+          {field.pricingImpact && <p className="text-xs text-muted-foreground">{field.pricingImpact}</p>}
         </div>
       );
     case "boolean":
@@ -184,7 +184,7 @@ function SpecFieldInput({
         <div className="flex items-center justify-between gap-3 rounded-lg border p-3">
           <div>
             <Label className="text-xs">{field.label}</Label>
-            {field.pricingImpact && <p className="text-[10px] text-muted-foreground">{field.pricingImpact}</p>}
+            {field.pricingImpact && <p className="text-xs text-muted-foreground">{field.pricingImpact}</p>}
           </div>
           <Switch checked={value as boolean} onCheckedChange={onChange} />
         </div>
@@ -205,7 +205,7 @@ function SpecFieldInput({
             max={field.max}
             step={field.step}
           />
-          {field.pricingImpact && <p className="text-[10px] text-muted-foreground">{field.pricingImpact}</p>}
+          {field.pricingImpact && <p className="text-xs text-muted-foreground">{field.pricingImpact}</p>}
         </div>
       );
   }

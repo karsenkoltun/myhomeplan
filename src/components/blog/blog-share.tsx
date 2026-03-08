@@ -28,7 +28,7 @@ export function BlogShareButtons({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8"
+        className="h-10 w-10 min-h-[44px] min-w-[44px]"
         asChild
       >
         <a
@@ -43,7 +43,7 @@ export function BlogShareButtons({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8"
+        className="h-10 w-10 min-h-[44px] min-w-[44px]"
         asChild
       >
         <a
@@ -58,7 +58,7 @@ export function BlogShareButtons({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8"
+        className="h-10 w-10 min-h-[44px] min-w-[44px]"
         asChild
       >
         <a
@@ -73,7 +73,7 @@ export function BlogShareButtons({
       <Button
         variant="ghost"
         size="icon"
-        className="h-8 w-8"
+        className="h-10 w-10 min-h-[44px] min-w-[44px]"
         onClick={copyLink}
         aria-label="Copy link"
       >

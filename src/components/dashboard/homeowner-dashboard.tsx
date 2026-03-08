@@ -290,7 +290,7 @@ export function HomeownerDashboard({
           <Card className="md:col-span-2">
             <CardHeader><CardTitle className="text-base">Quick Actions</CardTitle></CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 {[
                   { icon: Calendar, label: "Book Service", href: "/account/book" },
                   { icon: ShoppingCart, label: "Buy Credits", desc: "Add-on services" },

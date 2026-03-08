@@ -86,7 +86,7 @@ const FAQTabs = ({
         key={key}
         onClick={() => setSelected(key)}
         className={cn(
-          "relative overflow-hidden whitespace-nowrap rounded-md border px-3 py-1.5 text-sm font-medium transition-colors duration-500",
+          "relative overflow-hidden whitespace-nowrap rounded-md border px-4 py-2.5 text-sm font-medium transition-colors duration-500 min-h-[44px]",
           selected === key
             ? "border-primary text-primary-foreground"
             : "border-border bg-transparent text-muted-foreground hover:text-foreground",
@@ -160,11 +160,11 @@ const FAQAccordionItem = ({
     >
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between gap-4 p-4 text-left"
+        className="flex w-full items-center justify-between gap-4 p-4 text-left min-h-[44px]"
       >
         <span
           className={cn(
-            "text-lg font-medium transition-colors",
+            "text-base font-medium transition-colors sm:text-lg",
             isOpen ? "text-foreground" : "text-muted-foreground",
           )}
         >

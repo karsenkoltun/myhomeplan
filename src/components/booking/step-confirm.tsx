@@ -16,6 +16,7 @@ import {
 } from "@/lib/supabase/queries";
 import { calculateContractorPayout } from "@/lib/pricing";
 import { FadeIn } from "@/components/ui/motion";
+import { toast } from "sonner";
 import { format, parseISO } from "date-fns";
 
 export function StepConfirm() {
@@ -87,6 +88,7 @@ export function StepConfirm() {
       setSuccess(true);
     } catch (err) {
       console.error("Booking failed:", err);
+      toast.error("Booking failed. Please try again.");
     } finally {
       setSubmitting(false);
     }

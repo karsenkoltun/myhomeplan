@@ -266,7 +266,7 @@ export const StepStrataInfo = forwardRef<StepValidationRef>(function StepStrataI
                     >
                       <div className="mb-3 flex items-center justify-between">
                         <span className="text-xs font-semibold text-muted-foreground">Contact {index + 1}</span>
-                        <Button variant="ghost" size="sm" onClick={() => removeCouncilContact(index)} className="h-7 w-7 p-0 text-muted-foreground hover:text-red-500">
+                        <Button variant="ghost" size="sm" onClick={() => removeCouncilContact(index)} className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 text-muted-foreground hover:text-red-500">
                           <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>

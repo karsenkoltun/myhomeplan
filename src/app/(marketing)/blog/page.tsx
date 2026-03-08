@@ -4,6 +4,7 @@ import { BlogCard, BlogCardFeatured } from "@/components/blog/blog-card";
 import { BlogSidebar } from "@/components/blog/blog-sidebar";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
 import { BlogSearch } from "@/components/blog/blog-search";
+import { BlogPagination } from "@/components/blog/blog-pagination";
 import { OrganizationJsonLd } from "@/components/blog/json-ld";
 import { BLOG_CATEGORIES, type BlogCategory } from "@/types/blog";
 import Link from "next/link";
@@ -106,21 +107,24 @@ export default function BlogPage() {
 
         {/* Main content + sidebar */}
         <div className="grid gap-8 lg:grid-cols-[1fr_320px]">
-          {/* Post grid */}
+          {/* Post grid with pagination */}
           <div>
             {posts.length > 0 ? (
-              <div className="grid gap-6 sm:grid-cols-2">
-                {posts.map((post) => (
-                  <BlogCard key={post.slug} post={post} />
-                ))}
-              </div>
+              <>
+                <div className="grid gap-6 sm:grid-cols-2">
+                  {posts.map((post) => (
+                    <BlogCard key={post.slug} post={post} />
+                  ))}
+                </div>
+                <BlogPagination totalItems={posts.length} itemsPerPage={12} />
+              </>
             ) : (
               <div className="rounded-xl border border-dashed p-12 text-center">
                 <p className="text-lg font-medium">
                   Blog posts coming soon
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  We're working on in-depth guides for every home maintenance
+                  We&apos;re working on in-depth guides for every home maintenance
                   topic. Check back soon.
                 </p>
               </div>

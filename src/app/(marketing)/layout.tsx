@@ -1,5 +1,6 @@
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 
 export default function MarketingLayout({
   children,
@@ -9,7 +10,9 @@ export default function MarketingLayout({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen">{children}</main>
+      <main className="min-h-screen overflow-x-hidden">
+        <ErrorBoundary>{children}</ErrorBoundary>
+      </main>
       <Footer />
     </>
   );

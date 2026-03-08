@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
@@ -16,6 +16,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover" as const,
+};
 
 export const metadata: Metadata = {
   title: "My Home Plan | All Your Home Services, One Monthly Plan",
@@ -54,6 +60,41 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "LocalBusiness",
+              name: "My Home Plan",
+              description:
+                "All your home services, one monthly plan. Serving the Okanagan Valley, BC.",
+              url: "https://myhomeplan.ca",
+              areaServed: {
+                "@type": "Place",
+                name: "Okanagan Valley, British Columbia, Canada",
+              },
+              serviceArea: {
+                "@type": "GeoCircle",
+                geoMidpoint: {
+                  "@type": "GeoCoordinates",
+                  latitude: 49.888,
+                  longitude: -119.496,
+                },
+                geoRadius: "100km",
+              },
+              priceRange: "$$",
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: "Kelowna",
+                addressRegion: "BC",
+                addressCountry: "CA",
+              },
+            }),
+          }}
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased`}
       >

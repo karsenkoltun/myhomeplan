@@ -52,7 +52,7 @@ export function NotificationBell() {
       <Button
         variant="ghost"
         size="icon"
-        className="relative h-9 w-9"
+        className="relative h-11 w-11 min-h-[44px] min-w-[44px]"
         onClick={() => setOpen(!open)}
       >
         <Bell className="h-4 w-4" />
@@ -69,7 +69,7 @@ export function NotificationBell() {
             className="fixed inset-0 z-40"
             onClick={() => setOpen(false)}
           />
-          <div className="absolute right-0 z-50 mt-2 w-80 rounded-lg border bg-background shadow-lg">
+          <div className="absolute right-0 z-50 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-lg border bg-background shadow-lg">
             <div className="border-b p-3">
               <p className="text-sm font-semibold">Notifications</p>
             </div>
@@ -83,7 +83,7 @@ export function NotificationBell() {
                   <button
                     key={n.id}
                     onClick={() => handleRead(n.id)}
-                    className={`w-full border-b p-3 text-left transition-colors hover:bg-muted/50 last:border-0 ${
+                    className={`w-full border-b p-3 text-left transition-colors hover:bg-muted/50 last:border-0 min-h-[44px] ${
                       !n.read ? "bg-primary/5" : ""
                     }`}
                   >

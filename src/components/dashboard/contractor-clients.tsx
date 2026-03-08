@@ -76,9 +76,15 @@ export function ContractorClients({
               Loading clients...
             </p>
           ) : clients.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              No clients yet. Complete jobs to build your client list.
-            </p>
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <Users className="h-10 w-10 text-muted-foreground/50" />
+              <div>
+                <p className="font-medium">No clients yet</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Complete jobs to build your client list.
+                </p>
+              </div>
+            </div>
           ) : (
             <StaggerContainer className="space-y-2">
               {clients.map((client) => {

@@ -18,7 +18,7 @@ export function OnboardingProgress({
   return (
     <div className="w-full">
       {/* Step indicators */}
-      <div className="flex items-center justify-between px-1">
+      <div className="flex items-center justify-between gap-1 overflow-x-auto px-1">
         {Array.from({ length: totalSteps }).map((_, i) => {
           const isCompleted = i < currentStep;
           const isCurrent = i === currentStep;

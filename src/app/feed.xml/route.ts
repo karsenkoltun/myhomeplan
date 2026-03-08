@@ -5,7 +5,6 @@ export async function GET() {
   const baseUrl = "https://myhomeplan.ca";
 
   const items = posts
-    .slice(0, 20)
     .map(
       (post) => `
     <item>

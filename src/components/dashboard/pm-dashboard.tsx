@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import {
   Building, Home, DollarSign, ClipboardList, Users, MapPin,
-  CheckCircle2, XCircle, Bell, FileText,
+  CheckCircle2, XCircle, Bell, FileText, Building2, UserPlus,
 } from "lucide-react";
 import {
   getPMCompany,
@@ -94,9 +94,15 @@ export function PMDashboard({
           </CardHeader>
           <CardContent>
             {properties.length === 0 ? (
-              <p className="py-6 text-center text-sm text-muted-foreground">
-                No properties added yet
-              </p>
+              <div className="flex flex-col items-center gap-3 py-12 text-center">
+                <Building2 className="h-10 w-10 text-muted-foreground/50" />
+                <div>
+                  <p className="font-medium">No properties added yet</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Your managed properties will appear here once added.
+                  </p>
+                </div>
+              </div>
             ) : (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {properties.map((prop) => {
@@ -175,16 +181,26 @@ export function PMDashboard({
       </div>
 
       {/* Team Permissions Table */}
-      {contacts.length > 0 && (
-        <FadeIn delay={0.35}>
-          <Card className="mt-6">
-            <CardHeader>
-              <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
-                <CardTitle className="text-base">Team Permissions</CardTitle>
+      <FadeIn delay={0.35}>
+        <Card className="mt-6">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-base">Team Permissions</CardTitle>
+            </div>
+          </CardHeader>
+          <CardContent>
+            {contacts.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-12 text-center">
+                <UserPlus className="h-10 w-10 text-muted-foreground/50" />
+                <div>
+                  <p className="font-medium">No team members yet</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Add team contacts to manage permissions and notifications.
+                  </p>
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
+            ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -232,10 +248,10 @@ export function PMDashboard({
                   </tbody>
                 </table>
               </div>
-            </CardContent>
-          </Card>
-        </FadeIn>
-      )}
+            )}
+          </CardContent>
+        </Card>
+      </FadeIn>
 
       {/* Company Overview */}
       <FadeIn delay={0.4}>

@@ -9,19 +9,21 @@ export function HeroScene() {
       {/* Gradient mesh base */}
       <GradientMesh />
 
-      {/* Morphing blobs */}
-      <div className="absolute -right-32 -top-32 text-primary/[0.06]">
+      {/* Morphing blobs - hidden on mobile for performance */}
+      <div className="absolute -right-32 -top-32 text-primary/[0.06] hidden sm:block">
         <MorphingBlob size={500} />
       </div>
-      <div className="absolute -left-24 bottom-0 text-sky-400/[0.05]">
+      <div className="absolute -left-24 bottom-0 text-sky-400/[0.05] hidden sm:block">
         <MorphingBlob size={400} />
       </div>
-      <div className="absolute right-1/4 top-1/3 text-violet-400/[0.04]">
+      <div className="absolute right-1/4 top-1/3 text-violet-400/[0.04] hidden md:block">
         <MorphingBlob size={300} />
       </div>
 
-      {/* Particles */}
-      <HeroParticles />
+      {/* Particles - hidden on mobile for performance */}
+      <div className="hidden sm:block">
+        <HeroParticles />
+      </div>
 
       {/* Subtle grain overlay for depth */}
       <div

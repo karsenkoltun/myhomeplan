@@ -1,6 +1,6 @@
 "use client";
 
-import { Bell, Calendar } from "lucide-react";
+import { Bell, Calendar, Inbox } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FadeIn } from "@/components/ui/motion";
 import { formatDistanceToNow } from "date-fns";
@@ -29,9 +29,15 @@ export function ActivityFeed({
         </CardHeader>
         <CardContent>
           {activities.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              No recent activity
-            </p>
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <Inbox className="h-10 w-10 text-muted-foreground/50" />
+              <div>
+                <p className="font-medium">No recent activity</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Notifications and booking updates will show up here.
+                </p>
+              </div>
+            </div>
           ) : (
             <div className="max-h-96 space-y-1 overflow-y-auto">
               {activities.map((activity) => (

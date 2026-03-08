@@ -843,7 +843,7 @@ function ContractorReview({ onComplete }: { onComplete: () => void }) {
               <Clock className="h-4 w-4 text-sky-600" />
               <h3 className="text-sm font-semibold text-muted-foreground">Availability</h3>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-sm">
+            <div className="grid gap-2 text-sm sm:grid-cols-2">
               <div>
                 <span className="text-muted-foreground">Days:</span>{" "}
                 {contractor.availableDays.length > 0

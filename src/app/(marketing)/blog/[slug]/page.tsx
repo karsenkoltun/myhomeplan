@@ -10,8 +10,9 @@ import {
 } from "@/lib/blog";
 import { mdxComponents } from "@/components/blog/mdx-components";
 import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
-import { BlogTOC } from "@/components/blog/blog-toc";
+import { BlogTOC, BlogTOCMobile } from "@/components/blog/blog-toc";
 import { BlogFAQ } from "@/components/blog/blog-faq";
+import { ReadingProgress } from "@/components/blog/reading-progress";
 import { BlogShareButtons } from "@/components/blog/blog-share";
 import { BlogRelatedPosts } from "@/components/blog/blog-related-posts";
 import { BlogCTABanner, BlogCTACompare } from "@/components/blog/blog-cta";
@@ -87,6 +88,7 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <>
       <ArticleJsonLd post={post} />
+      <ReadingProgress />
 
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
         <BlogBreadcrumbs category={post.category} postTitle={post.title} />
@@ -156,6 +158,9 @@ export default async function BlogPostPage({ params }: Props) {
               </div>
             </header>
 
+            {/* Mobile TOC */}
+            <BlogTOCMobile headings={post.headings} />
+
             {/* Featured image */}
             {post.featuredImage && (
               <div className="mb-8 overflow-hidden rounded-xl">
@@ -170,7 +175,7 @@ export default async function BlogPostPage({ params }: Props) {
             )}
 
             {/* MDX content */}
-            <div className="prose-custom">
+            <div className="prose-custom break-words">
               <MDXRemote
                 source={post.content}
                 components={mdxComponents}

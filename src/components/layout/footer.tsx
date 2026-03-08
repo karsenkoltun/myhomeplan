@@ -18,8 +18,9 @@ const footerLinks = {
     { name: "Blog", href: "/blog" },
     { name: "About Us", href: "/about" },
     { name: "FAQ", href: "/faq" },
-    { name: "Contact", href: "/about#contact" },
-    { name: "Privacy Policy", href: "#" },
+    { name: "Contact", href: "/contact" },
+    { name: "Privacy Policy", href: "/privacy" },
+    { name: "Terms of Service", href: "/terms" },
   ],
   Account: [
     { name: "Get Started", href: "/onboarding" },
@@ -41,7 +42,7 @@ export function Footer() {
               </div>
               <span className="font-bold">My Home Plan</span>
             </Link>
-            <p className="mt-3 text-sm text-muted-foreground">
+            <p className="mt-3 text-sm text-muted-foreground break-words">
               One plan. Every service. Zero stress. Serving the Okanagan
               Valley, BC.
             </p>
@@ -51,12 +52,12 @@ export function Footer() {
           {Object.entries(footerLinks).map(([category, links]) => (
             <div key={category}>
               <h3 className="text-sm font-semibold">{category}</h3>
-              <ul className="mt-3 space-y-2">
+              <ul className="mt-3 space-y-0.5">
                 {links.map((link) => (
                   <li key={link.name}>
                     <Link
                       href={link.href}
-                      className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                      className="inline-block py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground min-h-[44px] leading-relaxed"
                     >
                       {link.name}
                     </Link>
@@ -77,7 +78,7 @@ export function Footer() {
             <span>-</span>
             <a
               href="mailto:hello@myhomeplan.ca"
-              className="transition-colors hover:text-foreground"
+              className="py-2 transition-colors hover:text-foreground"
             >
               hello@myhomeplan.ca
             </a>

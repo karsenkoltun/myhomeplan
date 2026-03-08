@@ -87,7 +87,7 @@ export function StepPMProperties() {
                 <CardContent className="p-5 sm:p-6">
                   <div className="flex items-center justify-between mb-4">
                     <h3 className="text-sm font-semibold">Property {index + 1}</h3>
-                    <Button variant="ghost" size="sm" onClick={() => removeProperty(prop.id)} className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500">
+                    <Button variant="ghost" size="sm" onClick={() => removeProperty(prop.id)} className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 text-muted-foreground hover:text-red-500">
                       <Trash2 className="h-4 w-4" />
                     </Button>
                   </div>

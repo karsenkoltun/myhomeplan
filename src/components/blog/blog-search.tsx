@@ -124,7 +124,7 @@ export function BlogSearch({ posts }: BlogSearchProps) {
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium">{post.title}</p>
                       <div className="mt-0.5 flex items-center gap-2 text-xs text-muted-foreground">
-                        <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+                        <Badge variant="secondary" className="text-xs px-1.5 py-0">
                           {BLOG_CATEGORIES[post.category].label}
                         </Badge>
                         <span className="flex items-center gap-0.5">

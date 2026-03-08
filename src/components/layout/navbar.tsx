@@ -152,7 +152,7 @@ export function Navbar() {
         {/* Mobile Menu */}
         <Sheet open={open} onOpenChange={setOpen}>
           <SheetTrigger asChild className="lg:hidden">
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]">
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
@@ -164,8 +164,8 @@ export function Navbar() {
                 </div>
                 <span className="font-bold">My Home Plan</span>
               </Link>
-              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setOpen(false)}>
-                <X className="h-4 w-4" />
+              <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" onClick={() => setOpen(false)}>
+                <X className="h-5 w-5" />
               </Button>
             </div>
 
@@ -176,7 +176,7 @@ export function Navbar() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className="flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  className="flex items-center gap-2.5 rounded-lg px-3 py-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground min-h-[44px]"
                   onClick={() => setOpen(false)}
                 >
                   <item.icon className="h-4 w-4" />
@@ -192,7 +192,7 @@ export function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                    className={`rounded-lg px-3 py-3 text-sm font-medium transition-colors min-h-[44px] flex items-center ${
                       isActive
                         ? "bg-primary/10 text-primary"
                         : "text-muted-foreground hover:bg-accent hover:text-foreground"

@@ -193,18 +193,18 @@ export const StepServices = forwardRef<StepValidationRef>(function StepServices(
                               <Icon className="h-3.5 w-3.5 shrink-0 text-primary" />
                               <span className="truncate text-xs font-semibold sm:text-sm">{service.name}</span>
                               {service.popular && (
-                                <Badge variant="secondary" className="bg-amber-100 px-1 py-0 text-[9px] text-amber-700">Popular</Badge>
+                                <Badge variant="secondary" className="bg-amber-100 px-1.5 py-0 text-[10px] text-amber-700">Popular</Badge>
                               )}
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-[10px] text-muted-foreground">{service.frequencyLabel}</span>
+                              <span className="text-xs text-muted-foreground">{service.frequencyLabel}</span>
                               <span className="text-xs font-semibold text-primary">${price.toFixed(0)}/mo</span>
                             </div>
                             {/* Learn more toggle */}
                             <button
                               type="button"
                               onClick={(e) => handleLearnMore(e, service)}
-                              className="group mt-0.5 flex items-center gap-1 text-[10px] font-medium text-muted-foreground transition-colors hover:text-primary sm:text-xs"
+                              className="group mt-0.5 flex items-center gap-1 text-xs font-medium text-muted-foreground transition-colors hover:text-primary min-h-[44px]"
                             >
                               <span>{isExpanded ? "Show less" : "Learn more"}</span>
                               <ChevronDown

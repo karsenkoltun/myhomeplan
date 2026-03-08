@@ -71,7 +71,7 @@ export function StepPMContacts() {
                       {contact.isPrimary && <span className="ml-2 text-xs text-violet-600">(Primary)</span>}
                     </h3>
                     {pm.contacts.length > 1 && (
-                      <Button variant="ghost" size="sm" onClick={() => removeContact(index)} className="h-8 w-8 p-0 text-muted-foreground hover:text-red-500">
+                      <Button variant="ghost" size="sm" onClick={() => removeContact(index)} className="h-9 w-9 min-h-[44px] min-w-[44px] p-0 text-muted-foreground hover:text-red-500">
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     )}
@@ -99,19 +99,19 @@ export function StepPMContacts() {
                   </div>
                   <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
-                      <Label className="text-[11px]">Primary</Label>
+                      <Label className="text-xs">Primary</Label>
                       <Switch checked={contact.isPrimary} onCheckedChange={(v) => updateContact(index, { isPrimary: v })} />
                     </div>
                     <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
-                      <Label className="text-[11px]">Reports</Label>
+                      <Label className="text-xs">Reports</Label>
                       <Switch checked={contact.canApproveReports} onCheckedChange={(v) => updateContact(index, { canApproveReports: v })} />
                     </div>
                     <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
-                      <Label className="text-[11px]">Invoices</Label>
+                      <Label className="text-xs">Invoices</Label>
                       <Switch checked={contact.canApproveInvoices} onCheckedChange={(v) => updateContact(index, { canApproveInvoices: v })} />
                     </div>
                     <div className="flex items-center justify-between gap-2 rounded-lg border p-2">
-                      <Label className="text-[11px]">Notifications</Label>
+                      <Label className="text-xs">Notifications</Label>
                       <Switch checked={contact.receivesNotifications} onCheckedChange={(v) => updateContact(index, { receivesNotifications: v })} />
                     </div>
                   </div>

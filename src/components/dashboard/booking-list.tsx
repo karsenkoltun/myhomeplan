@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { FadeIn } from "@/components/ui/motion";
-import { Calendar, Clock } from "lucide-react";
+import { Calendar, CalendarX2, Clock } from "lucide-react";
 import { SERVICES } from "@/data/services";
 import type { Database } from "@/lib/supabase/types";
 
@@ -54,9 +54,15 @@ export function BookingList({
         </CardHeader>
         <CardContent>
           {bookings.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              {emptyMessage}
-            </p>
+            <div className="flex flex-col items-center gap-3 py-12 text-center">
+              <CalendarX2 className="h-10 w-10 text-muted-foreground/50" />
+              <div>
+                <p className="font-medium">{emptyMessage}</p>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Your scheduled services will appear here.
+                </p>
+              </div>
+            </div>
           ) : (
             <div className="space-y-3">
               {bookings.map((booking) => (

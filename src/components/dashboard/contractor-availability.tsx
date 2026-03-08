@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { FadeIn } from "@/components/ui/motion";
 import { Calendar, Clock, Briefcase, CheckCircle2, Loader2 } from "lucide-react";
 import { updateContractorAvailability } from "@/lib/supabase/queries";
+import { toast } from "sonner";
 
 const DAYS = [
   "Monday",
@@ -70,7 +71,7 @@ export function ContractorAvailability({
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch {
-      // silent
+      toast.error("Failed to save availability. Please try again.");
     } finally {
       setSaving(false);
     }

@@ -28,7 +28,7 @@ export function AppNav() {
             </span>
           )}
           <NotificationBell />
-          <Button variant="ghost" size="icon" className="h-9 w-9" asChild>
+          <Button variant="ghost" size="icon" className="h-11 w-11 min-h-[44px] min-w-[44px]" asChild>
             <Link href="/account">
               <User className="h-4 w-4" />
             </Link>
@@ -36,7 +36,7 @@ export function AppNav() {
           <Button
             variant="ghost"
             size="icon"
-            className="h-9 w-9"
+            className="h-11 w-11 min-h-[44px] min-w-[44px]"
             onClick={signOut}
           >
             <LogOut className="h-4 w-4" />
