@@ -74,7 +74,7 @@ export function ServiceUsageCard({
               </div>
             </div>
             <span className="text-sm font-bold text-primary">
-              ${monthlyPrice.toFixed(0)}<span className="text-xs font-normal text-muted-foreground">/mo</span>
+              ${(Number.isFinite(monthlyPrice) ? monthlyPrice : 0).toFixed(0)}<span className="text-xs font-normal text-muted-foreground">/mo</span>
             </span>
           </div>
 

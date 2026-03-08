@@ -266,10 +266,19 @@ async function _fetchAll(): Promise<PricingConfig> {
 
     // Parse platform_config into a flat record
     for (const row of (platRes.data ?? []) as { key: string; value: unknown }[]) {
-      const val = typeof row.value === "string"
-        ? (parseFloat(row.value) || row.value)
-        : (typeof row.value === "number" ? row.value : JSON.parse(String(row.value)));
-      config.platformConfig[row.key] = typeof val === "string" ? parseFloat(val) || val : val;
+      if (typeof row.value === "number") {
+        config.platformConfig[row.key] = row.value;
+      } else if (typeof row.value === "string") {
+        const parsed = parseFloat(row.value);
+        config.platformConfig[row.key] = Number.isFinite(parsed) ? parsed : row.value;
+      } else {
+        try {
+          const parsed = JSON.parse(String(row.value));
+          config.platformConfig[row.key] = typeof parsed === "number" ? parsed : String(row.value);
+        } catch {
+          config.platformConfig[row.key] = row.value as string;
+        }
+      }
     }
 
     _cache = config;

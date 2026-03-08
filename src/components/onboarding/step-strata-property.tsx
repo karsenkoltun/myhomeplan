@@ -269,7 +269,7 @@ export const StepStrataProperty = forwardRef<StepValidationRef>(function StepStr
                   type="number"
                   value={strata.yearBuilt}
                   onChange={(e) => {
-                    setStrata({ yearBuilt: Number(e.target.value) });
+                    setStrata({ yearBuilt: Number(e.target.value) || 2000 });
                     clearError("yearBuilt");
                   }}
                   min={1900}

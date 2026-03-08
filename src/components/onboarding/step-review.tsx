@@ -285,7 +285,7 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
                       <Icon className="h-3.5 w-3.5 text-muted-foreground" />
                       <span>{service.name}</span>
                     </div>
-                    <span className="font-medium">${price.toFixed(0)}/mo</span>
+                    <span className="font-medium">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
                   </div>
                 );
               })}

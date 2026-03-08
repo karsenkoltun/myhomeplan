@@ -269,7 +269,7 @@ export const StepPropertyBasics = forwardRef<StepValidationRef>(function StepPro
                 type="number"
                 value={property.yearBuilt}
                 onChange={(e) => {
-                  setProperty({ yearBuilt: Number(e.target.value) });
+                  setProperty({ yearBuilt: Number(e.target.value) || 2000 });
                   clearError("yearBuilt");
                 }}
                 min={1800}
@@ -628,7 +628,7 @@ export const StepPropertyDetails = forwardRef<StepValidationRef>(function StepPr
                     <Input
                       type="number"
                       value={property.gardenBedSqft || ""}
-                      onChange={(e) => setProperty({ gardenBedSqft: Number(e.target.value) })}
+                      onChange={(e) => setProperty({ gardenBedSqft: Number(e.target.value) || 0 })}
                       min={0}
                       className="h-11"
                       placeholder="e.g. 200"
@@ -644,7 +644,7 @@ export const StepPropertyDetails = forwardRef<StepValidationRef>(function StepPr
               <Input
                 type="number"
                 value={property.deckPatioSqft || ""}
-                onChange={(e) => setProperty({ deckPatioSqft: Number(e.target.value) })}
+                onChange={(e) => setProperty({ deckPatioSqft: Number(e.target.value) || 0 })}
                 min={0}
                 className="h-11"
                 placeholder="0 if none"
@@ -733,7 +733,7 @@ export const StepPropertyDetails = forwardRef<StepValidationRef>(function StepPr
                   <Input
                     type="number"
                     value={property.fenceLinearFeet || ""}
-                    onChange={(e) => setProperty({ fenceLinearFeet: Number(e.target.value) })}
+                    onChange={(e) => setProperty({ fenceLinearFeet: Number(e.target.value) || 0 })}
                     min={0}
                     className="h-11"
                     placeholder="e.g. 150"

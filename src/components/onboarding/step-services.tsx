@@ -203,7 +203,7 @@ export const StepServices = forwardRef<StepValidationRef>(function StepServices(
                             </div>
                             <div className="flex items-center justify-between">
                               <span className="text-xs text-muted-foreground">{service.frequencyLabel}</span>
-                              <span className="text-xs font-semibold text-primary">${price.toFixed(0)}/mo</span>
+                              <span className="text-xs font-semibold text-primary">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
                             </div>
                             {/* Learn more toggle */}
                             <button

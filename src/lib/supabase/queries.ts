@@ -27,6 +27,7 @@ export async function updateProfile(userId: string, updates: Record<string, unkn
 
 // ---- HOMEOWNER PROPERTIES ----
 
+/** Get the most recent property for a user (legacy compat) */
 export async function getProperty(userId: string) {
   const { data, error } = await supabase()
     .from("homeowner_properties")
@@ -37,6 +38,66 @@ export async function getProperty(userId: string) {
     .maybeSingle();
   if (error) throw error;
   return data;
+}
+
+/** Get ALL properties for a user */
+export async function getAllProperties(userId: string) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Get a specific property by ID */
+export async function getPropertyById(propertyId: string) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .select("*")
+    .eq("id", propertyId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Create a new property */
+export async function createProperty(
+  userId: string,
+  propertyData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .insert({ ...propertyData, profile_id: userId })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Update an existing property by ID */
+export async function updatePropertyById(
+  propertyId: string,
+  propertyData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .update(propertyData)
+    .eq("id", propertyId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Delete a property by ID */
+export async function deleteProperty(propertyId: string) {
+  const { error } = await supabase()
+    .from("homeowner_properties")
+    .delete()
+    .eq("id", propertyId);
+  if (error) throw error;
 }
 
 export async function upsertProperty(
@@ -745,14 +806,19 @@ export async function updateContractorAvailability(
 }
 
 // ---- SERVICE CREDITS ----
+// NOTE: service_credits table may not exist yet - handle gracefully
 
 export async function getServiceCredits(subscriptionId: string) {
-  const { data, error } = await supabase()
-    .from("service_credits")
-    .select("*")
-    .eq("subscription_id", subscriptionId);
-  if (error) throw error;
-  return data ?? [];
+  try {
+    const { data, error } = await supabase()
+      .from("service_credits")
+      .select("*")
+      .eq("subscription_id", subscriptionId);
+    if (error) return [];
+    return data ?? [];
+  } catch {
+    return [];
+  }
 }
 
 export async function purchaseCredits(

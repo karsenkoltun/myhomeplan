@@ -252,7 +252,7 @@ export default function PlanBuilderContent() {
                               <p className="hidden text-xs text-muted-foreground sm:line-clamp-1">{service.description}</p>
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-muted-foreground sm:text-xs">{service.frequencyLabel}</span>
-                                <span className="text-xs font-semibold text-primary sm:text-sm">${monthlyPrice.toFixed(0)}/mo</span>
+                                <span className="text-xs font-semibold text-primary sm:text-sm">${(Number.isFinite(monthlyPrice) ? monthlyPrice : 0).toFixed(0)}/mo</span>
                               </div>
                             </div>
                           </motion.div>
@@ -358,7 +358,7 @@ export default function PlanBuilderContent() {
                       initial={{ opacity: 0, y: -5 }}
                       animate={{ opacity: 1, y: 0 }}
                     >
-                      ${receipt.total.toFixed(0)}
+                      ${(receipt.total || 0).toFixed(0)}
                     </motion.span>
                     <span className="text-sm font-normal text-muted-foreground">/mo</span>
                   </p>
@@ -495,7 +495,7 @@ function ReceiptPanel({
                       animate={{ opacity: 1 }}
                       className="text-sm font-medium"
                     >
-                      ${monthlyPrice.toFixed(0)}
+                      ${(Number.isFinite(monthlyPrice) ? monthlyPrice : 0).toFixed(0)}
                     </motion.span>
                   </motion.div>
                 );
@@ -507,7 +507,7 @@ function ReceiptPanel({
             <div className="flex items-center justify-between text-sm">
               <span className="text-muted-foreground">Subtotal</span>
               <motion.span key={receipt.subtotal} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                ${receipt.subtotal.toFixed(0)}/mo
+                ${(receipt.subtotal || 0).toFixed(0)}/mo
               </motion.span>
             </div>
 
@@ -518,7 +518,7 @@ function ReceiptPanel({
                 className="flex items-center justify-between text-sm text-primary"
               >
                 <span>{PLAN_DISCOUNTS[planInterval].label} discount</span>
-                <span>-${receipt.discountAmount.toFixed(0)}/mo</span>
+                <span>-${(receipt.discountAmount || 0).toFixed(0)}/mo</span>
               </motion.div>
             )}
 
@@ -532,7 +532,7 @@ function ReceiptPanel({
                 animate={{ scale: 1 }}
                 className="text-xl font-bold text-primary sm:text-2xl"
               >
-                ${receipt.total.toFixed(0)}
+                ${(receipt.total || 0).toFixed(0)}
                 <span className="text-xs font-normal text-muted-foreground sm:text-sm">/mo</span>
               </motion.span>
             </div>
@@ -545,7 +545,7 @@ function ReceiptPanel({
             >
               <div className="flex items-center gap-2 text-sm font-medium text-primary">
                 <TrendingDown className="h-4 w-4" />
-                <span>You save ~${receipt.annualSavings.toFixed(0)}/year</span>
+                <span>You save ~${(receipt.annualSavings || 0).toFixed(0)}/year</span>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
                 Compared to hiring contractors individually

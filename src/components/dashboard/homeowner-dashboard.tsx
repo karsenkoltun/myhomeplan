@@ -12,7 +12,7 @@ import {
   Home, Settings, CreditCard, Calendar,
   CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, ClipboardList, DollarSign,
-  Phone, ShoppingCart, AlertCircle,
+  Phone, AlertCircle,
   type LucideIcon,
 } from "lucide-react";
 import { usePropertyStore } from "@/stores/property-store";
@@ -168,7 +168,7 @@ export function HomeownerDashboard({
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard icon={ClipboardList} label="Active Services" value={selectedServices.length} delay={0.05} />
         <StatCard icon={Calendar} label="Upcoming" value={upcomingBookings.length} delay={0.1} />
-        <StatCard icon={DollarSign} label="Monthly Cost" value={Math.round(total)} prefix="$" delay={0.15} />
+        <StatCard icon={DollarSign} label="Monthly Cost" value={Number.isFinite(total) ? Math.round(total) : 0} prefix="$" delay={0.15} />
         <StatCard icon={CheckCircle2} label="Completed" value={completedCount} delay={0.2} />
       </div>
 
@@ -211,7 +211,7 @@ export function HomeownerDashboard({
                         <Icon className="h-3.5 w-3.5 text-muted-foreground" />
                         <span>{service.name}</span>
                       </div>
-                      <span className="font-medium">${price.toFixed(0)}/mo</span>
+                      <span className="font-medium">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
                     </div>
                   );
                 })}
@@ -342,12 +342,12 @@ export function HomeownerDashboard({
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
                 {[
                   { icon: Calendar, label: "Book Service", href: "/account/book" },
-                  { icon: ShoppingCart, label: "Buy Credits", desc: "Add-on services" },
-                  { icon: CreditCard, label: "Billing", desc: "Coming soon" },
+                  { icon: ClipboardList, label: "My Services", href: "/account/services" },
                   { icon: Settings, label: "Edit Property", href: "/account/property" },
-                  { icon: Home, label: "Browse Services", href: "/plan-builder" },
+                  { icon: Home, label: "Browse Plans", href: "/plan-builder" },
+                  { icon: CreditCard, label: "Settings", href: "/account/settings" },
                 ].map((action) => (
-                  <Link key={action.label} href={action.href || "#"}>
+                  <Link key={action.label} href={action.href}>
                     <motion.div
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
@@ -355,7 +355,6 @@ export function HomeownerDashboard({
                     >
                       <action.icon className="h-6 w-6 text-primary" />
                       <span className="text-xs font-semibold">{action.label}</span>
-                      {action.desc && <span className="text-[10px] text-muted-foreground">{action.desc}</span>}
                     </motion.div>
                   </Link>
                 ))}

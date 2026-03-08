@@ -390,8 +390,8 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
                       <span>{service.name}</span>
                     </div>
                     <div className="text-right">
-                      <span className="font-medium">${price.toFixed(0)}/mo</span>
-                      <span className="ml-1 text-[10px] text-muted-foreground">(${servicePerUnit.toFixed(2)}/unit)</span>
+                      <span className="font-medium">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
+                      <span className="ml-1 text-[10px] text-muted-foreground">(${(Number.isFinite(servicePerUnit) ? servicePerUnit : 0).toFixed(2)}/unit)</span>
                     </div>
                   </div>
                 );
@@ -427,21 +427,21 @@ export function StepStrataReview({ onComplete }: { onComplete: () => void }) {
                 <>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Subtotal</span>
-                    <span>${subtotalMonthly.toFixed(0)}/mo</span>
+                    <span>${(subtotalMonthly || 0).toFixed(0)}/mo</span>
                   </div>
                   <div className="flex items-center justify-between text-sm text-emerald-600">
                     <span className="flex items-center gap-1">
                       <TrendingDown className="h-3 w-3" />
                       Volume discount ({volumeDiscount.percent}%)
                     </span>
-                    <span>-${(subtotalMonthly - afterVolumeDiscount).toFixed(0)}/mo</span>
+                    <span>-${((subtotalMonthly - afterVolumeDiscount) || 0).toFixed(0)}/mo</span>
                   </div>
                 </>
               )}
               {intervalDiscount > 0 && (
                 <div className="flex items-center justify-between text-sm text-primary">
                   <span>{STRATA_PLAN_DISCOUNTS[intervalKey].label} discount</span>
-                  <span>-${(afterVolumeDiscount * intervalDiscount).toFixed(0)}/mo</span>
+                  <span>-${((afterVolumeDiscount * intervalDiscount) || 0).toFixed(0)}/mo</span>
                 </div>
               )}
             </div>

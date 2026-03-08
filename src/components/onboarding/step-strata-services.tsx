@@ -193,8 +193,8 @@ export const StepStrataServices = forwardRef<StepValidationRef>(function StepStr
                       Default: {service.frequency}
                     </span>
                     <div className="text-right">
-                      <span className="text-xs font-semibold text-primary">${price.toFixed(0)}/mo</span>
-                      <span className="ml-1.5 text-[10px] text-muted-foreground">(${perUnit.toFixed(2)}/unit)</span>
+                      <span className="text-xs font-semibold text-primary">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
+                      <span className="ml-1.5 text-[10px] text-muted-foreground">(${(Number.isFinite(perUnit) ? perUnit : 0).toFixed(2)}/unit)</span>
                     </div>
                   </div>
                 </div>

@@ -78,7 +78,7 @@ export function StepServiceSpecs() {
                   <span className="text-sm font-semibold">{service.name}</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm font-bold text-primary">${price.toFixed(0)}/mo</span>
+                  <span className="text-sm font-bold text-primary">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
                   <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
                     <ChevronDown className="h-4 w-4 text-muted-foreground" />
                   </motion.div>
@@ -157,7 +157,7 @@ function SpecFieldInput({
           <Input
             type="number"
             value={value as number}
-            onChange={(e) => onChange(Number(e.target.value))}
+            onChange={(e) => onChange(Number(e.target.value) || 0)}
             min={field.min}
             max={field.max}
             step={field.step}
