@@ -40,6 +40,18 @@ const valueItems: Gallery4Item[] = [
     description: "One plan. One payment. One place for everything.",
     image: "https://images.pexels.com/photos/7578901/pexels-photo-7578901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "local",
+    title: "Local First",
+    description: "We hire from your community. Your money stays local, supporting the pros in your area.",
+    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "accountability",
+    title: "Real Accountability",
+    description: "Every promise comes with a guarantee. We don't just talk about quality - we back it up.",
+    image: "https://images.pexels.com/photos/4491881/pexels-photo-4491881.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
 
 const stats = [

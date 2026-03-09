@@ -69,6 +69,24 @@ const whyItems: Gallery4Item[] = [
     description: "One point of contact who knows your portfolio. No call centers, no ticket queues.",
     image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "reporting",
+    title: "Owner-ready reports",
+    description: "Automated maintenance reports for property owners. Professional, detailed, and always on time.",
+    image: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "scaling",
+    title: "Scale without hiring",
+    description: "Add new properties without adding overhead. Our platform scales with your portfolio.",
+    image: "https://images.pexels.com/photos/323780/pexels-photo-323780.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "emergency",
+    title: "Emergency coordination",
+    description: "After-hours emergencies handled for you. We dispatch, you get the update.",
+    image: "https://images.pexels.com/photos/6419128/pexels-photo-6419128.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
 
 const steps = [

@@ -97,6 +97,7 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
 
     try {
       if (user) {
+        // Save profile (but NOT onboarding_complete - that happens after payment)
         await updateProfile(user.id, {
           first_name: firstName,
           last_name: lastName,
@@ -104,7 +105,6 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
           phone,
           street: property.address,
           province: "BC",
-          onboarding_complete: true,
           agreed_to_terms: true,
           agreed_to_privacy: true,
         });
@@ -140,7 +140,6 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
           driveway_length: property.drivewayLength,
           fence_type: property.fenceType,
           fence_linear_feet: property.fenceLinearFeet,
-          // New fields
           hvac_brand: property.hvacBrand,
           hvac_age: property.hvacAge,
           water_heater_type: property.waterHeaterType,
@@ -158,6 +157,8 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
           home_insurance_provider: property.homeInsuranceProvider,
         });
 
+        let subscriptionId: string | null = null;
+
         if (selectedServices.length > 0) {
           const serviceItems = selectedServiceData.map((s) => ({
             serviceId: s.id,
@@ -166,41 +167,66 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
             monthlyPrice: calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
           }));
 
-          await createSubscription(
+          const sub = await createSubscription(
             user.id,
             savedProperty.id,
             planInterval,
             total,
             discount,
-            serviceItems
+            serviceItems,
+            "trialing"
           );
+          subscriptionId = sub.id;
+        }
+
+        // Update local store before redirect
+        setAccount({
+          firstName,
+          lastName,
+          email,
+          phone,
+          dateOfBirth: "",
+          address: { street: property.address, unit: "", city: "", province: "BC", postalCode: "" },
+          mailingAddressSame: true,
+          preferredContact: "email",
+          emergencyContactName: "",
+          emergencyContactPhone: "",
+          howDidYouHear: "",
+          referralCode: "",
+          agreedToTerms: true,
+          agreedToPrivacy: true,
+          marketingOptIn: false,
+        });
+
+        // Redirect to Stripe Checkout
+        if (subscriptionId) {
+          const res = await fetch("/api/stripe/checkout", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              subscriptionId,
+              planInterval,
+              monthlyTotal: total,
+            }),
+          });
+
+          const data = await res.json();
+          if (data.url) {
+            window.location.href = data.url;
+            return;
+          }
+          throw new Error(data.error || "Failed to create checkout session");
         }
       }
 
-      setAccount({
-        firstName,
-        lastName,
-        email,
-        phone,
-        dateOfBirth: "",
-        address: { street: property.address, unit: "", city: "", province: "BC", postalCode: "" },
-        mailingAddressSame: true,
-        preferredContact: "email",
-        emergencyContactName: "",
-        emergencyContactPhone: "",
-        howDidYouHear: "",
-        referralCode: "",
-        agreedToTerms: true,
-        agreedToPrivacy: true,
-        marketingOptIn: false,
-      });
+      // Fallback if no services selected (shouldn't happen, but safe)
       completeOnboarding();
       setSubmitted(true);
       toast.success("Welcome to My Home Plan!");
       setTimeout(onComplete, 1500);
     } catch (error) {
       console.error("Failed to save:", error);
-      toast.error("Something went wrong saving your data. Please try again.");
+      toast.error("Something went wrong. Please try again.");
     } finally {
       setSaving(false);
     }
@@ -400,9 +426,9 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
         </Card>
 
         <ShimmerButton onClick={handleSubmit} className="h-12 w-full text-base" disabled={saving}>
-          {saving ? <><Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Saving...</> : <>Complete Setup <Sparkles className="ml-2 inline h-4 w-4" /></>}
+          {saving ? <><Loader2 className="mr-2 inline h-4 w-4 animate-spin" /> Saving...</> : <>Proceed to Payment <ArrowRight className="ml-2 inline h-4 w-4" /></>}
         </ShimmerButton>
-        <p className="text-center text-xs text-muted-foreground">No payment required today.</p>
+        <p className="text-center text-xs text-muted-foreground">You&apos;ll be redirected to our secure payment page.</p>
       </div>
     </div>
   );

@@ -185,6 +185,24 @@ const guaranteeItems: Gallery4Item[] = [
     description: "Monthly plans have zero contracts. No lock-in, no penalties.",
     image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "on-time",
+    title: "On-Time Guarantee",
+    description: "Miss a scheduled window and your next service is on us. We respect your time.",
+    image: "https://images.pexels.com/photos/1178684/pexels-photo-1178684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "transparent",
+    title: "Transparent Billing",
+    description: "See every charge broken down in your dashboard. No hidden fees, no fine print.",
+    image: "https://images.pexels.com/photos/6694571/pexels-photo-6694571.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "savings",
+    title: "Bundle Savings",
+    description: "The more services you add, the more you save. Annual plans save up to 20%.",
+    image: "https://images.pexels.com/photos/1459495/pexels-photo-1459495.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
 
 /* ═══════════════════════════════════════════

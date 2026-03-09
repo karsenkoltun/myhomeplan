@@ -148,6 +148,24 @@ const guaranteeItems: Gallery4Item[] = [
     description: "Acknowledged in 30 minutes. Routine requests within 24 hours. Your building is always covered.",
     image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "compliance",
+    title: "Compliance Tracking",
+    description: "Every inspection, certification, and renewal tracked automatically. Never miss a deadline.",
+    image: "https://images.pexels.com/photos/4491881/pexels-photo-4491881.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "transparent",
+    title: "Transparent Reporting",
+    description: "Council-ready reports delivered monthly. Every dollar accounted for, every service documented.",
+    image: "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "dedicated",
+    title: "Dedicated Support",
+    description: "One account manager who knows your building. Direct line, no ticket queues.",
+    image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
 
 /* --- SUB-COMPONENTS -------------------------------------------------- */

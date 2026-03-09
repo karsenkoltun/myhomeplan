@@ -320,7 +320,7 @@ export async function getSubscription(userId: string) {
     .from("subscriptions")
     .select("*, subscription_services(*)")
     .eq("profile_id", userId)
-    .eq("status", "active")
+    .in("status", ["active", "trialing"])
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -334,7 +334,8 @@ export async function createSubscription(
   planInterval: "monthly" | "quarterly" | "annual",
   monthlyTotal: number,
   discountPct: number,
-  services: { serviceId: string; frequency: string; specs: Record<string, unknown>; monthlyPrice: number }[]
+  services: { serviceId: string; frequency: string; specs: Record<string, unknown>; monthlyPrice: number }[],
+  status: "active" | "trialing" = "trialing"
 ) {
   const { data: sub, error: subError } = await supabase()
     .from("subscriptions")
@@ -344,7 +345,7 @@ export async function createSubscription(
       plan_interval: planInterval,
       monthly_total: monthlyTotal,
       discount_pct: discountPct,
-      status: "active" as const,
+      status,
     })
     .select()
     .single();
@@ -367,6 +368,16 @@ export async function createSubscription(
   }
 
   return sub;
+}
+
+export async function getSubscriptionByStripeId(stripeSubscriptionId: string) {
+  const { data, error } = await supabase()
+    .from("subscriptions")
+    .select("*, subscription_services(*)")
+    .eq("stripe_subscription_id", stripeSubscriptionId)
+    .single();
+  if (error) throw error;
+  return data;
 }
 
 // ---- SERVICES (from DB catalog) ----

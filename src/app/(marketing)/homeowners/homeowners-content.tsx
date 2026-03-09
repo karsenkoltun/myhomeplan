@@ -84,6 +84,24 @@ const whyItems: Gallery4Item[] = [
     description: "No surprise bills. Cancel anytime. Your rate is locked from day one.",
     image: "https://images.pexels.com/photos/7578901/pexels-photo-7578901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "seasonal",
+    title: "Seasonal autopilot",
+    description: "Spring cleanup, fall prep, winter snow removal - every seasonal task handled at the right time.",
+    image: "https://images.pexels.com/photos/1459495/pexels-photo-1459495.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "guarantee",
+    title: "Satisfaction guaranteed",
+    description: "Not happy with a service? We send another pro at no extra cost. Every job backed by our promise.",
+    image: "https://images.pexels.com/photos/8961251/pexels-photo-8961251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "history",
+    title: "Full service history",
+    description: "Every visit logged, every detail tracked. Know exactly what's been done and what's coming next.",
+    image: "https://images.pexels.com/photos/6444968/pexels-photo-6444968.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
 
 const marqueeServices = [

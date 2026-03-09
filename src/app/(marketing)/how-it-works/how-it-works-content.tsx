@@ -1,17 +1,14 @@
 "use client";
 
-import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton } from "@/components/ui/motion";
-import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
+import { Timeline } from "@/components/ui/timeline";
 import { Gallery4 } from "@/components/ui/gallery4";
 import type { Gallery4Item } from "@/components/ui/gallery4";
-import { motion, useInView } from "framer-motion";
 import {
   ArrowRight,
   Check,
-  X,
   Calendar,
   Home,
 } from "lucide-react";
@@ -21,22 +18,6 @@ import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee
 /* ------------------------------------------------------------------ */
 /*  Data                                                               */
 /* ------------------------------------------------------------------ */
-
-const oldWayItems = [
-  "Google contractors for hours",
-  "Wait days for quotes",
-  "Schedule each service yourself",
-  "Chase no-show contractors",
-  "Get hit with surprise fees",
-];
-
-const newWayItems = [
-  "Tell us about your home",
-  "One plan, one price",
-  "We schedule everything",
-  "Guaranteed service quality",
-  "Nothing gets forgotten",
-];
 
 const processSteps = [
   {
@@ -94,36 +75,19 @@ const guaranteeItems: Gallery4Item[] = [
     description: "Upgrade, downgrade, or cancel anytime. We earn your loyalty, we don't lock you into it.",
     image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
+  {
+    id: "vetted-pros",
+    title: "Vetted Professionals",
+    description: "Every contractor is licensed, insured, and background-checked. We never send strangers to your door.",
+    image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "damage",
+    title: "Damage Protection",
+    description: "If anything goes wrong during a service, we cover it. Full liability coverage on every visit.",
+    image: "https://images.pexels.com/photos/6419128/pexels-photo-6419128.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
 ];
-
-/* ------------------------------------------------------------------ */
-/*  Animated item wrapper                                              */
-/* ------------------------------------------------------------------ */
-
-function AnimatedItem({
-  children,
-  index = 0,
-  className = "",
-}: {
-  children: React.ReactNode;
-  index?: number;
-  className?: string;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
-}
 
 /* ------------------------------------------------------------------ */
 /*  Component                                                          */
@@ -258,116 +222,43 @@ export function HowItWorksContent() {
       </section>
 
       {/* ============================================================ */}
-      {/*  Old Way vs New Way                                          */}
+      {/*  Process Steps (Timeline)                                    */}
       {/* ============================================================ */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           <FadeIn>
             <div className="text-center">
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                The Difference
+                The Process
               </p>
               <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                There&apos;s a better way
+                Four steps to{" "}
+                <span className="text-primary">autopilot</span>
               </h2>
+              <p className="mx-auto mt-6 max-w-prose text-muted-foreground">
+                From sign-up to full home coverage in under 5 minutes. Here&apos;s how it works.
+              </p>
             </div>
           </FadeIn>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-2">
-            {/* Old Way */}
-            <AnimatedItem>
-              <div className="h-full rounded-2xl border border-red-200/40 bg-red-50/30 p-8 dark:border-red-500/10 dark:bg-red-950/10">
-                <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/10">
-                    <X className="h-4 w-4 text-red-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">
-                    The Old Way
-                  </h3>
-                </div>
-                <ul className="space-y-4">
-                  {oldWayItems.map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <X className="h-4 w-4 shrink-0 text-red-400" />
-                      <span className="text-sm text-red-800/70 dark:text-red-300/70">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AnimatedItem>
-
-            {/* New Way */}
-            <AnimatedItem index={1}>
-              <div className="h-full rounded-2xl border border-emerald-200/40 bg-emerald-50/30 p-8 dark:border-emerald-500/10 dark:bg-emerald-950/10">
-                <div className="mb-8 flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/10">
-                    <Check className="h-4 w-4 text-emerald-500" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
-                    The My Home Plan Way
-                  </h3>
-                </div>
-                <ul className="space-y-4">
-                  {newWayItems.map((item) => (
-                    <li key={item} className="flex items-center gap-3">
-                      <Check className="h-4 w-4 shrink-0 text-emerald-500" />
-                      <span className="text-sm text-emerald-800/70 dark:text-emerald-300/70">
-                        {item}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </AnimatedItem>
-          </div>
-        </div>
-      </section>
-
-      {/* ============================================================ */}
-      {/*  Process Steps                                               */}
-      {/* ============================================================ */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid md:grid-cols-2 md:gap-8 xl:gap-12">
-            <div className="left-0 top-0 md:sticky md:h-svh md:py-12">
-              <FadeIn>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                  The Process
-                </p>
-                <h2 className="mb-6 mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                  Four steps to{" "}
-                  <span className="text-primary">autopilot</span>
-                </h2>
-                <p className="max-w-prose text-muted-foreground">
-                  From sign-up to full home coverage in under 5 minutes. Here&apos;s how it works.
-                </p>
-              </FadeIn>
-            </div>
-            <ContainerScroll className="min-h-[300vh] space-y-8 py-12">
-              {processSteps.map((step, index) => (
-                <CardSticky
-                  key={step.num}
-                  index={index + 2}
-                  className="rounded-2xl border border-border/50 bg-card p-8 shadow-md backdrop-blur-md"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="my-6 text-2xl font-bold tracking-tighter">
+          <div className="mt-16">
+            <Timeline
+              data={processSteps.map((step) => ({
+                title: step.num,
+                content: (
+                  <div className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm">
+                    <h3 className="text-2xl font-bold tracking-tight">
                       {step.title}
                     </h3>
-                    <span className="text-2xl font-bold text-primary">
-                      {step.num}
-                    </span>
+                    <p className="mt-4 text-muted-foreground">{step.description}</p>
+                    <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span className="text-sm font-medium text-primary">{step.badge}</span>
+                    </div>
                   </div>
-                  <p className="text-muted-foreground">{step.description}</p>
-                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-                    <Check className="h-4 w-4 text-primary" />
-                    <span className="text-sm font-medium text-primary">{step.badge}</span>
-                  </div>
-                </CardSticky>
-              ))}
-            </ContainerScroll>
+                ),
+              }))}
+            />
           </div>
         </div>
       </section>

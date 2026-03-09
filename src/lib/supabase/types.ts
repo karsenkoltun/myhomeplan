@@ -498,6 +498,16 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["service_credits"]["Row"]> & { subscription_id: string; service_id: string; total_credits: number };
         Update: Partial<Database["public"]["Tables"]["service_credits"]["Row"]>;
       };
+      stripe_webhook_events: {
+        Row: {
+          id: string;
+          type: string;
+          processed_at: string;
+          data: Json | null;
+        };
+        Insert: Partial<Database["public"]["Tables"]["stripe_webhook_events"]["Row"]> & { id: string; type: string };
+        Update: Partial<Database["public"]["Tables"]["stripe_webhook_events"]["Row"]>;
+      };
       pricing_multipliers: {
         Row: {
           id: string;

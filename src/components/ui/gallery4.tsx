@@ -93,6 +93,7 @@ const Gallery4 = ({
         <Carousel
           setApi={setCarouselApi}
           opts={{
+            loop: true,
             breakpoints: {
               "(max-width: 768px)": {
                 dragFree: true,

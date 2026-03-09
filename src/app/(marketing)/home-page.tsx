@@ -7,8 +7,8 @@ import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
 import { FlowButton } from "@/components/ui/flow-button";
 import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect, useCallback } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 import { Gallery4 } from "@/components/ui/gallery4";
@@ -18,6 +18,12 @@ import {
   ArrowRight,
   Check,
   X,
+  Shield,
+  Clock,
+  Wrench,
+  Users,
+  Home,
+  DollarSign,
 } from "lucide-react";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -38,11 +44,44 @@ const solutions = [
   "Cancel anytime, no contracts",
 ];
 
-const stats = [
-  { value: 15, suffix: "+", label: "Services", sublabel: "under one roof" },
-  { value: 847, suffix: "", label: "$847", sublabel: "avg. annual savings", prefix: "" },
-  { value: 100, suffix: "%", label: "Vetted", sublabel: "contractors insured" },
-  { value: 2, suffix: " min", label: "Setup", sublabel: "to build your plan" },
+const rotatingWords = [
+  "overpriced contractors",
+  "surprise repair bills",
+  "unreliable service",
+  "endless Googling for quotes",
+  "weekend coordination",
+  "no-show contractors",
+];
+
+const impactStats = [
+  {
+    icon: Wrench,
+    value: 30,
+    suffix: "+",
+    label: "Services available",
+    sublabel: "Lawn, snow, HVAC, cleaning, plumbing, and more - all under one roof.",
+  },
+  {
+    icon: Users,
+    value: 50,
+    suffix: "+",
+    label: "Local contractors connected",
+    sublabel: "The best your region has to offer, vetted and ready to go.",
+  },
+  {
+    icon: Clock,
+    value: 5,
+    suffix: " min",
+    label: "To build your plan",
+    sublabel: "Custom to your home, your services, your schedule.",
+  },
+  {
+    icon: Shield,
+    value: 100,
+    suffix: "%",
+    label: "Insured & licensed",
+    sublabel: "Every single contractor. Every single visit. No exceptions.",
+  },
 ];
 
 const whyItems: Gallery4Item[] = [
@@ -69,6 +108,24 @@ const whyItems: Gallery4Item[] = [
     title: "Predictable pricing",
     description: "No surprise bills. Ever. Your rate is locked from day one.",
     image: "https://images.pexels.com/photos/7578901/pexels-photo-7578901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "seasonal",
+    title: "Seasonal autopilot",
+    description: "Spring cleanup, fall prep, winter snow - every seasonal task scheduled at the right time automatically.",
+    image: "https://images.pexels.com/photos/1459495/pexels-photo-1459495.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "dashboard",
+    title: "Your home dashboard",
+    description: "Track every service, view history, and see what's coming next - all from one place.",
+    image: "https://images.pexels.com/photos/6444968/pexels-photo-6444968.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
+  },
+  {
+    id: "guarantee",
+    title: "Satisfaction guaranteed",
+    description: "Not happy with a service? We send another pro at no cost. Every job is backed by our promise.",
+    image: "https://images.pexels.com/photos/8961251/pexels-photo-8961251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -144,44 +201,73 @@ function RevealItem({
   );
 }
 
-function StatItem({
+function RotatingWord({ words }: { words: string[] }) {
+  const [index, setIndex] = useState(0);
+
+  const advance = useCallback(() => {
+    setIndex((prev) => (prev + 1) % words.length);
+  }, [words.length]);
+
+  useEffect(() => {
+    const timer = setInterval(advance, 2500);
+    return () => clearInterval(timer);
+  }, [advance]);
+
+  return (
+    <span className="relative inline-flex h-[1.2em] overflow-hidden align-bottom">
+      <AnimatePresence mode="wait">
+        <motion.span
+          key={words[index]}
+          initial={{ y: "100%", opacity: 0 }}
+          animate={{ y: 0, opacity: 1 }}
+          exit={{ y: "-100%", opacity: 0 }}
+          transition={{ duration: 0.4, ease: [0.21, 0.47, 0.32, 0.98] }}
+          className="text-primary"
+        >
+          {words[index]}
+        </motion.span>
+      </AnimatePresence>
+    </span>
+  );
+}
+
+function ImpactStatItem({
   stat,
   index,
 }: {
-  stat: (typeof stats)[0];
+  stat: (typeof impactStats)[0];
   index: number;
 }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
+  const Icon = stat.icon;
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 24 }}
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{
         duration: 0.5,
-        delay: index * 0.1,
+        delay: index * 0.12,
         ease: [0.21, 0.47, 0.32, 0.98],
       }}
-      className="text-center"
+      className="flex flex-col items-center text-center"
     >
-      <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
-        {stat.label === "$847" ? (
-          isInView ? (
-            <>
-              $<AnimatedCounter target={847} duration={1.5} />
-            </>
-          ) : (
-            "$0"
-          )
-        ) : isInView ? (
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+        <Icon className="h-6 w-6 text-primary" />
+      </div>
+      <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+        {isInView ? (
           <AnimatedCounter target={stat.value} suffix={stat.suffix} duration={1.5} />
         ) : (
           "0"
         )}
       </p>
-      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+      <p className="mt-1 text-sm font-semibold text-foreground sm:text-base">
+        {stat.label}
+      </p>
+      <p className="mt-1 max-w-[220px] text-sm text-muted-foreground">
         {stat.sublabel}
       </p>
     </motion.div>
@@ -255,16 +341,25 @@ export default function HomePage() {
       </section>
 
       {/* ══════════ STATS BANNER ══════════ */}
-      <section className="border-y border-border/40 py-20 sm:py-24">
+      <section className="border-y border-border/40 py-20 sm:py-28">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          {/* Headline with rotating word */}
           <FadeIn>
-            <p className="mb-12 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-16 sm:text-sm">
-              By the numbers
-            </p>
+            <div className="mx-auto mb-16 max-w-3xl text-center sm:mb-20">
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Saving you from{" "}
+                <RotatingWord words={rotatingWords} />
+              </h2>
+              <p className="mt-5 text-lg text-muted-foreground">
+                We turn unpredictable, expensive home maintenance into a predictable monthly investment - so you can stop worrying and start enjoying your home.
+              </p>
+            </div>
           </FadeIn>
-          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
-            {stats.map((stat, i) => (
-              <StatItem key={i} stat={stat} index={i} />
+
+          {/* Stat cards */}
+          <div className="grid grid-cols-2 gap-10 md:grid-cols-4 md:gap-8">
+            {impactStats.map((stat, i) => (
+              <ImpactStatItem key={stat.label} stat={stat} index={i} />
             ))}
           </div>
         </div>
