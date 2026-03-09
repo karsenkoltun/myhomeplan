@@ -1,18 +1,18 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton } from "@/components/ui/motion";
+import { Timeline } from "@/components/ui/timeline";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 import { motion, useInView } from "framer-motion";
 import {
   ArrowRight,
   Check,
   X,
   Shield,
-  Clock,
-  DollarSign,
-  Unlock,
   ClipboardList,
   Users,
   Calendar,
@@ -41,65 +41,113 @@ const newWayItems = [
   "Nothing gets forgotten",
 ];
 
-const steps = [
+const timelineData = [
   {
-    number: "01",
-    title: "Build Your Plan",
-    icon: ClipboardList,
-    headline: "Pick the services your home needs",
-    description:
-      "Choose from lawn care, snow removal, window cleaning, gutter maintenance, and more. We recommend a plan based on your home type, size, and location.",
-    detail: "Takes under 5 minutes",
+    title: "Step 1",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <ClipboardList className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
+          Build Your Plan
+        </h3>
+        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
+          Choose from lawn care, snow removal, window cleaning, gutter maintenance, and more. We recommend a plan based on your home type, size, and location.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+          <Check className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-primary">Takes under 5 minutes</span>
+        </div>
+      </div>
+    ),
   },
   {
-    number: "02",
-    title: "We Match Pros",
-    icon: Users,
-    headline: "Vetted contractors assigned to your home",
-    description:
-      "We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.",
-    detail: "All pros are pre-vetted",
+    title: "Step 2",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Users className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
+          We Match You With Pros
+        </h3>
+        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
+          We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+          <Check className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-primary">All pros are pre-vetted</span>
+        </div>
+      </div>
+    ),
   },
   {
-    number: "03",
-    title: "Auto-Scheduled",
-    icon: Calendar,
-    headline: "Services happen on time, every time",
-    description:
-      "Your maintenance calendar is built automatically. Services are scheduled at the right time of year, and you get notified before every visit.",
-    detail: "Zero effort from you",
+    title: "Step 3",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Calendar className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
+          Everything Gets Auto-Scheduled
+        </h3>
+        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
+          Your maintenance calendar is built automatically. Services are scheduled at the right time of year, and you get notified before every visit.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+          <Check className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-primary">Zero effort from you</span>
+        </div>
+      </div>
+    ),
   },
   {
-    number: "04",
-    title: "Stay Protected",
-    icon: Shield,
-    headline: "Your home stays in top shape year-round",
-    description:
-      "Track completed services, upcoming visits, and your home's maintenance history in your dashboard. We handle everything so you don't have to.",
-    detail: "Full visibility always",
+    title: "Step 4",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Shield className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
+          Your Home Stays Protected
+        </h3>
+        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
+          Track completed services, upcoming visits, and your home's maintenance history in your dashboard. We handle everything so you don't have to.
+        </p>
+        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+          <Check className="h-4 w-4 text-primary" />
+          <span className="text-sm font-medium text-primary">Full visibility always</span>
+        </div>
+      </div>
+    ),
   },
 ];
 
-const guarantees = [
+const guaranteeItems: Gallery4Item[] = [
   {
-    icon: Clock,
+    id: "on-time",
     title: "On-Time Guarantee",
-    description: "Miss a window and your next service is free.",
+    description: "Miss a window and your next service is free. We respect your time because we know it's valuable.",
+    image: "https://images.pexels.com/photos/1178684/pexels-photo-1178684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: DollarSign,
+    id: "price-lock",
     title: "Price Lock",
-    description: "No surprise charges. No rate hikes. Ever.",
+    description: "No surprise charges. No rate hikes. Your price stays locked from day one.",
+    image: "https://images.pexels.com/photos/3943716/pexels-photo-3943716.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: Shield,
+    id: "quality",
     title: "Quality Guarantee",
-    description: "Not happy? We send another pro at no cost.",
+    description: "Not happy with a service? We send another pro at no cost. Every job is backed by our quality promise.",
+    image: "https://images.pexels.com/photos/8961251/pexels-photo-8961251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: Unlock,
+    id: "no-lock-in",
     title: "No Lock-In",
-    description: "Upgrade, downgrade, or cancel anytime.",
+    description: "Upgrade, downgrade, or cancel anytime. We earn your loyalty, we don't lock you into it.",
+    image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -137,8 +185,6 @@ function AnimatedItem({
 /* ------------------------------------------------------------------ */
 
 export function HowItWorksContent() {
-  const [activeStep, setActiveStep] = useState(0);
-
   return (
     <div className="flex flex-col">
       {/* ============================================================ */}
@@ -335,129 +381,35 @@ export function HowItWorksContent() {
       </section>
 
       {/* ============================================================ */}
-      {/*  Interactive Timeline                                        */}
+      {/*  Timeline                                                    */}
       {/* ============================================================ */}
-      <section className="bg-muted/30 py-24 sm:py-32">
+      <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           <FadeIn>
-            <div className="text-center">
+            <div className="max-w-4xl">
               <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
                 The Process
               </p>
               <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
                 Four steps to autopilot
               </h2>
+              <p className="mt-4 max-w-lg text-muted-foreground">
+                From sign-up to full home coverage in under 5 minutes. Here's how it works.
+              </p>
             </div>
           </FadeIn>
-
-          <div className="mt-16 grid items-start gap-12 lg:grid-cols-[320px_1fr] lg:gap-16">
-            {/* Left - step selector */}
-            <FadeIn delay={0.1}>
-              <div className="space-y-3">
-                {steps.map((step, i) => {
-                  const isActive = activeStep === i;
-                  return (
-                    <button
-                      key={step.number}
-                      onClick={() => setActiveStep(i)}
-                      className={`flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-300 ${
-                        isActive
-                          ? "border-primary/20 bg-primary/5 shadow-lg shadow-black/5"
-                          : "border-border/50 bg-card hover:border-border hover:shadow-lg hover:shadow-black/5"
-                      }`}
-                    >
-                      <div
-                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors duration-300 ${
-                          isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground"
-                        }`}
-                      >
-                        {step.number}
-                      </div>
-                      <div>
-                        <p
-                          className={`text-sm font-semibold transition-colors duration-300 ${
-                            isActive
-                              ? "text-foreground"
-                              : "text-muted-foreground"
-                          }`}
-                        >
-                          {step.title}
-                        </p>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </FadeIn>
-
-            {/* Right - active step detail */}
-            <FadeIn delay={0.2}>
-              <motion.div
-                key={activeStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, ease: "easeOut" }}
-                className="rounded-2xl border border-border/50 bg-card p-8 shadow-lg shadow-black/5 sm:p-10"
-              >
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  {(() => {
-                    const Icon = steps[activeStep].icon;
-                    return <Icon className="h-6 w-6 text-primary" />;
-                  })()}
-                </div>
-                <h3 className="mt-6 text-2xl font-bold tracking-tight">
-                  {steps[activeStep].headline}
-                </h3>
-                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
-                  {steps[activeStep].description}
-                </p>
-                <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-                  <Check className="h-4 w-4 text-primary" />
-                  <span className="text-sm font-medium text-primary">
-                    {steps[activeStep].detail}
-                  </span>
-                </div>
-              </motion.div>
-            </FadeIn>
-          </div>
         </div>
+        <Timeline data={timelineData} />
       </section>
 
       {/* ============================================================ */}
       {/*  Guarantees                                                  */}
       {/* ============================================================ */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                Our Promise
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Backed by real guarantees
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {guarantees.map((g, i) => (
-              <AnimatedItem key={g.title} index={i}>
-                <div className="group h-full rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/5">
-                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-                    <g.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="text-sm font-semibold">{g.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-                    {g.description}
-                  </p>
-                </div>
-              </AnimatedItem>
-            ))}
-          </div>
-        </div>
-      </section>
+      <Gallery4
+        title="Backed by real guarantees"
+        description="Every plan comes with promises we actually keep. No fine print, no exceptions."
+        items={guaranteeItems}
+      />
 
       {/* ============================================================ */}
       {/*  Testimonials                                                */}

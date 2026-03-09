@@ -8,6 +8,8 @@ import { useRef } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 
 import {
   ArrowRight,
@@ -28,10 +30,6 @@ import {
   Wrench,
   ClipboardList,
   Users,
-  Zap,
-  Lock,
-  HeartHandshake,
-  Siren,
 } from "lucide-react";
 
 /* --- DATA ----------------------------------------------------------- */
@@ -113,21 +111,24 @@ const pricingTiers = [
   },
 ];
 
-const guarantees = [
+const guaranteeItems: Gallery4Item[] = [
   {
-    icon: HeartHandshake,
+    id: "quality",
     title: "Quality Guarantee",
-    desc: "Any service below standard gets re-done at no cost.",
+    description: "Any service below standard gets re-done at no cost. We stand behind every job.",
+    image: "https://images.pexels.com/photos/8961251/pexels-photo-8961251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: Lock,
+    id: "price-lock",
     title: "Price Lock Guarantee",
-    desc: "Your per-unit rate is locked for the full contract term.",
+    description: "Your per-unit rate is locked for the full contract term. No surprise assessments.",
+    image: "https://images.pexels.com/photos/3943716/pexels-photo-3943716.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: Zap,
+    id: "emergency",
     title: "Emergency Response",
-    desc: "Acknowledged in 30 minutes. Routine requests within 24 hours.",
+    description: "Acknowledged in 30 minutes. Routine requests within 24 hours. Your building is always covered.",
+    image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -292,40 +293,6 @@ function PricingCard({
   );
 }
 
-function GuaranteeCard({
-  guarantee,
-  index,
-}: {
-  guarantee: (typeof guarantees)[0];
-  index: number;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1,
-        ease: [0.21, 0.47, 0.32, 0.98],
-      }}
-      className="rounded-2xl border border-border/50 bg-card p-6 text-center transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 sm:p-8"
-    >
-      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 transition-transform duration-300 hover:scale-110">
-        <guarantee.icon className="h-6 w-6 text-emerald-600" />
-      </div>
-      <h3 className="mt-5 text-lg font-semibold tracking-tight">
-        {guarantee.title}
-      </h3>
-      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-        {guarantee.desc}
-      </p>
-    </motion.div>
-  );
-}
 
 /* --- DASHBOARD MOCKUP ------------------------------------------------ */
 
@@ -599,25 +566,11 @@ export function StrataContent() {
       </section>
 
       {/* ========== GUARANTEES ========== */}
-      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                Our promises
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                Guarantees built into every plan
-              </h2>
-            </div>
-          </FadeIn>
-          <div className="mx-auto mt-14 grid max-w-4xl gap-5 sm:mt-16 sm:grid-cols-3">
-            {guarantees.map((g, i) => (
-              <GuaranteeCard key={g.title} guarantee={g} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Gallery4
+        title="Guarantees built into every plan"
+        description="Real promises backed by real accountability. No fine print."
+        items={guaranteeItems}
+      />
 
       {/* ========== TESTIMONIALS ========== */}
       <section className="py-24 sm:py-32">

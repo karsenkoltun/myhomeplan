@@ -2,38 +2,133 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import { FAQ } from "@/components/ui/faq-tabs";
+import { PricingTable } from "@/components/ui/pricing-table";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { PLAN_TIERS, PLAN_DISCOUNTS, type PlanInterval } from "@/data/services";
-import { ArrowRight, Check, Shield, Lock, XCircle, Sparkles, Clock, HelpCircle } from "lucide-react";
+import { PLAN_DISCOUNTS, type PlanInterval } from "@/data/services";
+import { ArrowRight, Check, Home, Building2, Building, Wrench } from "lucide-react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 
-/* ─── Plan card accent colors ─── */
-const PLAN_COLORS: Record<string, { border: string; badge: string; glow: string }> = {
-  minimum: {
-    border: "border-t-emerald-500",
-    badge: "bg-emerald-500/10 text-emerald-600",
-    glow: "group-hover:shadow-emerald-500/10",
+/* ─── Home type presets ─── */
+const homeTypes = [
+  {
+    id: "suburban",
+    icon: Home,
+    name: "Suburban Home",
+    tagline: "Full indoor + outdoor coverage",
+    description:
+      "Detached homes with yards, driveways, and all the maintenance that comes with them.",
   },
-  fundamentals: {
-    border: "border-t-primary",
-    badge: "bg-primary/10 text-primary",
-    glow: "group-hover:shadow-primary/10",
+  {
+    id: "townhome",
+    icon: Building2,
+    name: "Townhome",
+    tagline: "Exterior + interior essentials",
+    description:
+      "Shared walls, private entrance. Less yard work, more focus on cleaning and exterior upkeep.",
   },
-  premium: {
-    border: "border-t-amber-500",
-    badge: "bg-amber-500/10 text-amber-600",
-    glow: "group-hover:shadow-amber-500/10",
+  {
+    id: "condo",
+    icon: Building,
+    name: "Condo / Apartment",
+    tagline: "Interior-focused care",
+    description:
+      "No yard, no exterior. Keep your unit spotless and systems running smoothly.",
   },
+];
+
+/* ─── Pricing plans per home type ─── */
+const suburbanPlans = [
+  { name: "Essential", level: "essential", price: { monthly: 89, yearly: 890 } },
+  { name: "Complete", level: "complete", price: { monthly: 159, yearly: 1590 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 249, yearly: 2490 } },
+];
+
+const townhomePlans = [
+  { name: "Essential", level: "essential", price: { monthly: 69, yearly: 690 } },
+  { name: "Complete", level: "complete", price: { monthly: 119, yearly: 1190 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 189, yearly: 1890 } },
+];
+
+const condoPlans = [
+  { name: "Essential", level: "essential", price: { monthly: 49, yearly: 490 } },
+  { name: "Complete", level: "complete", price: { monthly: 89, yearly: 890 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 149, yearly: 1490 } },
+];
+
+/* ─── Features per home type ─── */
+const suburbanFeatures = [
+  { name: "Bi-weekly lawn mowing", included: "essential" },
+  { name: "Snow removal", included: "essential" },
+  { name: "Spring + fall cleanup", included: "essential" },
+  { name: "Gutter cleaning (2x/yr)", included: "essential" },
+  { name: "Window washing (2x/yr)", included: "complete" },
+  { name: "HVAC tune-ups", included: "complete" },
+  { name: "Monthly house cleaning", included: "complete" },
+  { name: "Quarterly pest control", included: "complete" },
+  { name: "Handyman hours (2hrs/mo)", included: "complete" },
+  { name: "Lawn fertilization", included: "premium" },
+  { name: "Pressure washing", included: "premium" },
+  { name: "Appliance maintenance", included: "premium" },
+  { name: "Priority scheduling", included: "premium" },
+  { name: "Dedicated account manager", included: "premium" },
+];
+
+const townhomeFeatures = [
+  { name: "Exterior cleaning (2x/yr)", included: "essential" },
+  { name: "Snow removal (walkways)", included: "essential" },
+  { name: "Gutter cleaning (2x/yr)", included: "essential" },
+  { name: "Bi-weekly house cleaning", included: "complete" },
+  { name: "Window washing (2x/yr)", included: "complete" },
+  { name: "HVAC tune-ups", included: "complete" },
+  { name: "Quarterly pest control", included: "complete" },
+  { name: "Small yard maintenance", included: "complete" },
+  { name: "Pressure washing", included: "premium" },
+  { name: "Handyman hours (2hrs/mo)", included: "premium" },
+  { name: "Appliance maintenance", included: "premium" },
+  { name: "Priority scheduling", included: "premium" },
+];
+
+const condoFeatures = [
+  { name: "Bi-weekly house cleaning", included: "essential" },
+  { name: "HVAC filter replacement", included: "essential" },
+  { name: "Monthly deep clean", included: "complete" },
+  { name: "Window washing (interior)", included: "complete" },
+  { name: "Quarterly pest control", included: "complete" },
+  { name: "Appliance maintenance", included: "complete" },
+  { name: "Handyman hours (2hrs/mo)", included: "premium" },
+  { name: "Laundry & organizing", included: "premium" },
+  { name: "Priority scheduling", included: "premium" },
+  { name: "Dedicated account manager", included: "premium" },
+];
+
+const plansByType: Record<string, typeof suburbanPlans> = {
+  suburban: suburbanPlans,
+  townhome: townhomePlans,
+  condo: condoPlans,
+};
+
+const featuresByType: Record<string, typeof suburbanFeatures> = {
+  suburban: suburbanFeatures,
+  townhome: townhomeFeatures,
+  condo: condoFeatures,
 };
 
 /* ─── FAQ data ─── */
 const faqCategories = { general: "General" };
 const faqData = {
   general: [
+    {
+      question: "Are prices exact or estimates?",
+      answer:
+        "Starting prices shown are estimates based on typical home sizes. Your actual price is calculated when you enter your property details in the Plan Builder - it factors in square footage, lot size, and your specific service selections.",
+    },
     {
       question: "Can I switch plans later?",
       answer:
@@ -42,7 +137,7 @@ const faqData = {
     {
       question: "Are there any hidden fees or contracts?",
       answer:
-        "No hidden fees, ever. Monthly plans have zero contracts. Quarterly and annual plans are prorated if you cancel early.",
+        "No hidden fees, ever. Monthly plans have zero contracts. Yearly plans are prorated if you cancel early.",
     },
     {
       question: "How does the Price Lock Guarantee work?",
@@ -57,237 +152,49 @@ const faqData = {
     {
       question: "What if I'm not satisfied with a service?",
       answer:
-        "We stand behind our work. If you're not happy, we'll send the contractor back to redo it at no extra cost. If the issue persists, we'll assign a different contractor.",
+        "We stand behind our work. If you're not happy, we'll send the contractor back to redo it at no extra cost.",
     },
     {
-      question: "How is pricing calculated?",
+      question: "Can I add or remove services?",
       answer:
-        "Pricing is based on your property size (home square footage and lot size), the services you select, and how frequently you need them. Use our Plan Builder to see exact pricing for your property.",
-    },
-    {
-      question: "Can I add or remove services during my plan?",
-      answer:
-        "Absolutely. You can customize your service lineup anytime. Added services are prorated for the current billing period, and removed services take effect at the next cycle.",
+        "Absolutely. You can customize your service lineup anytime. Added services are prorated, removed services take effect at the next cycle.",
     },
     {
       question: "Do you serve my area?",
       answer:
-        "We currently serve 7 cities in the Okanagan Valley: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland. We're expanding soon to more BC cities.",
-    },
-    {
-      question: "What payment methods do you accept?",
-      answer:
-        "We accept all major credit cards (Visa, Mastercard, American Express) and bank transfers. All payments are processed securely through Stripe.",
-    },
-    {
-      question: "Is there a minimum commitment?",
-      answer:
-        "Monthly plans have zero commitment - cancel anytime. Quarterly plans have a 3-month minimum and annual plans a 12-month minimum, but both come with significant savings.",
+        "We currently serve 7 cities in the Okanagan Valley: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland.",
     },
   ],
 };
 
-/* ─── Guarantees ─── */
-const GUARANTEES = [
+/* ─── Guarantee gallery items ─── */
+const guaranteeItems: Gallery4Item[] = [
   {
-    icon: Lock,
+    id: "price-lock",
     title: "Price Lock",
-    desc: "Rate locked for 12 months.",
+    description: "Your rate is locked for 12 months. No surprise charges, no rate hikes.",
+    image: "https://images.pexels.com/photos/3943716/pexels-photo-3943716.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: Shield,
+    id: "satisfaction",
     title: "Satisfaction Guarantee",
-    desc: "Not happy? We redo it free.",
+    description: "Not happy with a service? We redo it at no cost. Every single time.",
+    image: "https://images.pexels.com/photos/8961251/pexels-photo-8961251.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    icon: XCircle,
+    id: "cancel",
     title: "Cancel Anytime",
-    desc: "Monthly plans, zero contracts.",
+    description: "Monthly plans have zero contracts. No lock-in, no penalties.",
+    image: "https://images.pexels.com/photos/5691658/pexels-photo-5691658.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
-
-/* ─── Animated card wrapper ─── */
-function PlanCard({
-  plan,
-  interval,
-  getPrice,
-  getSavings,
-  index,
-}: {
-  plan: (typeof PLAN_TIERS)[number];
-  interval: PlanInterval;
-  getPrice: (base: number) => number;
-  getSavings: (base: number) => number;
-  index: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-60px" });
-  const colors = PLAN_COLORS[plan.id] ?? PLAN_COLORS.minimum;
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 40 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="group relative"
-    >
-      <div
-        className={`relative flex h-full flex-col rounded-2xl border border-border/50 border-t-2 ${colors.border} bg-background p-8 transition-all duration-300 hover:shadow-lg hover:shadow-black/5 ${colors.glow} ${
-          plan.highlighted ? "ring-1 ring-primary/20" : ""
-        }`}
-      >
-        {/* Badge */}
-        {plan.highlighted && (
-          <div className="absolute -top-3 left-8">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1 text-xs font-semibold text-primary-foreground shadow-sm">
-              <Sparkles className="h-3 w-3" />
-              Most Popular
-            </span>
-          </div>
-        )}
-        {plan.id === "premium" && (
-          <div className="absolute -top-3 left-8">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-500 px-3 py-1 text-xs font-semibold text-white shadow-sm">
-              <Clock className="h-3 w-3" />
-              Priority
-            </span>
-          </div>
-        )}
-
-        {/* Plan name + tagline */}
-        <div className="mt-2">
-          <h3 className="text-lg font-semibold">{plan.name}</h3>
-          <p className="mt-1 text-sm text-muted-foreground">{plan.tagline}</p>
-        </div>
-
-        {/* Pricing */}
-        <div className="mt-6 flex items-baseline gap-1">
-          <span className="text-sm text-muted-foreground">From</span>
-          <AnimatePresence mode="wait">
-            <motion.span
-              key={`${plan.id}-${interval}`}
-              initial={{ opacity: 0, y: -12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 12 }}
-              transition={{ duration: 0.2 }}
-              className="text-4xl font-bold tracking-tight"
-            >
-              ${getPrice(plan.startingPrice)}
-            </motion.span>
-          </AnimatePresence>
-          <span className="text-sm text-muted-foreground">/mo</span>
-        </div>
-
-        {/* Savings badge */}
-        <div className="h-7 mt-2">
-          {interval !== "monthly" && (
-            <AnimatePresence mode="wait">
-              <motion.span
-                key={`savings-${plan.id}-${interval}`}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-semibold text-emerald-600"
-              >
-                Save ${getSavings(plan.startingPrice)}/yr
-              </motion.span>
-            </AnimatePresence>
-          )}
-        </div>
-
-        {/* Divider */}
-        <div className="my-6 h-px bg-border/50" />
-
-        {/* Features */}
-        <ul className="flex-1 space-y-3">
-          {plan.features.map((feature) => (
-            <li key={feature} className="flex items-start gap-3">
-              <Check className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-              <span className="text-sm text-muted-foreground">{feature}</span>
-            </li>
-          ))}
-        </ul>
-
-        {/* Best for */}
-        <p className="mt-6 text-xs text-muted-foreground">
-          <span className="font-medium text-foreground">Best for:</span>{" "}
-          {plan.bestFor}
-        </p>
-
-        {/* CTA */}
-        <div className="mt-6">
-          {plan.highlighted ? (
-            <Link href="/onboarding">
-              <ShimmerButton className="w-full py-3 text-sm font-medium">
-                Get Started
-                <ArrowRight className="ml-2 inline h-4 w-4" />
-              </ShimmerButton>
-            </Link>
-          ) : (
-            <Button
-              variant="outline"
-              size="lg"
-              className="w-full"
-              asChild
-            >
-              <Link href="/onboarding">
-                Get Started
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          )}
-        </div>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ─── Guarantee card ─── */
-function GuaranteeCard({
-  item,
-  index,
-}: {
-  item: (typeof GUARANTEES)[number];
-  index: number;
-}) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-40px" });
-  const Icon = item.icon;
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={inView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.45, delay: index * 0.1 }}
-      className="rounded-2xl border border-border/50 bg-background p-8 text-center transition-all duration-300 hover:shadow-lg hover:shadow-black/5"
-    >
-      <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-        <Icon className="h-5 w-5 text-primary" />
-      </div>
-      <h4 className="text-sm font-semibold">{item.title}</h4>
-      <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
-    </motion.div>
-  );
-}
 
 /* ═══════════════════════════════════════════
    Main Component
    ═══════════════════════════════════════════ */
 export default function PricingContent() {
-  const [interval, setInterval] = useState<PlanInterval>("monthly");
-
-  const getPrice = (basePrice: number) => {
-    const discount = PLAN_DISCOUNTS[interval].discount;
-    return Math.round(basePrice * (1 - discount));
-  };
-
-  const getSavings = (basePrice: number) => {
-    const monthlyTotal = basePrice * 12;
-    const discount = PLAN_DISCOUNTS[interval].discount;
-    return Math.round(monthlyTotal - monthlyTotal * (1 - discount));
-  };
+  const [selectedType, setSelectedType] = useState("suburban");
+  const router = useRouter();
 
   return (
     <div className="flex flex-col overflow-x-hidden">
@@ -300,135 +207,114 @@ export default function PricingContent() {
                 Simple, Transparent Pricing
               </p>
               <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Plans that fit every home
+                Plans built for your home type
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
-                Pick the level of care that matches your home and budget.
+                Select your home type to see recommended services and starting prices.
+                Every plan is customized to your exact property in the Plan Builder.
               </p>
             </div>
           </FadeIn>
         </div>
       </section>
 
-      {/* ── Interval Toggle ── */}
-      <section className="pb-4">
+      {/* ── Home Type Selector ── */}
+      <section className="pb-8">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn delay={0.15}>
-            <div className="flex justify-center">
-              <div className="relative inline-flex rounded-xl border border-border/50 bg-muted/40 p-1">
-                {(
-                  Object.entries(PLAN_DISCOUNTS) as [
-                    PlanInterval,
-                    (typeof PLAN_DISCOUNTS)[PlanInterval],
-                  ][]
-                ).map(([key, val]) => (
+          <FadeIn delay={0.1}>
+            <div className="grid gap-4 sm:grid-cols-3">
+              {homeTypes.map((type) => {
+                const isActive = selectedType === type.id;
+                const Icon = type.icon;
+                return (
                   <button
-                    key={key}
-                    onClick={() => setInterval(key)}
-                    className={`relative rounded-lg px-4 py-2.5 text-sm font-medium transition-all sm:px-6 ${
-                      interval === key
-                        ? "text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground"
+                    key={type.id}
+                    onClick={() => setSelectedType(type.id)}
+                    className={`flex flex-col items-start rounded-2xl border p-6 text-left transition-all duration-300 ${
+                      isActive
+                        ? "border-primary/30 bg-primary/5 ring-2 ring-primary shadow-lg shadow-primary/5"
+                        : "border-border/50 bg-card hover:border-border hover:shadow-lg hover:shadow-black/5"
                     }`}
                   >
-                    {interval === key && (
-                      <motion.div
-                        layoutId="pricing-tab"
-                        className="absolute inset-0 rounded-lg bg-primary shadow-sm"
-                        transition={{
-                          type: "spring",
-                          stiffness: 400,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-                    <span className="relative z-10 flex items-center gap-1.5">
-                      {val.label}
-                      {val.discount > 0 && (
-                        <span
-                          className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                            interval === key
-                              ? "bg-white/20"
-                              : "bg-primary/10 text-primary"
-                          }`}
-                        >
-                          -{val.discount * 100}%
-                        </span>
-                      )}
-                    </span>
+                    <div
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl transition-colors ${
+                        isActive ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </div>
+                    <h3 className="mt-4 text-base font-semibold">{type.name}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{type.tagline}</p>
                   </button>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </FadeIn>
         </div>
       </section>
 
-      {/* ── Plan Cards ── */}
+      {/* ── Pricing Table ── */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid gap-6 md:grid-cols-3 lg:gap-8">
-            {PLAN_TIERS.map((plan, i) => (
-              <PlanCard
-                key={plan.id}
-                plan={plan}
-                interval={interval}
-                getPrice={getPrice}
-                getSavings={getSavings}
-                index={i}
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={selectedType}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <PricingTable
+                features={featuresByType[selectedType]}
+                plans={plansByType[selectedType]}
+                defaultPlan="complete"
+                defaultInterval="monthly"
+                ctaLabel="Build your plan -"
+                ctaHref={`/plan-builder?type=${selectedType}`}
+                note="Starting prices shown. Your exact price is calculated based on your property details."
               />
-            ))}
-          </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
-      {/* ── Not Sure? ── */}
+      {/* ── Custom Plan CTA ── */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           <FadeIn>
-            <div className="mx-auto max-w-2xl text-center">
-              <HelpCircle className="mx-auto h-8 w-8 text-muted-foreground/60" />
+            <div className="mx-auto max-w-2xl rounded-2xl border border-border/50 bg-card p-8 text-center shadow-lg shadow-black/5 sm:p-12">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+                <Wrench className="h-7 w-7 text-primary" />
+              </div>
               <h2 className="mt-6 text-2xl font-bold tracking-tight sm:text-3xl">
-                Not sure which plan?
+                Need something different?
               </h2>
               <p className="mt-3 text-muted-foreground">
-                Answer a few questions and we&apos;ll recommend the perfect
-                package for your home.
+                Mix and match any services to build a fully custom plan.
+                Choose exactly what your home needs - nothing more, nothing less.
               </p>
               <div className="mt-8">
-                <Link href="/onboarding">
+                <Link href="/plan-builder">
                   <ShimmerButton className="px-8 py-3 text-sm font-medium">
-                    Build Your Custom Plan
+                    Build a Custom Plan
                     <ArrowRight className="ml-2 inline h-4 w-4" />
                   </ShimmerButton>
                 </Link>
               </div>
+              <p className="mt-4 text-xs text-muted-foreground">
+                Takes under 5 minutes. No credit card required.
+              </p>
             </div>
           </FadeIn>
         </div>
       </section>
 
       {/* ── Guarantees ── */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="mx-auto max-w-2xl text-center">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                Every Plan Includes
-              </p>
-              <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Backed by real guarantees
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="mx-auto mt-16 grid max-w-4xl gap-6 sm:grid-cols-3 lg:gap-8">
-            {GUARANTEES.map((item, i) => (
-              <GuaranteeCard key={item.title} item={item} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
+      <Gallery4
+        title="Backed by real guarantees"
+        description="Every plan includes promises we actually keep. No fine print."
+        items={guaranteeItems}
+      />
 
       {/* ── Testimonials ── */}
       <section className="py-24 sm:py-32">
@@ -477,15 +363,15 @@ export default function PricingContent() {
                 maintenance again.
               </p>
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-                <Link href="/onboarding">
+                <Link href="/plan-builder">
                   <ShimmerButton className="px-8 py-3 text-sm font-medium">
-                    Get Started
+                    Build Your Plan
                     <ArrowRight className="ml-2 inline h-4 w-4" />
                   </ShimmerButton>
                 </Link>
                 <Button variant="outline" size="lg" asChild>
-                  <Link href="/plan-builder">
-                    Build a Custom Plan
+                  <Link href="/about#contact">
+                    Contact Us
                   </Link>
                 </Button>
               </div>
