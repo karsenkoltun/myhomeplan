@@ -146,35 +146,6 @@ const serviceCategories = [
 
 /* --- COMPONENTS ---------------------------------------------------- */
 
-function HeroDashboardCard({
-  card,
-  index,
-}: {
-  card: (typeof heroCards)[0];
-  index: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 24, rotateX: -8 }}
-      animate={{ opacity: 1, y: 0, rotateX: 0 }}
-      transition={{
-        duration: 0.6,
-        delay: 0.6 + index * 0.15,
-        ease: [0.21, 0.47, 0.32, 0.98],
-      }}
-      className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md"
-    >
-      <p className="text-xs font-medium text-white/50">{card.label}</p>
-      <div className="mt-2 flex items-end justify-between">
-        <p className="text-2xl font-bold text-white">{card.value}</p>
-        <span className={`text-xs font-medium ${card.color}`}>
-          {card.change}
-        </span>
-      </div>
-    </motion.div>
-  );
-}
-
 function StatItem({
   stat,
   index,
@@ -224,107 +195,99 @@ export function ContractorsContent() {
   return (
     <div className="flex flex-col overflow-x-clip">
       {/* ====== HERO ====== */}
-      <section className="relative overflow-hidden bg-[#0a0a0a] py-24 sm:py-32">
-        {/* Subtle gradient orbs */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.15),transparent)]" />
-        <motion.div
-          className="absolute -right-40 top-20 h-[500px] w-[500px] rounded-full bg-blue-500/5 blur-3xl"
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -left-40 bottom-0 h-[400px] w-[400px] rounded-full bg-violet-500/5 blur-3xl"
-          animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-
-        <div className="relative mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
             {/* Left - Copy */}
-            <div>
-              <FadeIn>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-blue-400/80 sm:text-sm">
-                  Now accepting contractors
-                </p>
-                <h1 className="mt-5 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[3.5rem] lg:leading-[1.1]">
-                  Free leads.
-                  <br />
-                  Guaranteed pay.
-                  <br />
-                  <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
-                    Zero cost.
-                  </span>
-                </h1>
-                <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/60">
-                  Join the network that sends you qualified homeowners, handles
-                  admin, and pays on time - every time.
-                </p>
-              </FadeIn>
-              <FadeIn delay={0.2}>
-                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
-                  <Link href="/onboarding?type=contractor">
-                    <ShimmerButton className="h-12 w-full px-8 text-base font-semibold sm:w-auto">
-                      Apply Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </ShimmerButton>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    className="h-12 border-white/15 px-8 text-base text-white hover:bg-white/5"
-                    onClick={() =>
-                      document
-                        .getElementById("benefits")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                    }
-                  >
-                    Learn More
-                  </Button>
-                </div>
-              </FadeIn>
-            </div>
+            <FadeIn>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Now accepting contractors
+              </p>
+              <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Free leads.
+                <br />
+                Guaranteed pay.
+                <br />
+                <span className="text-primary">Zero cost.</span>
+              </h1>
+              <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+                Join the network that sends you qualified homeowners, handles
+                admin, and pays on time - every time.
+              </p>
+              <div className="mt-10 flex items-center gap-4">
+                <Link href="/onboarding?type=contractor">
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Apply Now
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Button
+                  variant="outline"
+                  className="h-12 px-6 text-base"
+                  onClick={() =>
+                    document
+                      .getElementById("benefits")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  Learn More
+                </Button>
+              </div>
+            </FadeIn>
 
             {/* Right - Dashboard mockup */}
-            <div className="hidden lg:block">
+            <FadeIn delay={0.2}>
               <div className="relative">
-                {/* Glow behind cards */}
-                <div className="absolute inset-0 -m-8 rounded-3xl bg-gradient-to-br from-blue-500/10 via-transparent to-violet-500/10 blur-2xl" />
-                <div className="relative space-y-4">
+                <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-xl shadow-black/5">
                   {/* Header bar */}
-                  <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.4 }}
-                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 backdrop-blur-md"
-                  >
+                  <div className="flex items-center justify-between border-b border-border/50 pb-4">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500">
-                        <Briefcase className="h-4 w-4 text-white" />
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10">
+                        <Briefcase className="h-4 w-4 text-primary" />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">
+                        <p className="text-sm font-semibold">
                           Contractor Dashboard
                         </p>
-                        <p className="text-xs text-white/40">March 2026</p>
+                        <p className="text-xs text-muted-foreground">March 2026</p>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5">
                       <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                      <span className="text-sm font-medium text-white/80">
-                        4.9
-                      </span>
+                      <span className="text-sm font-medium">4.9</span>
                     </div>
-                  </motion.div>
+                  </div>
 
                   {/* Metric cards */}
-                  <div className="grid grid-cols-1 gap-3">
-                    {heroCards.map((card, i) => (
-                      <HeroDashboardCard key={card.label} card={card} index={i} />
+                  <div className="mt-4 space-y-3">
+                    {heroCards.map((card) => (
+                      <div
+                        key={card.label}
+                        className="flex items-center justify-between rounded-xl border border-border/30 bg-muted/30 px-4 py-3"
+                      >
+                        <div>
+                          <p className="text-xs text-muted-foreground">{card.label}</p>
+                          <p className="mt-0.5 text-xl font-bold">{card.value}</p>
+                        </div>
+                        <span className={`text-xs font-medium ${card.color}`}>
+                          {card.change}
+                        </span>
+                      </div>
                     ))}
                   </div>
                 </div>
+
+                {/* Floating badge */}
+                <div className="absolute -right-3 -top-3 rounded-xl border border-border/50 bg-card px-4 py-2 shadow-lg shadow-black/5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10">
+                      <TrendingUp className="h-3.5 w-3.5 text-emerald-500" />
+                    </div>
+                    <span className="text-xs font-semibold">Growing fast</span>
+                  </div>
+                </div>
               </div>
-            </div>
+            </FadeIn>
           </div>
         </div>
       </section>

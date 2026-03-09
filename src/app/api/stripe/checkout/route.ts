@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe/server";
+import { getStripeServer } from "@/lib/stripe/server";
 import { getStripeInterval, toCents, STRIPE_PRODUCT_NAME } from "@/lib/stripe/helpers";
 import { createClient } from "@/lib/supabase/server";
 
@@ -36,7 +36,7 @@ export async function POST(req: NextRequest) {
     let customerId = profile?.stripe_customer_id;
 
     if (!customerId) {
-      const customer = await stripe.customers.create({
+      const customer = await getStripeServer().customers.create({
         email: profile?.email || user.email,
         name: [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") || undefined,
         metadata: { supabase_user_id: user.id },
@@ -55,7 +55,7 @@ export async function POST(req: NextRequest) {
 
     // Create an ad-hoc price for this customer's subscription
     // First ensure we have a product
-    const products = await stripe.products.search({
+    const products = await getStripeServer().products.search({
       query: `name:"${STRIPE_PRODUCT_NAME}"`,
     });
 
@@ -63,14 +63,14 @@ export async function POST(req: NextRequest) {
     if (products.data.length > 0) {
       productId = products.data[0].id;
     } else {
-      const product = await stripe.products.create({
+      const product = await getStripeServer().products.create({
         name: STRIPE_PRODUCT_NAME,
         description: "Custom home maintenance subscription",
       });
       productId = product.id;
     }
 
-    const price = await stripe.prices.create({
+    const price = await getStripeServer().prices.create({
       product: productId,
       unit_amount: billingAmount,
       currency: "cad",
@@ -89,7 +89,7 @@ export async function POST(req: NextRequest) {
     const origin = req.headers.get("origin") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
     // Create Checkout Session
-    const session = await stripe.checkout.sessions.create({
+    const session = await getStripeServer().checkout.sessions.create({
       customer: customerId,
       mode: "subscription",
       line_items: [{ price: price.id, quantity: 1 }],

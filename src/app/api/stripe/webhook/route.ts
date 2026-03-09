@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe/server";
+import { getStripeServer } from "@/lib/stripe/server";
 import { createClient } from "@supabase/supabase-js";
 import type Stripe from "stripe";
 
@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
 
   let event: Stripe.Event;
   try {
-    event = stripe.webhooks.constructEvent(
+    event = getStripeServer().webhooks.constructEvent(
       body,
       signature,
       process.env.STRIPE_WEBHOOK_SECRET!
@@ -95,7 +95,7 @@ async function handleCheckoutCompleted(
   if (!subId) return;
 
   const stripeSubscriptionId = session.subscription as string;
-  const stripeSub = await stripe.subscriptions.retrieve(stripeSubscriptionId);
+  const stripeSub = await getStripeServer().subscriptions.retrieve(stripeSubscriptionId);
 
   await supabase
     .from("subscriptions")
@@ -133,7 +133,7 @@ async function handleInvoicePaid(
   const stripeSubId = getSubIdFromInvoice(invoice);
   if (!stripeSubId) return;
 
-  const stripeSub = await stripe.subscriptions.retrieve(stripeSubId);
+  const stripeSub = await getStripeServer().subscriptions.retrieve(stripeSubId);
 
   await supabase
     .from("subscriptions")
