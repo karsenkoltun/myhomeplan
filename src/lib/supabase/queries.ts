@@ -515,7 +515,6 @@ export async function createBooking(booking: {
     .insert({
       ...booking,
       status: "scheduled" as const,
-      payment_status: "pending" as const,
     })
     .select()
     .single();

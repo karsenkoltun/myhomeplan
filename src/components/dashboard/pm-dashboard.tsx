@@ -92,14 +92,14 @@ export function PMDashboard({
   const calendarData: CalendarData[] = useMemo(() => {
     return bookings
       .filter((b) => b.status !== "cancelled")
-      .map((b) => {
+      .map((b, i) => {
         const prop = properties.find((p) => p.id === b.property_id);
         const serviceName = SERVICES.find((s) => s.id === b.service_id)?.name ?? b.service_id;
         const label = prop ? `${serviceName} - ${prop.property_name || prop.address}` : serviceName;
         return {
           day: parseISO(b.scheduled_date),
           events: [{
-            id: Math.random(),
+            id: i,
             name: label,
             time: b.scheduled_time,
             datetime: b.scheduled_date,

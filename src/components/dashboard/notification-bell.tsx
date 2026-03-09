@@ -31,10 +31,22 @@ export function NotificationBell() {
   }, [user]);
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    (async () => {
+      if (!user) return;
+      try {
+        const data = await getNotifications(user.id);
+        if (!cancelled) setNotifications(data);
+      } catch {
+        // silent
+      }
+    })();
     const interval = setInterval(load, 30000);
-    return () => clearInterval(interval);
-  }, [load]);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [load, user]);
 
   async function handleRead(id: string) {
     try {

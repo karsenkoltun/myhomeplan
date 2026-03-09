@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import dynamic from "next/dynamic";
+import { toast } from "sonner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -68,14 +69,33 @@ export function ContractorDashboard({
         setMetrics(metricsData);
         setMonthlyEarnings(earnings);
       }
-    } catch {
-      // silent
+    } catch (err) {
+      console.error("Failed to load contractor data:", err);
     }
   }, [profile.id]);
 
   useEffect(() => {
-    loadData();
-  }, [loadData]);
+    let cancelled = false;
+    (async () => {
+      try {
+        const cp = await getContractorProfile(profile.id as string);
+        if (cancelled || !cp) return;
+        setContractor(cp);
+        const [data, metricsData, earnings] = await Promise.all([
+          getBookingsForContractor(cp.id),
+          getContractorMetrics(cp.id),
+          getContractorMonthlyEarnings(cp.id),
+        ]);
+        if (cancelled) return;
+        setBookings(data);
+        setMetrics(metricsData);
+        setMonthlyEarnings(earnings);
+      } catch (err) {
+        console.error("Failed to load contractor data:", err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [profile.id]);
 
   const displayName = contractor?.business_name || (profile.first_name as string) || "there";
 
@@ -96,18 +116,19 @@ export function ContractorDashboard({
     try {
       await updateBookingStatus(bookingId, status);
       await loadData();
-    } catch {
-      // silent
+    } catch (err) {
+      console.error("Failed to update booking status:", err);
+      toast.error("Failed to update status. Please try again.");
     }
   }
 
   // Map bookings to calendar events
   const calendarData = bookings
     .filter((b) => b.status !== "cancelled")
-    .map((b) => ({
+    .map((b, i) => ({
       day: parseISO(b.scheduled_date),
       events: [{
-        id: Math.random(),
+        id: i,
         name: getServiceName(b.service_id),
         time: b.scheduled_time,
         datetime: b.scheduled_date,

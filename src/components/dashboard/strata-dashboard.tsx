@@ -97,12 +97,12 @@ export function StrataDashboard({
   const calendarData: CalendarData[] = useMemo(() => {
     return bookings
       .filter((b) => b.status !== "cancelled")
-      .map((b) => {
+      .map((b, i) => {
         const serviceName = SERVICES.find((s) => s.id === b.service_id)?.name ?? b.service_id;
         return {
           day: parseISO(b.scheduled_date),
           events: [{
-            id: Math.random(),
+            id: i,
             name: serviceName,
             time: b.scheduled_time,
             datetime: b.scheduled_date,
