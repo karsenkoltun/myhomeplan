@@ -4,76 +4,41 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
-import { Timeline } from "@/components/ui/timeline";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 import { motion, useInView } from "framer-motion";
 import { LocationMap } from "@/components/ui/location-map";
 import {
   ArrowRight,
   Mail,
-  Handshake,
-  Eye,
-  Gem,
-  Puzzle,
 } from "lucide-react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 
-const valueTimelineItems = [
+const valueItems: Gallery4Item[] = [
   {
-    title: "Fairness",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Handshake className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Fair for Everyone</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Contractors earn fair pay. Homeowners pay fair prices. Everyone wins.
-        </p>
-      </div>
-    ),
+    id: "fair",
+    title: "Fair for Everyone",
+    description: "Contractors earn fair pay. Homeowners pay fair prices. Everyone wins.",
+    image: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Trust",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Eye className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Trust & Transparency</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Vetted contractors. Upfront pricing. No hidden fees, ever.
-        </p>
-      </div>
-    ),
+    id: "trust",
+    title: "Trust & Transparency",
+    description: "Vetted contractors. Upfront pricing. No hidden fees, ever.",
+    image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Quality",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Gem className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Quality Obsession</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Every service is guaranteed. If it's not right, we make it right.
-        </p>
-      </div>
-    ),
+    id: "quality",
+    title: "Quality Obsession",
+    description: "Every service is guaranteed. If it's not right, we make it right.",
+    image: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Simplicity",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Puzzle className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Simplicity First</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          One plan. One payment. One place for everything.
-        </p>
-      </div>
-    ),
+    id: "simplicity",
+    title: "Simplicity First",
+    description: "One plan. One payment. One place for everything.",
+    image: "https://images.pexels.com/photos/7578901/pexels-photo-7578901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -162,21 +127,11 @@ export default function AboutContent() {
       </section>
 
       {/* Values */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="max-w-4xl">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                What we stand for
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                Built on principles, not trends
-              </h2>
-            </div>
-          </FadeIn>
-        </div>
-        <Timeline data={valueTimelineItems} />
-      </section>
+      <Gallery4
+        title="Built on principles, not trends"
+        description="What we stand for at My Home Plan."
+        items={valueItems}
+      />
 
       {/* Market Stats */}
       <section className="py-24 sm:py-32" ref={statsRef}>

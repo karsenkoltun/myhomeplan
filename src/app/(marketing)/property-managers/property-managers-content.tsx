@@ -8,21 +8,14 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Timeline } from "@/components/ui/timeline";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 
 import {
   ArrowRight,
   Building2,
-  FileText,
-  BarChart3,
-  HeadphonesIcon,
-  ShieldCheck,
   Check,
   X,
-  Users,
-  Layers,
-  Receipt,
-  MessageSquare,
 } from "lucide-react";
 
 /* -- DATA --------------------------------------------------------- */
@@ -50,62 +43,30 @@ const solutions = [
   "Adding properties takes minutes, not weeks",
 ];
 
-const timelineItems = [
+const whyItems: Gallery4Item[] = [
   {
-    title: "Consolidate",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Layers className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Portfolio consolidation</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Every property, every service, one dashboard. Replace dozens of vendor relationships with a single platform.
-        </p>
-      </div>
-    ),
+    id: "consolidation",
+    title: "Portfolio consolidation",
+    description: "Every property, every service, one dashboard. Replace dozens of vendor relationships with a single platform.",
+    image: "https://images.pexels.com/photos/1370704/pexels-photo-1370704.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Billing",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Receipt className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">One monthly invoice</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Consolidated billing across your entire portfolio. One payment, one line item for accounting.
-        </p>
-      </div>
-    ),
+    id: "invoice",
+    title: "One monthly invoice",
+    description: "Consolidated billing across your entire portfolio. One payment, one line item for accounting.",
+    image: "https://images.pexels.com/photos/6694571/pexels-photo-6694571.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Retention",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <MessageSquare className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Reduce tenant complaints</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Proactive, scheduled maintenance prevents issues before tenants notice. Better retention, fewer calls.
-        </p>
-      </div>
-    ),
+    id: "complaints",
+    title: "Reduce tenant complaints",
+    description: "Proactive, scheduled maintenance prevents issues before tenants notice. Better retention, fewer calls.",
+    image: "https://images.pexels.com/photos/1571460/pexels-photo-1571460.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Support",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <HeadphonesIcon className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Dedicated account manager</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          One point of contact who knows your portfolio. No call centers, no ticket queues.
-        </p>
-      </div>
-    ),
+    id: "manager",
+    title: "Dedicated account manager",
+    description: "One point of contact who knows your portfolio. No call centers, no ticket queues.",
+    image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -510,21 +471,11 @@ export function PropertyManagersContent() {
       </section>
 
       {/* ========== FEATURES ========== */}
-      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="max-w-4xl">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                Why My Home Plan
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                Built for portfolio scale
-              </h2>
-            </div>
-          </FadeIn>
-        </div>
-        <Timeline data={timelineItems} />
-      </section>
+      <Gallery4
+        title="Built for portfolio scale"
+        description="Why property managers choose My Home Plan to streamline operations."
+        items={whyItems}
+      />
 
       {/* ========== HOW IT WORKS ========== */}
       <section id="how-it-works" className="py-24 sm:py-32">

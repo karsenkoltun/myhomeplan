@@ -10,16 +10,13 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Timeline } from "@/components/ui/timeline";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 
 import {
   ArrowRight,
   Check,
   X,
-  Layers,
-  ShieldCheck,
-  CalendarClock,
-  DollarSign,
 } from "lucide-react";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -47,62 +44,30 @@ const stats = [
   { value: 2, suffix: " min", label: "Setup", sublabel: "to build your plan" },
 ];
 
-const timelineItems = [
+const whyItems: Gallery4Item[] = [
   {
-    title: "Bundled",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Layers className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">One plan for everything</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Lawn, snow, HVAC, cleaning, and more - bundled into one subscription with one monthly bill.
-        </p>
-      </div>
-    ),
+    id: "bundled",
+    title: "One plan for everything",
+    description: "Lawn, snow, HVAC, cleaning, and more - bundled into one subscription with one monthly bill.",
+    image: "https://images.pexels.com/photos/1396122/pexels-photo-1396122.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Vetted",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <ShieldCheck className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Vetted local pros</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Every contractor is licensed, insured, and background-checked. No guessing, no risk.
-        </p>
-      </div>
-    ),
+    id: "vetted",
+    title: "Vetted local pros",
+    description: "Every contractor is licensed, insured, and background-checked. No guessing, no risk.",
+    image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Scheduled",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <CalendarClock className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Real-time scheduling</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Every service tracked and managed for you. Get notified before every visit.
-        </p>
-      </div>
-    ),
+    id: "scheduled",
+    title: "Real-time scheduling",
+    description: "Every service tracked and managed for you. Get notified before every visit.",
+    image: "https://images.pexels.com/photos/6694543/pexels-photo-6694543.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Predictable",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <DollarSign className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Predictable pricing</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          No surprise bills. Ever. Your rate is locked from day one.
-        </p>
-      </div>
-    ),
+    id: "pricing",
+    title: "Predictable pricing",
+    description: "No surprise bills. Ever. Your rate is locked from day one.",
+    image: "https://images.pexels.com/photos/7578901/pexels-photo-7578901.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -376,31 +341,21 @@ export default function HomePage() {
       </section>
 
       {/* ══════════ WHY MY HOME PLAN ══════════ */}
-      <section className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="max-w-4xl">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                Why My Home Plan
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                Everything handled. Nothing forgotten.
-              </h2>
-            </div>
-          </FadeIn>
+      <Gallery4
+        title="Everything handled. Nothing forgotten."
+        description="Why homeowners choose My Home Plan for all their maintenance needs."
+        items={whyItems}
+      />
+      <FadeIn>
+        <div className="-mt-16 mb-24 text-center">
+          <Button variant="outline" size="sm" asChild>
+            <Link href="/plan-builder">
+              See All Services & Pricing
+              <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+            </Link>
+          </Button>
         </div>
-        <Timeline data={timelineItems} />
-        <FadeIn delay={0.3}>
-          <div className="mt-12 text-center">
-            <Button variant="outline" size="sm" asChild>
-              <Link href="/plan-builder">
-                See All Services & Pricing
-                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
-              </Link>
-            </Button>
-          </div>
-        </FadeIn>
-      </section>
+      </FadeIn>
 
       {/* ══════════ HOW IT WORKS ══════════ */}
       <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">

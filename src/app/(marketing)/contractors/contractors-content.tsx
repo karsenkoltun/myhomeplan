@@ -11,7 +11,8 @@ import {
 import { motion, useInView } from "framer-motion";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Timeline } from "@/components/ui/timeline";
+import { Gallery4 } from "@/components/ui/gallery4";
+import type { Gallery4Item } from "@/components/ui/gallery4";
 
 import {
   ArrowRight,
@@ -24,12 +25,6 @@ import {
   Bug,
   Hammer,
   Sun,
-  DollarSign,
-  ShieldCheck,
-  Target,
-  CalendarClock,
-  ClipboardCheck,
-  Users,
   FileText,
   UserCheck,
   Phone,
@@ -69,90 +64,42 @@ const stats = [
   { value: 100, prefix: "", suffix: "%", label: "Payment guaranteed" },
 ];
 
-const benefitTimelineItems = [
+const benefitItems: Gallery4Item[] = [
   {
-    title: "Leads",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Target className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Free qualified leads</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Homeowners sent directly to you at zero cost. No bidding, no competition.
-        </p>
-      </div>
-    ),
+    id: "leads",
+    title: "Free qualified leads",
+    description: "Homeowners sent directly to you at zero cost. No bidding, no competition.",
+    image: "https://images.pexels.com/photos/3184291/pexels-photo-3184291.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Payment",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <DollarSign className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Guaranteed payment</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Every completed job paid on schedule. Always. No chasing invoices.
-        </p>
-      </div>
-    ),
+    id: "payment",
+    title: "Guaranteed payment",
+    description: "Every completed job paid on schedule. Always. No chasing invoices.",
+    image: "https://images.pexels.com/photos/4386431/pexels-photo-4386431.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Marketing",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <TrendingUp className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">No marketing costs</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          We handle all customer acquisition for you. Focus on what you do best.
-        </p>
-      </div>
-    ),
+    id: "marketing",
+    title: "No marketing costs",
+    description: "We handle all customer acquisition for you. Focus on what you do best.",
+    image: "https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Flexibility",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <CalendarClock className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Flexible schedule</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          You choose when, where, and how much you work. Your business, your terms.
-        </p>
-      </div>
-    ),
+    id: "schedule",
+    title: "Flexible schedule",
+    description: "You choose when, where, and how much you work. Your business, your terms.",
+    image: "https://images.pexels.com/photos/585419/pexels-photo-585419.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Admin",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <ClipboardCheck className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Admin handled</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Scheduling, invoicing, follow-ups - all taken care of so you can focus on the work.
-        </p>
-      </div>
-    ),
+    id: "admin",
+    title: "Admin handled",
+    description: "Scheduling, invoicing, follow-ups - all taken care of so you can focus on the work.",
+    image: "https://images.pexels.com/photos/6694543/pexels-photo-6694543.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
-    title: "Network",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Users className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Growing network</h3>
-        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
-          Join a vetted community of top local professionals. Referrals and collaboration built in.
-        </p>
-      </div>
-    ),
+    id: "network",
+    title: "Growing network",
+    description: "Join a vetted community of top local professionals. Referrals and collaboration built in.",
+    image: "https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];
 
@@ -472,24 +419,11 @@ export function ContractorsContent() {
       </section>
 
       {/* ====== BENEFITS ====== */}
-      <section id="benefits" className="py-24 sm:py-32">
-        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="max-w-4xl">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                Why join us
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                Built for contractors who want more
-              </h2>
-              <p className="mt-4 max-w-lg text-lg text-muted-foreground">
-                No chasing leads. No unpaid invoices. Just steady work.
-              </p>
-            </div>
-          </FadeIn>
-        </div>
-        <Timeline data={benefitTimelineItems} />
-      </section>
+      <Gallery4
+        title="Built for contractors who want more"
+        description="No chasing leads. No unpaid invoices. Just steady work."
+        items={benefitItems}
+      />
 
       {/* ====== HOW TO JOIN ====== */}
       <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
