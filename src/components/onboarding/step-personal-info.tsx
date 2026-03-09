@@ -100,7 +100,7 @@ export const StepPersonalInfo = forwardRef<StepValidationRef>(function StepPerso
           <User className="h-6 w-6" />
         </div>
         <h2 className="text-center text-2xl font-bold sm:text-3xl">About You</h2>
-        <p className="mt-2 text-center text-muted-foreground">Let's start with your basic information.</p>
+        <p className="mt-2 text-center text-muted-foreground">Let&apos;s start with your basic information.</p>
       </div>
 
       <AnimatePresence>

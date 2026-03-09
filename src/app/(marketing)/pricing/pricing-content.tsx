@@ -1,17 +1,15 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
+import { FadeIn, ShimmerButton } from "@/components/ui/motion";
 import { FAQ } from "@/components/ui/faq-tabs";
 import { PricingTable } from "@/components/ui/pricing-table";
 import { Gallery4 } from "@/components/ui/gallery4";
 import type { Gallery4Item } from "@/components/ui/gallery4";
-import { motion, AnimatePresence, useInView } from "framer-motion";
-import { PLAN_DISCOUNTS, type PlanInterval } from "@/data/services";
-import { ArrowRight, Check, Home, Building2, Building, Wrench } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, Home, Building2, Building, Wrench } from "lucide-react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 
@@ -194,7 +192,6 @@ const guaranteeItems: Gallery4Item[] = [
    ═══════════════════════════════════════════ */
 export default function PricingContent() {
   const [selectedType, setSelectedType] = useState("suburban");
-  const router = useRouter();
 
   return (
     <div className="flex flex-col overflow-x-hidden">

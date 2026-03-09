@@ -53,10 +53,6 @@ export function BlogSearch({ posts }: BlogSearchProps) {
   // Keyboard navigation
   const [activeIndex, setActiveIndex] = useState(-1);
 
-  useEffect(() => {
-    setActiveIndex(-1);
-  }, [query]);
-
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (!isOpen || results.length === 0) return;
 
@@ -86,6 +82,7 @@ export function BlogSearch({ posts }: BlogSearchProps) {
           value={query}
           onChange={(e) => {
             setQuery(e.target.value);
+            setActiveIndex(-1);
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
@@ -96,6 +93,7 @@ export function BlogSearch({ posts }: BlogSearchProps) {
           <button
             onClick={() => {
               setQuery("");
+              setActiveIndex(-1);
               inputRef.current?.focus();
             }}
             className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"

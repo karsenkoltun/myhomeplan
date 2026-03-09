@@ -4,8 +4,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import { FlowButton } from "@/components/ui/flow-button";
+import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
 import { motion, useInView } from "framer-motion";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 import { Gallery4 } from "@/components/ui/gallery4";
@@ -132,78 +133,6 @@ function RevealItem({
       >
         {children}
       </p>
-    </motion.div>
-  );
-}
-
-function TimelineStep({
-  step,
-  index,
-  isLast,
-  isActive,
-  onClick,
-}: {
-  step: (typeof steps)[0];
-  index: number;
-  isLast: boolean;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-40px" });
-
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 20 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.12,
-        ease: [0.21, 0.47, 0.32, 0.98],
-      }}
-      onClick={onClick}
-      className="group relative flex cursor-pointer gap-5 sm:gap-7"
-    >
-      {/* Timeline spine */}
-      <div className="flex flex-col items-center">
-        <motion.div
-          animate={{
-            scale: isActive ? 1 : 0.85,
-            backgroundColor: isActive
-              ? "oklch(0.55 0.18 285)"
-              : "oklch(0.955 0.005 285)",
-          }}
-          transition={{ duration: 0.3 }}
-          className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold shadow-sm sm:h-14 sm:w-14 sm:text-base"
-        >
-          <span className={isActive ? "text-white" : "text-muted-foreground"}>
-            {step.num}
-          </span>
-        </motion.div>
-        {!isLast && (
-          <div
-            className="w-px flex-1 bg-gradient-to-b from-border to-transparent"
-            style={{ minHeight: "2rem" }}
-          />
-        )}
-      </div>
-      {/* Content */}
-      <div className={`pb-8 ${isLast ? "pb-0" : ""}`}>
-        <h3
-          className={`text-lg font-semibold tracking-tight transition-colors duration-200 sm:text-xl ${
-            isActive ? "text-foreground" : "text-muted-foreground"
-          }`}
-        >
-          {step.title}
-        </h3>
-        <motion.p
-          animate={{ opacity: isActive ? 1 : 0.5 }}
-          className="mt-1 text-sm text-muted-foreground sm:text-base"
-        >
-          {step.detail}
-        </motion.p>
-      </div>
     </motion.div>
   );
 }
@@ -343,8 +272,6 @@ function FloatingDashboard() {
 /* -- PAGE --------------------------------------------------------- */
 
 export function PropertyManagersContent() {
-  const [activeStep, setActiveStep] = useState(0);
-
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* ========== HERO ========== */}
@@ -480,17 +407,17 @@ export function PropertyManagersContent() {
       {/* ========== HOW IT WORKS ========== */}
       <section id="how-it-works" className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
-            {/* Left - text */}
-            <div>
+          <div className="grid md:grid-cols-2 md:gap-8 xl:gap-12">
+            <div className="left-0 top-0 md:sticky md:h-svh md:py-12">
               <FadeIn>
                 <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                   How it works
                 </p>
-                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                  Three steps to a simpler portfolio
+                <h2 className="mb-6 mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  Three steps to a{" "}
+                  <span className="text-violet-500">simpler portfolio</span>
                 </h2>
-                <p className="mt-5 text-lg text-muted-foreground">
+                <p className="max-w-prose text-muted-foreground">
                   From first call to fully managed in under two weeks.
                 </p>
               </FadeIn>
@@ -504,19 +431,25 @@ export function PropertyManagersContent() {
                 </div>
               </FadeIn>
             </div>
-            {/* Right - timeline */}
-            <div className="mt-2">
-              {steps.map((step, i) => (
-                <TimelineStep
+            <ContainerScroll className="min-h-[250vh] space-y-8 py-12">
+              {steps.map((step, index) => (
+                <CardSticky
                   key={step.num}
-                  step={step}
-                  index={i}
-                  isLast={i === steps.length - 1}
-                  isActive={activeStep === i}
-                  onClick={() => setActiveStep(i)}
-                />
+                  index={index + 2}
+                  className="rounded-2xl border border-border/50 bg-card p-8 shadow-md backdrop-blur-md"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="my-6 text-2xl font-bold tracking-tighter">
+                      {step.title}
+                    </h3>
+                    <span className="text-2xl font-bold text-violet-500">
+                      {step.num}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground">{step.detail}</p>
+                </CardSticky>
               ))}
-            </div>
+            </ContainerScroll>
           </div>
         </div>
       </section>

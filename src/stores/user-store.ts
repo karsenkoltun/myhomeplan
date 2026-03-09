@@ -30,16 +30,31 @@ export interface AccountInfo {
   marketingOptIn: boolean;
 }
 
+export interface RoleProfile {
+  role: UserType;
+  label: string;
+  propertyId?: string;
+  propertyName?: string;
+}
+
 interface UserState {
   userType: UserType | null;
   onboardingStep: number;
   onboardingComplete: boolean;
   account: AccountInfo | null;
 
+  /** Multi-role support */
+  activeRole: UserType | null;
+  availableRoles: RoleProfile[];
+  activePropertyId: string | null;
+
   setUserType: (type: UserType) => void;
   setOnboardingStep: (step: number) => void;
   completeOnboarding: () => void;
   setAccount: (info: AccountInfo) => void;
+  setActiveRole: (role: UserType) => void;
+  setAvailableRoles: (roles: RoleProfile[]) => void;
+  setActivePropertyId: (id: string | null) => void;
   reset: () => void;
 }
 
@@ -50,17 +65,26 @@ export const useUserStore = create<UserState>()(
       onboardingStep: 0,
       onboardingComplete: false,
       account: null,
+      activeRole: null,
+      availableRoles: [],
+      activePropertyId: null,
 
       setUserType: (type) => set({ userType: type }),
       setOnboardingStep: (step) => set({ onboardingStep: step }),
       completeOnboarding: () => set({ onboardingComplete: true }),
       setAccount: (info) => set({ account: info }),
+      setActiveRole: (role) => set({ activeRole: role }),
+      setAvailableRoles: (roles) => set({ availableRoles: roles }),
+      setActivePropertyId: (id) => set({ activePropertyId: id }),
       reset: () =>
         set({
           userType: null,
           onboardingStep: 0,
           onboardingComplete: false,
           account: null,
+          activeRole: null,
+          availableRoles: [],
+          activePropertyId: null,
         }),
     }),
     { name: "mhp-user" }

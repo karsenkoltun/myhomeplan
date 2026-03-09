@@ -350,3 +350,12 @@ html {
     transform: translateY(calc(-100% - var(--gap)));
   }
 }
+
+/* Animated glowing search bar */
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.animate-spin-slow {
+  animation: spin-slow 4s linear infinite;
+}

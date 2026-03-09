@@ -36,7 +36,7 @@ export default function BlogError({
               />
             </svg>
           </div>
-          <CardTitle className="text-xl">Couldn't load blog</CardTitle>
+          <CardTitle className="text-xl">Couldn&apos;t load blog</CardTitle>
           <CardDescription>
             We had trouble loading the blog content. This might be a temporary issue.
           </CardDescription>

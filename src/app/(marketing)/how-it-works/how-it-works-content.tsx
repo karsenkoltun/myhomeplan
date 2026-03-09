@@ -4,7 +4,7 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton } from "@/components/ui/motion";
-import { Timeline } from "@/components/ui/timeline";
+import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
 import { Gallery4 } from "@/components/ui/gallery4";
 import type { Gallery4Item } from "@/components/ui/gallery4";
 import { motion, useInView } from "framer-motion";
@@ -12,9 +12,6 @@ import {
   ArrowRight,
   Check,
   X,
-  Shield,
-  ClipboardList,
-  Users,
   Calendar,
   Home,
 } from "lucide-react";
@@ -41,86 +38,34 @@ const newWayItems = [
   "Nothing gets forgotten",
 ];
 
-const timelineData = [
+const processSteps = [
   {
-    title: "Step 1",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <ClipboardList className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
-          Build Your Plan
-        </h3>
-        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
-          Choose from lawn care, snow removal, window cleaning, gutter maintenance, and more. We recommend a plan based on your home type, size, and location.
-        </p>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-          <Check className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Takes under 5 minutes</span>
-        </div>
-      </div>
-    ),
+    num: "01",
+    title: "Build Your Plan",
+    description:
+      "Choose from lawn care, snow removal, window cleaning, gutter maintenance, and more. We recommend a plan based on your home type, size, and location.",
+    badge: "Takes under 5 minutes",
   },
   {
-    title: "Step 2",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Users className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
-          We Match You With Pros
-        </h3>
-        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
-          We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.
-        </p>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-          <Check className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">All pros are pre-vetted</span>
-        </div>
-      </div>
-    ),
+    num: "02",
+    title: "We Match You With Pros",
+    description:
+      "We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.",
+    badge: "All pros are pre-vetted",
   },
   {
-    title: "Step 3",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Calendar className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
-          Everything Gets Auto-Scheduled
-        </h3>
-        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
-          Your maintenance calendar is built automatically. Services are scheduled at the right time of year, and you get notified before every visit.
-        </p>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-          <Check className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Zero effort from you</span>
-        </div>
-      </div>
-    ),
+    num: "03",
+    title: "Everything Gets Auto-Scheduled",
+    description:
+      "Your maintenance calendar is built automatically. Services are scheduled at the right time of year, and you get notified before every visit.",
+    badge: "Zero effort from you",
   },
   {
-    title: "Step 4",
-    content: (
-      <div>
-        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-          <Shield className="h-6 w-6 text-primary" />
-        </div>
-        <h3 className="text-xl font-bold tracking-tight md:text-2xl">
-          Your Home Stays Protected
-        </h3>
-        <p className="mt-2 text-muted-foreground text-sm md:text-base max-w-lg">
-          Track completed services, upcoming visits, and your home's maintenance history in your dashboard. We handle everything so you don't have to.
-        </p>
-        <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
-          <Check className="h-4 w-4 text-primary" />
-          <span className="text-sm font-medium text-primary">Full visibility always</span>
-        </div>
-      </div>
-    ),
+    num: "04",
+    title: "Your Home Stays Protected",
+    description:
+      "Track completed services, upcoming visits, and your home's maintenance history in your dashboard. We handle everything so you don't have to.",
+    badge: "Full visibility always",
   },
 ];
 
@@ -323,7 +268,7 @@ export function HowItWorksContent() {
                 The Difference
               </p>
               <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                There's a better way
+                There&apos;s a better way
               </h2>
             </div>
           </FadeIn>
@@ -381,25 +326,50 @@ export function HowItWorksContent() {
       </section>
 
       {/* ============================================================ */}
-      {/*  Timeline                                                    */}
+      {/*  Process Steps                                               */}
       {/* ============================================================ */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <FadeIn>
-            <div className="max-w-4xl">
-              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                The Process
-              </p>
-              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
-                Four steps to autopilot
-              </h2>
-              <p className="mt-4 max-w-lg text-muted-foreground">
-                From sign-up to full home coverage in under 5 minutes. Here's how it works.
-              </p>
+          <div className="grid md:grid-cols-2 md:gap-8 xl:gap-12">
+            <div className="left-0 top-0 md:sticky md:h-svh md:py-12">
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                  The Process
+                </p>
+                <h2 className="mb-6 mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                  Four steps to{" "}
+                  <span className="text-primary">autopilot</span>
+                </h2>
+                <p className="max-w-prose text-muted-foreground">
+                  From sign-up to full home coverage in under 5 minutes. Here&apos;s how it works.
+                </p>
+              </FadeIn>
             </div>
-          </FadeIn>
+            <ContainerScroll className="min-h-[300vh] space-y-8 py-12">
+              {processSteps.map((step, index) => (
+                <CardSticky
+                  key={step.num}
+                  index={index + 2}
+                  className="rounded-2xl border border-border/50 bg-card p-8 shadow-md backdrop-blur-md"
+                >
+                  <div className="flex items-center justify-between gap-4">
+                    <h3 className="my-6 text-2xl font-bold tracking-tighter">
+                      {step.title}
+                    </h3>
+                    <span className="text-2xl font-bold text-primary">
+                      {step.num}
+                    </span>
+                  </div>
+                  <p className="text-muted-foreground">{step.description}</p>
+                  <div className="mt-4 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+                    <Check className="h-4 w-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">{step.badge}</span>
+                  </div>
+                </CardSticky>
+              ))}
+            </ContainerScroll>
+          </div>
         </div>
-        <Timeline data={timelineData} />
       </section>
 
       {/* ============================================================ */}

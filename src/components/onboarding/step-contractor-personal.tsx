@@ -103,7 +103,7 @@ export const StepContractorPersonal = forwardRef<StepValidationRef>(function Ste
                 placeholder="250-555-0123"
                 className="h-11"
               />
-              <p className="text-xs text-muted-foreground">We'll collect your phone on the next steps.</p>
+              <p className="text-xs text-muted-foreground">We&apos;ll collect your phone on the next steps.</p>
             </div>
           </CardContent>
         </Card>

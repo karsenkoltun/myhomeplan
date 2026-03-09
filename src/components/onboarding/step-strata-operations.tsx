@@ -36,7 +36,7 @@ export function StepStrataOperations() {
           <Settings className="h-6 w-6" />
         </div>
         <h2 className="text-center text-2xl font-bold sm:text-3xl">Operations & Financials</h2>
-        <p className="mt-2 text-center text-muted-foreground">Help us understand your building's operations for better service planning.</p>
+        <p className="mt-2 text-center text-muted-foreground">Help us understand your building&apos;s operations for better service planning.</p>
       </div>
 
       <div className="mt-8 space-y-6">

@@ -88,7 +88,7 @@ export const StepAddressInfo = forwardRef<StepValidationRef>(function StepAddres
           <MapPin className="h-6 w-6" />
         </div>
         <h2 className="text-center text-2xl font-bold sm:text-3xl">Your Address</h2>
-        <p className="mt-2 text-center text-muted-foreground">Where is the property we'll be servicing?</p>
+        <p className="mt-2 text-center text-muted-foreground">Where is the property we&apos;ll be servicing?</p>
       </div>
 
       <div className={cn("mt-8 space-y-6", shaking && "animate-shake")}>

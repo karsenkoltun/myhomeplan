@@ -90,7 +90,7 @@ export default async function CategoryPage({ params }: Props) {
                 No posts in this category yet
               </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                We're working on content for {info.label.toLowerCase()}.
+                We&apos;re working on content for {info.label.toLowerCase()}.
                 Check back soon.
               </p>
             </div>

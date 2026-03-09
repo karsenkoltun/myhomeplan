@@ -70,7 +70,7 @@ export function StepPMProperties() {
           <Building className="h-6 w-6" />
         </div>
         <h2 className="text-center text-2xl font-bold sm:text-3xl">Your Properties</h2>
-        <p className="mt-2 text-center text-muted-foreground">Add the properties you'd like us to service.</p>
+        <p className="mt-2 text-center text-muted-foreground">Add the properties you&apos;d like us to service.</p>
       </div>
 
       <div className="mt-8 space-y-6">

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Home,
   ClipboardList,
@@ -16,6 +16,7 @@ import {
   Building2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { RoleSwitcher } from "@/components/dashboard/role-switcher";
 
 interface NavItem {
   label: string;
@@ -74,6 +75,11 @@ export function AppSidebar() {
             </span>
           )}
         </Link>
+      </div>
+
+      {/* Role switcher */}
+      <div className="border-b border-sidebar-border py-3">
+        <RoleSwitcher collapsed={collapsed} />
       </div>
 
       {/* Main navigation */}

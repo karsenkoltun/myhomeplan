@@ -1,23 +1,15 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/motion";
+import { FadeIn } from "@/components/ui/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
@@ -420,8 +412,6 @@ function ReceiptPanel({
   onGetStarted: () => void;
   isMobile?: boolean;
 }) {
-  const Wrapper = isMobile ? "div" : Card;
-
   const content = (
     <>
       {!isMobile && (

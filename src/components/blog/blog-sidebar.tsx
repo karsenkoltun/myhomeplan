@@ -126,7 +126,7 @@ function SidebarPlanCTA() {
       <CardContent className="p-5">
         <div className="mb-3 flex items-center gap-2">
           <Calculator className="h-5 w-5 text-green-600" />
-          <h3 className="font-semibold">See What You'd Save</h3>
+          <h3 className="font-semibold">See What You&apos;d Save</h3>
         </div>
         <ul className="mb-4 space-y-1.5 text-sm text-muted-foreground">
           <li className="flex items-start gap-2">
