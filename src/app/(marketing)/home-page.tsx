@@ -5,8 +5,7 @@ import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
-import { FlowButton } from "@/components/ui/flow-button";
-import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
+import { Timeline } from "@/components/ui/timeline";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
 
@@ -383,51 +382,34 @@ export default function HomePage() {
       </FadeIn>
 
       {/* ══════════ HOW IT WORKS ══════════ */}
-      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+      <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid md:grid-cols-2 md:gap-8 xl:gap-12">
-            <div className="left-0 top-0 md:sticky md:h-svh md:py-12">
-              <FadeIn>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                  How it works
-                </p>
-                <h2 className="mb-6 mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                  Four steps. Then{" "}
-                  <span className="text-primary">never think about it again.</span>
-                </h2>
-                <p className="max-w-prose text-muted-foreground">
-                  From signup to service - it takes less time than ordering dinner.
-                </p>
-              </FadeIn>
-              <FadeIn delay={0.3}>
-                <div className="mt-10">
-                  <FlowButton
-                    text="Build Your Plan"
-                    href="/onboarding"
-                    className="h-12 px-10 text-base"
-                  />
-                </div>
-              </FadeIn>
+          <FadeIn>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                How it works
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Four steps. Then{" "}
+                <span className="text-primary">never think about it again.</span>
+              </h2>
+              <p className="mx-auto mt-6 max-w-prose text-muted-foreground">
+                From signup to service - it takes less time than ordering dinner.
+              </p>
             </div>
-            <ContainerScroll className="min-h-[300vh] space-y-8 py-12">
-              {steps.map((step, index) => (
-                <CardSticky
-                  key={step.num}
-                  index={index + 2}
-                  className="rounded-2xl border border-border/50 bg-card p-8 shadow-md backdrop-blur-md"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="my-6 text-2xl font-bold tracking-tighter">
-                      {step.title}
-                    </h3>
-                    <span className="text-2xl font-bold text-primary">
-                      {step.num}
-                    </span>
+          </FadeIn>
+          <div className="mt-16">
+            <Timeline
+              data={steps.map((step) => ({
+                title: step.num,
+                content: (
+                  <div className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm">
+                    <h3 className="text-2xl font-bold tracking-tight">{step.title}</h3>
+                    <p className="mt-4 text-muted-foreground">{step.detail}</p>
                   </div>
-                  <p className="text-muted-foreground">{step.detail}</p>
-                </CardSticky>
-              ))}
-            </ContainerScroll>
+                ),
+              }))}
+            />
           </div>
         </div>
       </section>

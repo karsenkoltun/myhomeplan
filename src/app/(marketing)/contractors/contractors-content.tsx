@@ -8,7 +8,7 @@ import {
   InfiniteMarquee,
   MarqueeServiceItem,
 } from "@/components/marketing/infinite-marquee";
-import { ContainerScroll, CardSticky } from "@/components/ui/cards-stack";
+import { Timeline } from "@/components/ui/timeline";
 import { motion, useInView } from "framer-motion";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
@@ -316,52 +316,34 @@ export function ContractorsContent() {
       />
 
       {/* ====== HOW TO JOIN ====== */}
-      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+      <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
-          <div className="grid md:grid-cols-2 md:gap-8 xl:gap-12">
-            <div className="left-0 top-0 md:sticky md:h-svh md:py-12">
-              <FadeIn>
-                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                  How to join
-                </p>
-                <h2 className="mb-6 mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
-                  Four steps to{" "}
-                  <span className="text-primary">your first job</span>
-                </h2>
-                <p className="max-w-prose text-muted-foreground">
-                  From application to earning - as fast as two weeks.
-                </p>
-              </FadeIn>
-              <FadeIn delay={0.3}>
-                <div className="mt-10">
-                  <Link href="/onboarding?type=contractor">
-                    <ShimmerButton className="h-12 px-10 text-base">
-                      Apply Now
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </ShimmerButton>
-                  </Link>
-                </div>
-              </FadeIn>
+          <FadeIn>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                How to join
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Four steps to{" "}
+                <span className="text-primary">your first job</span>
+              </h2>
+              <p className="mx-auto mt-6 max-w-prose text-muted-foreground">
+                From application to earning - as fast as two weeks.
+              </p>
             </div>
-            <ContainerScroll className="min-h-[300vh] space-y-8 py-12">
-              {timelineSteps.map((step, index) => (
-                <CardSticky
-                  key={step.num}
-                  index={index + 2}
-                  className="rounded-2xl border border-border/50 bg-card p-8 shadow-md backdrop-blur-md"
-                >
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="my-6 text-2xl font-bold tracking-tighter">
-                      {step.title}
-                    </h3>
-                    <span className="text-2xl font-bold text-primary">
-                      {step.num}
-                    </span>
+          </FadeIn>
+          <div className="mt-16">
+            <Timeline
+              data={timelineSteps.map((step) => ({
+                title: step.num,
+                content: (
+                  <div className="rounded-2xl border border-border/50 bg-card p-8 shadow-sm">
+                    <h3 className="text-2xl font-bold tracking-tight">{step.title}</h3>
+                    <p className="mt-4 text-muted-foreground">{step.detail}</p>
                   </div>
-                  <p className="text-muted-foreground">{step.detail}</p>
-                </CardSticky>
-              ))}
-            </ContainerScroll>
+                ),
+              }))}
+            />
           </div>
         </div>
       </section>
