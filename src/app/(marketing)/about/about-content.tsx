@@ -4,21 +4,77 @@ import { useRef } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 import { motion, useInView } from "framer-motion";
 import { LocationMap } from "@/components/ui/location-map";
 import {
   ArrowRight,
   Mail,
+  Handshake,
+  Eye,
+  Gem,
+  Puzzle,
 } from "lucide-react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
 
-const valueItems = [
-  { title: "Fair for Everyone", description: "Contractors earn fair pay. Homeowners pay fair prices. Everyone wins." },
-  { title: "Trust & Transparency", description: "Vetted contractors. Upfront pricing. No hidden fees, ever." },
-  { title: "Quality Obsession", description: "Every service is guaranteed. If it's not right, we make it right." },
-  { title: "Simplicity First", description: "One plan. One payment. One place for everything." },
+const valueTimelineItems = [
+  {
+    title: "Fairness",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Handshake className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Fair for Everyone</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Contractors earn fair pay. Homeowners pay fair prices. Everyone wins.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Trust",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Eye className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Trust & Transparency</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Vetted contractors. Upfront pricing. No hidden fees, ever.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Quality",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Gem className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Quality Obsession</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every service is guaranteed. If it's not right, we make it right.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Simplicity",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Puzzle className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Simplicity First</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          One plan. One payment. One place for everything.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const stats = [
@@ -107,12 +163,19 @@ export default function AboutContent() {
 
       {/* Values */}
       <section className="py-24 sm:py-32">
-        <Feature
-          badge="What we stand for"
-          title="Built on principles, not trends"
-          items={valueItems}
-          columns={2}
-        />
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                What we stand for
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Built on principles, not trends
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={valueTimelineItems} />
       </section>
 
       {/* Market Stats */}

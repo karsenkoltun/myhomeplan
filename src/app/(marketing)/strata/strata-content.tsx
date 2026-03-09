@@ -7,7 +7,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 import { Gallery4 } from "@/components/ui/gallery4";
 import type { Gallery4Item } from "@/components/ui/gallery4";
 
@@ -30,6 +30,10 @@ import {
   Wrench,
   ClipboardList,
   Users,
+  FileText,
+  AlertTriangle,
+  TrendingDown,
+  BarChart3,
 } from "lucide-react";
 
 /* --- DATA ----------------------------------------------------------- */
@@ -55,13 +59,91 @@ const solutionPoints = [
   "Built-in compliance tracking",
 ];
 
-const featureItems = [
-  { title: "Unified contract management", description: "One agreement replaces a dozen vendor contracts." },
-  { title: "Predictable budgeting", description: "Fixed per-unit pricing. No surprise assessments." },
-  { title: "Compliance autopilot", description: "Fire, elevator, HVAC - every cert tracked for you." },
-  { title: "Emergency coordination", description: "Burst pipe at 2 AM? We handle it, you sleep." },
-  { title: "Volume-based savings", description: "Bulk pricing across hundreds of buildings." },
-  { title: "Council-ready reporting", description: "One clear report instead of ten vendor summaries." },
+const timelineItems = [
+  {
+    title: "Contracts",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <FileText className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Unified contract management</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          One agreement replaces a dozen vendor contracts. Less paperwork, less risk.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Budgeting",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <DollarSign className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Predictable budgeting</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Fixed per-unit pricing. No surprise assessments. Budget with confidence.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Compliance",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <ClipboardList className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Compliance autopilot</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Fire, elevator, HVAC - every certification tracked and renewed for you.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Emergency",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <AlertTriangle className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Emergency coordination</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Burst pipe at 2 AM? We handle it, you sleep. 24/7 emergency response.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Savings",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <TrendingDown className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Volume-based savings</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Bulk pricing across hundreds of buildings. The more units, the more you save.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Reporting",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <BarChart3 className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Council-ready reporting</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          One clear report instead of ten vendor summaries. Ready for any council meeting.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const pricingTiers = [
@@ -531,14 +613,19 @@ export function StrataContent() {
 
       {/* ========== FEATURES ========== */}
       <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
-        <FadeIn>
-          <Feature
-            badge="Why strata councils choose us"
-            title="Everything managed. Nothing missed."
-            items={featureItems}
-            columns={3}
-          />
-        </FadeIn>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Why strata councils choose us
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Everything managed. Nothing missed.
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={timelineItems} />
       </section>
 
       {/* ========== PRICING TIERS ========== */}

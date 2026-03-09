@@ -44,8 +44,12 @@ function Feature({ badge, title, subtitle, items, columns = 3 }: FeatureProps) {
           >
             {items.map((item) => (
               <div key={item.title} className="flex flex-col gap-2">
-                <div className="mb-2 aspect-video rounded-md bg-muted" />
-                <h3 className="text-xl tracking-tight">{item.title}</h3>
+                {item.icon && (
+                  <div className="mb-1 flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                    <item.icon className="h-5 w-5 text-primary" />
+                  </div>
+                )}
+                <h3 className="text-xl font-semibold tracking-tight">{item.title}</h3>
                 <p className="text-base text-muted-foreground">
                   {item.description}
                 </p>

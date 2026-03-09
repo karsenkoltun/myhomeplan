@@ -6,36 +6,20 @@ import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
 import { FlowButton } from "@/components/ui/flow-button";
-import {
-  InfiniteMarquee,
-  MarqueeServiceItem,
-} from "@/components/marketing/infinite-marquee";
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 
 import {
   ArrowRight,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Hammer,
-  Wrench,
-  Zap,
-  Home,
-  Droplets,
-  PaintBucket,
-  Wind,
   Check,
   X,
-  Calendar,
-  CreditCard,
+  Layers,
   ShieldCheck,
-  Clock,
+  CalendarClock,
+  DollarSign,
 } from "lucide-react";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
@@ -63,11 +47,63 @@ const stats = [
   { value: 2, suffix: " min", label: "Setup", sublabel: "to build your plan" },
 ];
 
-const featureItems = [
-  { title: "One plan for everything", description: "Lawn, snow, HVAC, cleaning, and more - bundled." },
-  { title: "Vetted local pros", description: "Licensed, insured, background-checked." },
-  { title: "Real-time scheduling", description: "Every service tracked and managed for you." },
-  { title: "Predictable pricing", description: "No surprise bills. Ever." },
+const timelineItems = [
+  {
+    title: "Bundled",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Layers className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">One plan for everything</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Lawn, snow, HVAC, cleaning, and more - bundled into one subscription with one monthly bill.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Vetted",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <ShieldCheck className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Vetted local pros</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every contractor is licensed, insured, and background-checked. No guessing, no risk.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Scheduled",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <CalendarClock className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Real-time scheduling</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every service tracked and managed for you. Get notified before every visit.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Predictable",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <DollarSign className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Predictable pricing</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          No surprise bills. Ever. Your rate is locked from day one.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const steps = [
@@ -93,19 +129,6 @@ const steps = [
   },
 ];
 
-const marqueeServices = [
-  { icon: Scissors, label: "Lawn Care", color: "text-green-600" },
-  { icon: Snowflake, label: "Snow Removal", color: "text-sky-500" },
-  { icon: Thermometer, label: "HVAC", color: "text-orange-500" },
-  { icon: Sparkles, label: "Cleaning", color: "text-violet-500" },
-  { icon: Bug, label: "Pest Control", color: "text-rose-500" },
-  { icon: Hammer, label: "Handyman", color: "text-amber-600" },
-  { icon: Wrench, label: "Plumbing", color: "text-cyan-600" },
-  { icon: Zap, label: "Electrical", color: "text-yellow-500" },
-  { icon: Droplets, label: "Pressure Washing", color: "text-blue-500" },
-  { icon: Wind, label: "Gutter Cleaning", color: "text-teal-500" },
-  { icon: PaintBucket, label: "Painting", color: "text-pink-500" },
-];
 
 /* ─── COMPONENTS ──────────────────────────────────────────────── */
 
@@ -281,24 +304,6 @@ export default function HomePage() {
         <HeroTextReveal />
       </section>
 
-      {/* ══════════ SERVICES MARQUEE (trust bar) ══════════ */}
-      <section className="border-y border-border/40 bg-muted/20 py-8 sm:py-10">
-        <FadeIn>
-          <p className="mb-5 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-7 sm:text-sm">
-            15+ services under one roof
-          </p>
-        </FadeIn>
-        <InfiniteMarquee speed={35}>
-          {marqueeServices.map((s) => (
-            <MarqueeServiceItem
-              key={s.label}
-              icon={s.icon}
-              label={s.label}
-              color={s.color}
-            />
-          ))}
-        </InfiniteMarquee>
-      </section>
 
       {/* ══════════ PROBLEM → SOLUTION ══════════ */}
       <section className="py-24 sm:py-32">
@@ -370,16 +375,21 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ══════════ FEATURE GRID ══════════ */}
+      {/* ══════════ WHY MY HOME PLAN ══════════ */}
       <section className="py-24 sm:py-32">
-        <FadeIn>
-          <Feature
-            badge="Why My Home Plan"
-            title="Everything handled. Nothing forgotten."
-            items={featureItems}
-            columns={2}
-          />
-        </FadeIn>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Why My Home Plan
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Everything handled. Nothing forgotten.
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={timelineItems} />
         <FadeIn delay={0.3}>
           <div className="mt-12 text-center">
             <Button variant="outline" size="sm" asChild>

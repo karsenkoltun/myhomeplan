@@ -8,7 +8,7 @@ import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 
 import {
   ArrowRight,
@@ -21,6 +21,8 @@ import {
   X,
   Users,
   Layers,
+  Receipt,
+  MessageSquare,
 } from "lucide-react";
 
 /* -- DATA --------------------------------------------------------- */
@@ -48,11 +50,63 @@ const solutions = [
   "Adding properties takes minutes, not weeks",
 ];
 
-const featureItems = [
-  { title: "Portfolio consolidation", description: "Every property, every service, one dashboard. Replace dozens of vendor relationships with a single platform." },
-  { title: "One monthly invoice", description: "Consolidated billing across your entire portfolio. One payment, one line item for accounting." },
-  { title: "Reduce tenant complaints", description: "Proactive, scheduled maintenance prevents issues before tenants notice. Better retention, fewer calls." },
-  { title: "Dedicated account manager", description: "One point of contact who knows your portfolio. No call centers, no ticket queues." },
+const timelineItems = [
+  {
+    title: "Consolidate",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Layers className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Portfolio consolidation</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every property, every service, one dashboard. Replace dozens of vendor relationships with a single platform.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Billing",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Receipt className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">One monthly invoice</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Consolidated billing across your entire portfolio. One payment, one line item for accounting.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Retention",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <MessageSquare className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Reduce tenant complaints</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Proactive, scheduled maintenance prevents issues before tenants notice. Better retention, fewer calls.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Support",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <HeadphonesIcon className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Dedicated account manager</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          One point of contact who knows your portfolio. No call centers, no ticket queues.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const steps = [
@@ -457,14 +511,19 @@ export function PropertyManagersContent() {
 
       {/* ========== FEATURES ========== */}
       <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
-        <FadeIn>
-          <Feature
-            badge="Why My Home Plan"
-            title="Built for portfolio scale"
-            items={featureItems}
-            columns={2}
-          />
-        </FadeIn>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Why My Home Plan
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Built for portfolio scale
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={timelineItems} />
       </section>
 
       {/* ========== HOW IT WORKS ========== */}

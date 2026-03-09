@@ -11,7 +11,7 @@ import {
 import { motion, useInView } from "framer-motion";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 
 import {
   ArrowRight,
@@ -35,6 +35,8 @@ import {
   DollarSign,
   Star,
   Leaf,
+  Layers,
+  CalendarClock,
 } from "lucide-react";
 
 /* --- DATA --------------------------------------------------------- */
@@ -62,11 +64,63 @@ const stats = [
   { value: 0, suffix: "", label: "Hidden fees", sublabel: "transparent pricing always" },
 ];
 
-const featureItems = [
-  { title: "One plan, every service", description: "Lawn, snow, HVAC, cleaning - bundled into one subscription." },
-  { title: "Vetted local pros", description: "Licensed, insured, and background-checked." },
-  { title: "Effortless scheduling", description: "Book any service in seconds from your dashboard." },
-  { title: "Predictable pricing", description: "No surprise bills. Cancel anytime." },
+const timelineItems = [
+  {
+    title: "Bundled",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Layers className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">One plan, every service</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Lawn, snow, HVAC, cleaning - bundled into one subscription with one monthly bill.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Vetted",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <ShieldCheck className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Vetted local pros</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every contractor is licensed, insured, and background-checked before they touch your home.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Scheduled",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <CalendarClock className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Effortless scheduling</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Book any service in seconds from your dashboard. We handle all coordination.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Predictable",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <DollarSign className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Predictable pricing</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          No surprise bills. Cancel anytime. Your rate is locked from day one.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const marqueeServices = [
@@ -411,14 +465,19 @@ export function HomeownersContent() {
 
       {/* ========== FEATURES ========== */}
       <section className="py-24 sm:py-32">
-        <FadeIn>
-          <Feature
-            badge="Why My Home Plan"
-            title="Everything handled. Nothing forgotten."
-            items={featureItems}
-            columns={2}
-          />
-        </FadeIn>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Why My Home Plan
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Everything handled. Nothing forgotten.
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={timelineItems} />
         <FadeIn delay={0.3}>
           <div className="mt-12 text-center">
             <Button variant="outline" size="sm" asChild>

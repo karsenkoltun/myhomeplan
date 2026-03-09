@@ -11,7 +11,7 @@ import {
 import { motion, useInView } from "framer-motion";
 
 import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
-import { Feature } from "@/components/ui/feature-section-with-grid";
+import { Timeline } from "@/components/ui/timeline";
 
 import {
   ArrowRight,
@@ -69,13 +69,91 @@ const stats = [
   { value: 100, prefix: "", suffix: "%", label: "Payment guaranteed" },
 ];
 
-const benefitItems = [
-  { title: "Free qualified leads", description: "Homeowners sent directly to you at zero cost." },
-  { title: "Guaranteed payment", description: "Every completed job paid on schedule. Always." },
-  { title: "No marketing costs", description: "We handle all customer acquisition for you." },
-  { title: "Flexible schedule", description: "You choose when, where, and how much you work." },
-  { title: "Admin handled", description: "Scheduling, invoicing, follow-ups - all taken care of." },
-  { title: "Growing network", description: "Join a vetted community of top local professionals." },
+const benefitTimelineItems = [
+  {
+    title: "Leads",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Target className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Free qualified leads</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Homeowners sent directly to you at zero cost. No bidding, no competition.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Payment",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <DollarSign className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Guaranteed payment</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Every completed job paid on schedule. Always. No chasing invoices.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Marketing",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <TrendingUp className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">No marketing costs</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          We handle all customer acquisition for you. Focus on what you do best.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Flexibility",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <CalendarClock className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Flexible schedule</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          You choose when, where, and how much you work. Your business, your terms.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Admin",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <ClipboardCheck className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Admin handled</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Scheduling, invoicing, follow-ups - all taken care of so you can focus on the work.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: "Network",
+    content: (
+      <div>
+        <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+          <Users className="h-6 w-6 text-primary" />
+        </div>
+        <h3 className="text-xl font-bold tracking-tight md:text-2xl">Growing network</h3>
+        <p className="mt-2 max-w-lg text-sm text-muted-foreground md:text-base">
+          Join a vetted community of top local professionals. Referrals and collaboration built in.
+        </p>
+      </div>
+    ),
+  },
 ];
 
 const timelineSteps = [
@@ -393,17 +471,24 @@ export function ContractorsContent() {
         </div>
       </section>
 
-      {/* ====== BENEFITS GRID ====== */}
+      {/* ====== BENEFITS ====== */}
       <section id="benefits" className="py-24 sm:py-32">
-        <FadeIn>
-          <Feature
-            badge="Why join us"
-            title="Built for contractors who want more"
-            subtitle="No chasing leads. No unpaid invoices. Just steady work."
-            items={benefitItems}
-            columns={3}
-          />
-        </FadeIn>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="max-w-4xl">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Why join us
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Built for contractors who want more
+              </h2>
+              <p className="mt-4 max-w-lg text-lg text-muted-foreground">
+                No chasing leads. No unpaid invoices. Just steady work.
+              </p>
+            </div>
+          </FadeIn>
+        </div>
+        <Timeline data={benefitTimelineItems} />
       </section>
 
       {/* ====== HOW TO JOIN ====== */}
