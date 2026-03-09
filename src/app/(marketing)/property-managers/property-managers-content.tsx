@@ -273,7 +273,7 @@ function FloatingDashboard() {
 
 export function PropertyManagersContent() {
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col overflow-x-clip">
       {/* ========== HERO ========== */}
       <section className="relative overflow-hidden py-24 sm:py-32">
         <div className="absolute inset-0 bg-gradient-to-b from-violet-500/[0.06] via-transparent to-background" />

@@ -222,7 +222,7 @@ function StatItem({
 
 export function ContractorsContent() {
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col overflow-x-clip">
       {/* ====== HERO ====== */}
       <section className="relative overflow-hidden bg-[#0a0a0a] py-24 sm:py-32">
         {/* Subtle gradient orbs */}

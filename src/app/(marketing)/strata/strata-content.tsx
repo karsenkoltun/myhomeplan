@@ -423,7 +423,7 @@ function DashboardMockup() {
 
 export function StrataContent() {
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col overflow-x-clip">
       {/* ========== HERO ========== */}
       <section className="relative overflow-hidden py-24 sm:py-32">
         {/* Background gradient */}

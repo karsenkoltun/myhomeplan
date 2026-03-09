@@ -194,7 +194,7 @@ export default function PricingContent() {
   const [selectedType, setSelectedType] = useState("suburban");
 
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col overflow-x-clip">
       {/* ── Hero ── */}
       <section className="py-24 sm:py-32">
         <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">

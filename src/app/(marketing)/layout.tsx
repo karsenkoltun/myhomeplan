@@ -10,7 +10,7 @@ export default function MarketingLayout({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen overflow-x-hidden">
+      <main className="min-h-screen overflow-x-clip">
         <ErrorBoundary>{children}</ErrorBoundary>
       </main>
       <Footer />

@@ -192,7 +192,7 @@ function StatItem({
 
 export default function HomePage() {
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col overflow-x-clip">
       {/* ══════════ HERO ══════════ */}
       <section className="relative min-h-[100vh] overflow-hidden">
         <HeroScene />
