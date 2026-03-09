@@ -6,7 +6,6 @@ import { BlogBreadcrumbs } from "@/components/blog/blog-breadcrumbs";
 import { BlogSearch } from "@/components/blog/blog-search";
 import { BlogPagination } from "@/components/blog/blog-pagination";
 import { OrganizationJsonLd } from "@/components/blog/json-ld";
-import { FeatureSectionGrid } from "@/components/marketing/feature-section-grid";
 import { BLOG_CATEGORIES, type BlogCategory } from "@/types/blog";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -105,99 +104,6 @@ export default function BlogPage() {
               </Badge>
             </Link>
           ))}
-        </div>
-
-        {/* Browse by Topic */}
-        <div className="mb-10">
-          <FeatureSectionGrid
-            badge="Browse by Topic"
-            title="Explore Home Maintenance Topics"
-            subtitle="Find expert guides, checklists, and cost breakdowns for every area of your home."
-            items={[
-              {
-                icon: "Leaf",
-                title: "Seasonal Maintenance",
-                description:
-                  "Month-by-month checklists and seasonal prep guides to keep your home ready year-round.",
-                href: "/blog/category/seasonal-guides",
-                color: "text-emerald-500",
-                bg: "bg-emerald-500/10",
-              },
-              {
-                icon: "Thermometer",
-                title: "HVAC & Climate",
-                description:
-                  "Furnace, AC, and heat pump maintenance tips to stay comfortable and energy-efficient.",
-                href: "/blog/category/home-systems",
-                color: "text-blue-500",
-                bg: "bg-blue-500/10",
-              },
-              {
-                icon: "Flower2",
-                title: "Lawn & Garden",
-                description:
-                  "Lawn care schedules, landscaping ideas, and outdoor maintenance for every season.",
-                href: "/blog/category/outdoor-maintenance",
-                color: "text-green-500",
-                bg: "bg-green-500/10",
-              },
-              {
-                icon: "Snowflake",
-                title: "Snow & Ice",
-                description:
-                  "Snow removal tips, ice dam prevention, and winterization guides for Okanagan winters.",
-                href: "/blog/category/seasonal-guides",
-                color: "text-cyan-500",
-                bg: "bg-cyan-500/10",
-              },
-              {
-                icon: "Bug",
-                title: "Pest Control",
-                description:
-                  "Prevention strategies, treatment options, and when to call a professional exterminator.",
-                href: "/blog/category/specialty-services",
-                color: "text-amber-500",
-                bg: "bg-amber-500/10",
-              },
-              {
-                icon: "Sparkles",
-                title: "Cleaning",
-                description:
-                  "Deep cleaning schedules, carpet care, window washing, and indoor maintenance tips.",
-                href: "/blog/category/indoor-cleaning",
-                color: "text-violet-500",
-                bg: "bg-violet-500/10",
-              },
-              {
-                icon: "Hammer",
-                title: "Home Improvement",
-                description:
-                  "DIY projects, handyman tips, and when it makes sense to hire a professional.",
-                href: "/blog/category/homeowner-tips",
-                color: "text-orange-500",
-                bg: "bg-orange-500/10",
-              },
-              {
-                icon: "Wifi",
-                title: "Smart Home",
-                description:
-                  "Smart thermostats, security systems, and tech upgrades to modernize your home.",
-                href: "/blog/category/home-systems",
-                color: "text-indigo-500",
-                bg: "bg-indigo-500/10",
-              },
-              {
-                icon: "DollarSign",
-                title: "Budgeting & Costs",
-                description:
-                  "Cost breakdowns, pricing comparisons, and budgeting tools for every home service.",
-                href: "/blog/category/cost-guides",
-                color: "text-rose-500",
-                bg: "bg-rose-500/10",
-              },
-            ]}
-            columns={3}
-          />
         </div>
 
         {/* Featured post */}

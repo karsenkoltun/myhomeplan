@@ -1,21 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  FadeIn,
-  StaggerContainer,
-  StaggerItem,
-  ShimmerButton,
-  FloatingElement,
-} from "@/components/ui/motion";
+import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import { HeroScene } from "@/components/hero/hero-scene";
 import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
-import DisplayCards from "@/components/ui/display-cards";
 import { FlowButton } from "@/components/ui/flow-button";
-import { SocialProofBar } from "@/components/marketing/social-proof-bar";
-import { SectionHeader } from "@/components/marketing/section-header";
 import {
   InfiniteMarquee,
   MarqueeServiceItem,
@@ -23,23 +13,11 @@ import {
 import { motion, useInView } from "framer-motion";
 import { useRef, useState } from "react";
 
-// Lazy-load heavy below-fold components to reduce initial bundle size
-const Testimonials3D = dynamic(
-  () => import("@/components/marketing/testimonials-3d").then((mod) => ({ default: mod.Testimonials3D })),
-  { ssr: false }
-);
-const BentoGrid = dynamic(
-  () => import("@/components/marketing/bento-grid").then((mod) => ({ default: mod.BentoGrid })),
-  { ssr: false }
-);
-const CostComparison = dynamic(
-  () => import("@/components/marketing/cost-comparison").then((mod) => ({ default: mod.CostComparison })),
-  { ssr: false }
-);
+import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
+import { Feature } from "@/components/ui/feature-section-with-grid";
+
 import {
   ArrowRight,
-  CheckCircle2,
-  DollarSign,
   Scissors,
   Snowflake,
   Thermometer,
@@ -49,82 +27,77 @@ import {
   Wrench,
   Zap,
   Home,
-  Calendar,
-  CreditCard,
-  X,
-  Check,
-  Search,
-  PhoneOff,
-  CalendarX,
-  Receipt,
-  ShieldCheck,
-  Heart,
   Droplets,
   PaintBucket,
   Wind,
-  Flower2,
+  Check,
+  X,
+  Calendar,
+  CreditCard,
+  ShieldCheck,
+  Clock,
 } from "lucide-react";
 
 /* ─── DATA ────────────────────────────────────────────────────── */
 
-const painPoints = [
-  { text: "Searching for contractors on Google and hoping they're legit", icon: Search },
-  { text: "Contractors who don't show up, don't call, don't care", icon: PhoneOff },
-  { text: "Juggling 8 different service providers with 8 different schedules", icon: CalendarX },
-  { text: "Surprise bills that are double what you were quoted", icon: Receipt },
+const problems = [
+  "Unreliable contractors",
+  "Endless Googling for quotes",
+  "Juggling 8+ providers",
+  "Surprise bills every month",
+  "Wasted weekends coordinating",
 ];
 
-const benefitsBento = [
+const solutions = [
+  "Vetted, licensed, and insured pros",
+  "One subscription, one monthly bill",
+  "Every service scheduled for you",
+  "Save 20-40% with bulk rates",
+  "Cancel anytime, no contracts",
+];
+
+const stats = [
+  { value: 15, suffix: "+", label: "Services", sublabel: "under one roof" },
+  { value: 847, suffix: "", label: "$847", sublabel: "avg. annual savings", prefix: "" },
+  { value: 100, suffix: "%", label: "Vetted", sublabel: "contractors insured" },
+  { value: 2, suffix: " min", label: "Setup", sublabel: "to build your plan" },
+];
+
+const featureItems = [
+  { title: "One plan for everything", description: "Lawn, snow, HVAC, cleaning, and more - bundled." },
+  { title: "Vetted local pros", description: "Licensed, insured, background-checked." },
+  { title: "Real-time scheduling", description: "Every service tracked and managed for you." },
+  { title: "Predictable pricing", description: "No surprise bills. Ever." },
+];
+
+const steps = [
   {
-    title: "One Monthly Payment",
-    description: "Every home service bundled into one predictable bill. No surprise costs, no invoicing chaos.",
-    icon: CreditCard,
-    color: "text-primary",
-    bg: "bg-primary/10",
-    span: "large" as const,
+    num: "01",
+    title: "Tell us about your home",
+    detail: "Property size, lot, heating. 2 minutes.",
   },
   {
-    title: "Vetted Local Pros",
-    description: "Licensed, insured, and background-checked. Only the best contractors in the Okanagan.",
-    icon: ShieldCheck,
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10",
+    num: "02",
+    title: "Pick your services",
+    detail: "Choose what you need. Price builds live.",
   },
   {
-    title: "Guaranteed Scheduling",
-    description: "Services happen on time, every time. You never coordinate a thing.",
-    icon: Calendar,
-    color: "text-sky-500",
-    bg: "bg-sky-500/10",
+    num: "03",
+    title: "We handle everything",
+    detail: "Scheduling, coordination, quality checks.",
   },
   {
-    title: "Save 20-40%",
-    description: "Bulk rates from our contractor network passed directly to you. No hidden markups.",
-    icon: DollarSign,
-    color: "text-amber-500",
-    bg: "bg-amber-500/10",
-  },
-  {
-    title: "Cancel Anytime",
-    description: "No long-term contracts on monthly plans. Stay because it works, not because you're stuck.",
-    icon: Heart,
-    color: "text-rose-500",
-    bg: "bg-rose-500/10",
-  },
-  {
-    title: "Everything Handled",
-    description: "Scheduling, quality control, communication. We manage it all so you can enjoy your home.",
-    icon: CheckCircle2,
-    color: "text-violet-500",
-    bg: "bg-violet-500/10",
+    num: "04",
+    title: "Enjoy your home",
+    detail: "Weekends are yours again.",
   },
 ];
 
 const marqueeServices = [
   { icon: Scissors, label: "Lawn Care", color: "text-green-600" },
   { icon: Snowflake, label: "Snow Removal", color: "text-sky-500" },
-  { icon: Thermometer, label: "HVAC Maintenance", color: "text-orange-500" },
-  { icon: Sparkles, label: "House Cleaning", color: "text-violet-500" },
+  { icon: Thermometer, label: "HVAC", color: "text-orange-500" },
+  { icon: Sparkles, label: "Cleaning", color: "text-violet-500" },
   { icon: Bug, label: "Pest Control", color: "text-rose-500" },
   { icon: Hammer, label: "Handyman", color: "text-amber-600" },
   { icon: Wrench, label: "Plumbing", color: "text-cyan-600" },
@@ -134,84 +107,163 @@ const marqueeServices = [
   { icon: PaintBucket, label: "Painting", color: "text-pink-500" },
 ];
 
-const contractorNetwork = [
-  { icon: Wrench, label: "Licensed Plumbers", color: "text-blue-500" },
-  { icon: Thermometer, label: "Certified HVAC Technicians", color: "text-red-500" },
-  { icon: Zap, label: "Insured Electricians", color: "text-yellow-500" },
-  { icon: Flower2, label: "Professional Landscapers", color: "text-green-500" },
-  { icon: Home, label: "Expert Roofers", color: "text-orange-500" },
-  { icon: Sparkles, label: "Certified Cleaners", color: "text-purple-500" },
-  { icon: Snowflake, label: "Snow Removal Pros", color: "text-cyan-500" },
-  { icon: Bug, label: "Pest Control Experts", color: "text-amber-500" },
-];
+/* ─── COMPONENTS ──────────────────────────────────────────────── */
 
-const steps = [
-  {
-    step: "01",
-    title: "Tell Us About Your Home",
-    description: "Property details, lot size, heating type. Takes 2 minutes.",
-    icon: Home,
-  },
-  {
-    step: "02",
-    title: "Choose Your Services",
-    description: "Pick exactly what you need. Watch your price build in real-time.",
-    icon: Calendar,
-  },
-  {
-    step: "03",
-    title: "We Handle Everything",
-    description: "Scheduling, coordination, quality checks. You do nothing.",
-    icon: CheckCircle2,
-  },
-  {
-    step: "04",
-    title: "Enjoy Your Home",
-    description: "Spend your weekends living, not maintaining.",
-    icon: Heart,
-  },
-];
-
-/* ─── PAIN POINT CARD ─────────────────────────────────────────── */
-
-function PainPointCard({ text, icon: Icon, index }: { text: string; icon: React.ElementType; index: number }) {
-  const [hovered, setHovered] = useState(false);
+function RevealItem({
+  children,
+  index,
+  variant,
+}: {
+  children: React.ReactNode;
+  index: number;
+  variant: "problem" | "solution";
+}) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-40px" });
 
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.5, delay: index * 0.1, ease: [0.21, 0.47, 0.32, 0.98] }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      className="group relative rounded-2xl border border-white/[0.06] bg-white/[0.03] p-5 backdrop-blur-sm transition-all duration-300 hover:border-emerald-500/20 hover:bg-emerald-500/[0.04] sm:p-6"
+      initial={{ opacity: 0, x: -16 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="flex items-center gap-3.5 py-2"
     >
-      <div className="flex items-start gap-4">
-        <div className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
-          <motion.div
-            initial={false}
-            animate={{ opacity: hovered ? 0 : 1, scale: hovered ? 0.5 : 1 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 flex items-center justify-center rounded-xl bg-red-500/10"
-          >
-            <X className="h-5 w-5 text-red-400" />
-          </motion.div>
-          <motion.div
-            initial={false}
-            animate={{ opacity: hovered ? 1 : 0, scale: hovered ? 1 : 0.5 }}
-            transition={{ duration: 0.2 }}
-            className="absolute inset-0 flex items-center justify-center rounded-xl bg-emerald-500/10"
-          >
-            <Check className="h-5 w-5 text-emerald-400" />
-          </motion.div>
-        </div>
-        <p className="text-sm leading-relaxed text-white/70 transition-colors duration-300 group-hover:text-white/90 sm:text-base">
-          {text}
-        </p>
+      <div
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+          variant === "problem" ? "bg-red-50" : "bg-emerald-50"
+        }`}
+      >
+        {variant === "problem" ? (
+          <X className="h-3.5 w-3.5 text-red-500" />
+        ) : (
+          <Check className="h-3.5 w-3.5 text-emerald-600" />
+        )}
       </div>
+      <p
+        className={`text-lg font-medium sm:text-xl ${
+          variant === "problem" ? "text-muted-foreground" : "text-foreground"
+        }`}
+      >
+        {children}
+      </p>
+    </motion.div>
+  );
+}
+
+function TimelineStep({
+  step,
+  index,
+  isLast,
+  isActive,
+  onClick,
+}: {
+  step: (typeof steps)[0];
+  index: number;
+  isLast: boolean;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.12,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      onClick={onClick}
+      className="group relative flex cursor-pointer gap-5 sm:gap-7"
+    >
+      {/* Timeline spine */}
+      <div className="flex flex-col items-center">
+        <motion.div
+          animate={{
+            scale: isActive ? 1 : 0.85,
+            backgroundColor: isActive
+              ? "oklch(0.55 0.18 250)"
+              : "oklch(0.955 0.005 250)",
+          }}
+          transition={{ duration: 0.3 }}
+          className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold shadow-sm sm:h-14 sm:w-14 sm:text-base"
+        >
+          <span className={isActive ? "text-white" : "text-muted-foreground"}>
+            {step.num}
+          </span>
+        </motion.div>
+        {!isLast && (
+          <div className="w-px flex-1 bg-gradient-to-b from-border to-transparent" style={{ minHeight: "2rem" }} />
+        )}
+      </div>
+      {/* Content */}
+      <div className={`pb-8 ${isLast ? "pb-0" : ""}`}>
+        <h3
+          className={`text-lg font-semibold tracking-tight transition-colors duration-200 sm:text-xl ${
+            isActive ? "text-foreground" : "text-muted-foreground"
+          }`}
+        >
+          {step.title}
+        </h3>
+        <motion.p
+          animate={{ opacity: isActive ? 1 : 0.5, height: isActive ? "auto" : "auto" }}
+          className="mt-1 text-sm text-muted-foreground sm:text-base"
+        >
+          {step.detail}
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+}
+
+function StatItem({
+  stat,
+  index,
+}: {
+  stat: (typeof stats)[0];
+  index: number;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.1,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="text-center"
+    >
+      <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+        {stat.label === "$847" ? (
+          isInView ? (
+            <>
+              $<AnimatedCounter target={847} duration={1.5} />
+            </>
+          ) : (
+            "$0"
+          )
+        ) : isInView ? (
+          <AnimatedCounter target={stat.value} suffix={stat.suffix} duration={1.5} />
+        ) : (
+          "0"
+        )}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+        {stat.sublabel}
+      </p>
     </motion.div>
   );
 }
@@ -219,6 +271,8 @@ function PainPointCard({ text, icon: Icon, index }: { text: string; icon: React.
 /* ─── PAGE ────────────────────────────────────────────────────── */
 
 export default function HomePage() {
+  const [activeStep, setActiveStep] = useState(0);
+
   return (
     <div className="flex flex-col overflow-x-hidden">
       {/* ══════════ HERO ══════════ */}
@@ -227,113 +281,11 @@ export default function HomePage() {
         <HeroTextReveal />
       </section>
 
-      {/* ══════════ SOCIAL PROOF BAR ══════════ */}
-      <SocialProofBar />
-
-      {/* ══════════ DISPLAY CARDS - PRODUCT PREVIEW ══════════ */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  Your Home, On Autopilot
-                </h2>
-                <p className="mt-3 text-muted-foreground sm:text-lg">
-                  Every service scheduled, tracked, and managed - so you never think about maintenance again.
-                </p>
-              </div>
-              <div className="flex-1">
-                <DisplayCards
-                  cards={[
-                    {
-                      className:
-                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <Calendar className="size-4 text-emerald-300" />,
-                      title: "Lawn Care Scheduled",
-                      description: "Next service: March 15",
-                      date: "Bi-weekly",
-                      iconClassName: "text-emerald-500",
-                      titleClassName: "text-emerald-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <Snowflake className="size-4 text-sky-300" />,
-                      title: "Snow Removal Complete",
-                      description: "Driveway cleared at 6am",
-                      date: "This morning",
-                      iconClassName: "text-sky-500",
-                      titleClassName: "text-sky-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-                      icon: <CreditCard className="size-4 text-violet-300" />,
-                      title: "Monthly Plan Active",
-                      description: "$159/mo - 8 services included",
-                      date: "Since January",
-                      iconClassName: "text-violet-500",
-                      titleClassName: "text-violet-500",
-                    },
-                  ]}
-                />
-              </div>
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ══════════ PAIN POINTS ══════════ */}
-      <section className="relative overflow-hidden bg-[#0a0a0f] py-16 sm:py-24">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/[0.06] via-transparent to-transparent" />
-        <div className="relative mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            title="Sound Familiar?"
-            subtitle="Homeownership shouldn't feel like a second job."
-            dark
-          />
-          <div className="mt-10 grid gap-3 sm:mt-12 sm:grid-cols-2 sm:gap-4">
-            {painPoints.map((point, i) => (
-              <PainPointCard key={i} text={point.text} icon={point.icon} index={i} />
-            ))}
-          </div>
-          <FadeIn delay={0.6}>
-            <div className="mt-12 text-center sm:mt-16">
-              <p className="text-xl font-semibold text-white sm:text-2xl">
-                There&apos;s a better way.
-              </p>
-              <motion.div
-                className="mx-auto mt-4 h-12 w-px bg-gradient-to-b from-white/30 to-transparent"
-                initial={{ scaleY: 0 }}
-                whileInView={{ scaleY: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: 0.3 }}
-                style={{ transformOrigin: "top" }}
-              />
-            </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ══════════ BENEFITS - BENTO GRID ══════════ */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
-        <SectionHeader
-          badge="Why My Home Plan"
-          badgeColor="primary"
-          title="Everything Handled. Nothing Forgotten."
-          subtitle="One subscription replaces every contractor, quote, and phone call."
-        />
-        <div className="mt-10 sm:mt-14">
-          <BentoGrid items={benefitsBento} />
-        </div>
-      </section>
-
-      {/* ══════════ SERVICES MARQUEE ══════════ */}
-      <section className="border-y bg-muted/20 py-10 sm:py-14">
+      {/* ══════════ SERVICES MARQUEE (trust bar) ══════════ */}
+      <section className="border-y border-border/40 bg-muted/20 py-8 sm:py-10">
         <FadeIn>
-          <p className="mb-6 text-center text-sm font-medium uppercase tracking-widest text-muted-foreground sm:mb-8">
-            15+ Services Under One Roof
+          <p className="mb-5 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-7 sm:text-sm">
+            15+ services under one roof
           </p>
         </FadeIn>
         <InfiniteMarquee speed={35}>
@@ -346,158 +298,198 @@ export default function HomePage() {
             />
           ))}
         </InfiniteMarquee>
-        <FadeIn delay={0.2}>
-          <div className="mt-6 text-center sm:mt-8">
+      </section>
+
+      {/* ══════════ PROBLEM → SOLUTION ══════════ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+            {/* Problems */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-red-500/80 sm:text-sm">
+                  The problem
+                </p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  Homeownership shouldn&apos;t be a second job
+                </h2>
+              </FadeIn>
+              <div className="mt-10 space-y-1">
+                {problems.map((p, i) => (
+                  <RevealItem key={i} index={i} variant="problem">
+                    {p}
+                  </RevealItem>
+                ))}
+              </div>
+            </div>
+            {/* Solutions */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-600/80 sm:text-sm">
+                  The solution
+                </p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  There&apos;s a better way
+                </h2>
+              </FadeIn>
+              <div className="mt-10 space-y-1">
+                {solutions.map((s, i) => (
+                  <RevealItem key={i} index={i} variant="solution">
+                    {s}
+                  </RevealItem>
+                ))}
+              </div>
+              <FadeIn delay={0.4}>
+                <div className="mt-10">
+                  <Link href="/onboarding">
+                    <ShimmerButton className="h-12 px-8 text-base">
+                      Build Your Plan
+                      <ArrowRight className="ml-2 inline h-4 w-4" />
+                    </ShimmerButton>
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ STATS BANNER ══════════ */}
+      <section className="border-y border-border/40 py-20 sm:py-24">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <p className="mb-12 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-16 sm:text-sm">
+              By the numbers
+            </p>
+          </FadeIn>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
+            {stats.map((stat, i) => (
+              <StatItem key={i} stat={stat} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════ FEATURE GRID ══════════ */}
+      <section className="py-24 sm:py-32">
+        <FadeIn>
+          <Feature
+            badge="Why My Home Plan"
+            title="Everything handled. Nothing forgotten."
+            items={featureItems}
+            columns={2}
+          />
+        </FadeIn>
+        <FadeIn delay={0.3}>
+          <div className="mt-12 text-center">
             <Button variant="outline" size="sm" asChild>
               <Link href="/plan-builder">
-                See All Services & Pricing <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
+                See All Services & Pricing
+                <ArrowRight className="ml-1.5 h-3.5 w-3.5" />
               </Link>
             </Button>
           </div>
         </FadeIn>
       </section>
 
-      {/* ══════════ TRUSTED CONTRACTOR NETWORK ══════════ */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Vetted & Certified"
-            badgeColor="emerald"
-            title="Our Trusted Contractor Network"
-            subtitle="Every contractor is licensed, insured, and background-checked before joining our network."
-          />
-        </div>
-        <div className="mt-8 sm:mt-10">
-          <InfiniteMarquee speed={40} direction="right">
-            {contractorNetwork.map((c) => (
-              <MarqueeServiceItem
-                key={c.label}
-                icon={c.icon}
-                label={c.label}
-                color={c.color}
-              />
-            ))}
-          </InfiniteMarquee>
+      {/* ══════════ HOW IT WORKS ══════════ */}
+      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+            {/* Left - text */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                  How it works
+                </p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  Four steps. Then never think about it again.
+                </h2>
+                <p className="mt-5 text-lg text-muted-foreground">
+                  From signup to service - it takes less time than ordering dinner.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.3}>
+                <div className="mt-10">
+                  <FlowButton
+                    text="Build Your Plan"
+                    href="/onboarding"
+                    className="h-12 px-10 text-base"
+                  />
+                </div>
+              </FadeIn>
+            </div>
+            {/* Right - timeline */}
+            <div className="mt-2">
+              {steps.map((step, i) => (
+                <TimelineStep
+                  key={step.num}
+                  step={step}
+                  index={i}
+                  isLast={i === steps.length - 1}
+                  isActive={activeStep === i}
+                  onClick={() => setActiveStep(i)}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* ══════════ COST COMPARISON ══════════ */}
-      <CostComparison />
-
-      {/* ══════════ HOW IT WORKS ══════════ */}
-      <section className="py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Simple Process"
-            badgeColor="sky"
-            title="How It Works"
-            subtitle="Four steps. Then you never think about home maintenance again."
-          />
-
-          <StaggerContainer
-            className="mx-auto mt-12 grid max-w-6xl gap-6 sm:mt-16 sm:gap-8 md:grid-cols-4"
-            staggerDelay={0.12}
-          >
-            {steps.map((step, i) => (
-              <StaggerItem key={step.step}>
-                <div className="relative">
-                  {i < steps.length - 1 && (
-                    <div className="absolute left-1/2 top-12 hidden h-0.5 w-full md:block">
-                      <motion.div
-                        className="h-full bg-gradient-to-r from-primary/30 to-primary/10"
-                        initial={{ scaleX: 0 }}
-                        whileInView={{ scaleX: 1 }}
-                        viewport={{ once: true }}
-                        transition={{ duration: 0.8, delay: 0.5 + i * 0.2 }}
-                        style={{ transformOrigin: "left" }}
-                      />
-                    </div>
-                  )}
-                  <div className="flex flex-col items-center text-center">
-                    <motion.div
-                      className="relative z-10 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 ring-4 ring-background sm:h-24 sm:w-24"
-                      whileHover={{ scale: 1.08, rotate: 3 }}
-                      transition={{ type: "spring", stiffness: 300 }}
-                    >
-                      <step.icon className="h-8 w-8 text-primary sm:h-10 sm:w-10" />
-                      <span className="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground sm:h-7 sm:w-7 sm:text-xs">
-                        {step.step}
-                      </span>
-                    </motion.div>
-                    <h3 className="mt-5 text-lg font-semibold sm:mt-6 sm:text-xl">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 text-sm text-muted-foreground sm:text-base">
-                      {step.description}
-                    </p>
-                  </div>
-                </div>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-
-          <FadeIn delay={0.4}>
-            <div className="mt-10 flex justify-center sm:mt-12">
-              <FlowButton text="Build Your Plan" href="/onboarding" className="h-12 px-10 text-base" />
+      {/* ══════════ TESTIMONIALS ══════════ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Real results
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Homeowners love My Home Plan
+              </h2>
             </div>
           </FadeIn>
-        </div>
-      </section>
-
-      {/* ══════════ TESTIMONIALS - 3D CARDS ══════════ */}
-      <section className="border-y bg-muted/20 py-16 sm:py-24">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Real People, Real Results"
-            badgeColor="amber"
-            title="Homeowners Love My Home Plan"
-            subtitle="Real homes. Real savings. Real relief."
-          />
-          <div className="mt-10 sm:mt-14">
-            <Testimonials3D audience="homeowner" maxItems={3} />
+          <div className="mt-14 sm:mt-16">
+            <TestimonialsMarquee audience="homeowner" />
           </div>
         </div>
       </section>
 
       {/* ══════════ FINAL CTA ══════════ */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
-        <FadeIn>
-          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <FloatingElement amplitude={6} duration={4}>
-              <Home className="mx-auto h-10 w-10 opacity-80 sm:h-12 sm:w-12" />
-            </FloatingElement>
-            <h2 className="mt-5 text-2xl font-bold tracking-tight sm:mt-6 sm:text-3xl md:text-4xl">
-              Ready to Stop Managing and Start Living?
-            </h2>
-            <p className="mx-auto mt-3 max-w-xl text-base opacity-90 sm:mt-4 sm:text-lg">
-              Join hundreds of Okanagan homeowners who&apos;ve simplified their home maintenance.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-              <Button
-                size="lg"
-                variant="secondary"
-                className="h-12 w-full px-8 text-base text-primary sm:w-auto"
-                asChild
-              >
+      <section className="border-t border-border/40 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <FadeIn>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Ready to get started?
+              </h2>
+              <p className="mt-5 text-lg text-muted-foreground">
+                Build your custom home plan in under 2 minutes.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
                 <Link href="/onboarding">
-                  Build Your Plan <ArrowRight className="ml-2 h-4 w-4" />
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Build Your Plan
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
                 </Link>
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 w-full border-white/30 px-8 text-base text-white hover:bg-white/10 sm:w-auto"
-                asChild
-              >
-                <Link href="/pricing">View Pricing</Link>
-              </Button>
-            </div>
-            <p className="mt-4 text-sm opacity-70">
-              Starting at $89/month &middot; No contracts on monthly plans
-            </p>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-12 px-8 text-base"
+                  asChild
+                >
+                  <Link href="/pricing">View Pricing</Link>
+                </Button>
+              </div>
+              <p className="mt-5 text-sm text-muted-foreground/70">
+                Starting at $89/month &middot; Cancel anytime &middot; No contracts
+              </p>
+            </FadeIn>
           </div>
-        </FadeIn>
+        </div>
       </section>
     </div>
   );

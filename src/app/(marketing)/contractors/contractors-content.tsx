@@ -1,282 +1,477 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
+import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { FAQ } from "@/components/ui/faq-tabs";
-import { FadeIn, ShimmerButton } from "@/components/ui/motion";
-import DisplayCards from "@/components/ui/display-cards";
-import { FlowButton } from "@/components/ui/flow-button";
-import { SectionHeader } from "@/components/marketing/section-header";
-import { SocialProofBar } from "@/components/marketing/social-proof-bar";
-import { BentoGrid } from "@/components/marketing/bento-grid";
-import { InfiniteMarquee, MarqueeServiceItem } from "@/components/marketing/infinite-marquee";
-
-// Lazy-load heavy below-fold component
-const Testimonials3D = dynamic(
-  () => import("@/components/marketing/testimonials-3d").then((mod) => ({ default: mod.Testimonials3D })),
-  { ssr: false }
-);
-import { motion } from "framer-motion";
+import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
 import {
-  ArrowRight, ArrowDown, Star, Briefcase, ClipboardCheck, Phone, Rocket,
-  FileText, UserCheck, Scissors, Snowflake, Sparkles, Thermometer, Wrench,
-  Zap, Bug, Hammer, Paintbrush, Sun, Check, X, Minus, ShieldCheck, Target,
-  CalendarClock, DollarSign, Flower2, Home,
+  InfiniteMarquee,
+  MarqueeServiceItem,
+} from "@/components/marketing/infinite-marquee";
+import { motion, useInView } from "framer-motion";
+
+import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
+import { Feature } from "@/components/ui/feature-section-with-grid";
+
+import {
+  ArrowRight,
+  Scissors,
+  Snowflake,
+  Sparkles,
+  Thermometer,
+  Wrench,
+  Zap,
+  Bug,
+  Hammer,
+  Sun,
+  DollarSign,
+  ShieldCheck,
+  Target,
+  CalendarClock,
+  ClipboardCheck,
+  Users,
+  FileText,
+  UserCheck,
+  Phone,
+  Rocket,
+  TrendingUp,
+  Star,
+  Briefcase,
 } from "lucide-react";
 
-// ---- Data ----
+/* --- DATA ---------------------------------------------------------- */
+
+const heroCards = [
+  {
+    label: "This Week's Earnings",
+    value: "$2,840",
+    change: "+12%",
+    color: "text-emerald-500",
+  },
+  {
+    label: "Jobs in Queue",
+    value: "6",
+    change: "3 new",
+    color: "text-blue-500",
+  },
+  {
+    label: "Customer Rating",
+    value: "4.9",
+    change: "128 reviews",
+    color: "text-amber-500",
+  },
+];
+
+const stats = [
+  { value: 0, prefix: "$", suffix: "", label: "Cost to join" },
+  { value: 0, prefix: "", suffix: "", label: "Bi-weekly direct deposit", displayText: "Bi-weekly" },
+  { value: 10, prefix: "", suffix: "+", label: "Service categories" },
+  { value: 100, prefix: "", suffix: "%", label: "Payment guaranteed" },
+];
 
 const benefitItems = [
-  { icon: Target, title: "Free Leads, Every Month", description: "Qualified, ready-to-book homeowners sent to you at zero cost. No bidding wars, no pay-per-lead fees.", color: "text-emerald-500", bg: "bg-emerald-500/10", span: "large" as const },
-  { icon: Briefcase, title: "Steady Year-Round Pipeline", description: "No more feast-or-famine cycles. We keep your calendar full through every season.", color: "text-blue-500", bg: "bg-blue-500/10" },
-  { icon: ShieldCheck, title: "Guaranteed Payment, Always", description: "Stop chasing invoices. Payment guaranteed for every completed job, deposited on schedule.", color: "text-violet-500", bg: "bg-violet-500/10" },
-  { icon: ClipboardCheck, title: "We Handle All Admin", description: "Scheduling, customer communication, invoicing, follow-ups - we take care of everything.", color: "text-rose-500", bg: "bg-rose-500/10" },
-  { icon: Star, title: "Build Your Reputation", description: "Every job builds your verified profile with real reviews. Better performance unlocks premium jobs.", color: "text-amber-500", bg: "bg-amber-500/10", span: "large" as const },
-  { icon: CalendarClock, title: "Set Your Own Schedule", description: "You decide when you work, how much you take on, and which areas you serve.", color: "text-cyan-500", bg: "bg-cyan-500/10" },
-];
-
-const comparisonRows = [
-  { feature: "Cost to join", mhp: "Free", leads: "$30-100/lead", wom: "Free", mhpGood: true, leadsGood: false, womGood: true },
-  { feature: "Steady work", mhp: "Yes", leads: "Inconsistent", wom: "Unpredictable", mhpGood: true, leadsGood: false, womGood: false },
-  { feature: "Payment guarantee", mhp: "Yes", leads: "No", wom: "No", mhpGood: true, leadsGood: false, womGood: false },
-  { feature: "Admin & scheduling", mhp: "Handled for you", leads: "No", wom: "No", mhpGood: true, leadsGood: false, womGood: false },
-];
-
-const serviceCategories = [
-  { name: "Lawn Care & Landscaping", icon: Scissors, hiring: true, color: "text-emerald-500" },
-  { name: "Snow Removal", icon: Snowflake, hiring: true, color: "text-sky-500" },
-  { name: "House Cleaning", icon: Sparkles, hiring: true, color: "text-violet-500" },
-  { name: "HVAC & Mechanical", icon: Thermometer, hiring: false, color: "text-rose-500" },
-  { name: "Plumbing", icon: Wrench, hiring: true, color: "text-blue-500" },
-  { name: "Electrical", icon: Zap, hiring: false, color: "text-amber-500" },
-  { name: "Pest Control", icon: Bug, hiring: false, color: "text-orange-500" },
-  { name: "Handyman Services", icon: Hammer, hiring: true, color: "text-cyan-500" },
-  { name: "Painting", icon: Paintbrush, hiring: false, color: "text-pink-500" },
-  { name: "Window & Gutter Cleaning", icon: Sun, hiring: true, color: "text-yellow-500" },
+  { title: "Free qualified leads", description: "Homeowners sent directly to you at zero cost." },
+  { title: "Guaranteed payment", description: "Every completed job paid on schedule. Always." },
+  { title: "No marketing costs", description: "We handle all customer acquisition for you." },
+  { title: "Flexible schedule", description: "You choose when, where, and how much you work." },
+  { title: "Admin handled", description: "Scheduling, invoicing, follow-ups - all taken care of." },
+  { title: "Growing network", description: "Join a vetted community of top local professionals." },
 ];
 
 const timelineSteps = [
-  { icon: FileText, title: "Submit Application", description: "Fill out our simple form. Takes about 10 minutes.", timing: "Day 1" },
-  { icon: UserCheck, title: "Review & Verification", description: "We review qualifications, run a background check, and verify references.", timing: "3-5 business days" },
-  { icon: Phone, title: "Onboarding Call", description: "30-minute call to discuss partnership and next steps.", timing: "Week 2" },
-  { icon: Rocket, title: "Start Working", description: "Begin receiving job assignments in your service area.", timing: "Week 2-3" },
+  {
+    num: "01",
+    icon: FileText,
+    title: "Apply online",
+    detail: "Simple form. Takes about 2 minutes.",
+  },
+  {
+    num: "02",
+    icon: UserCheck,
+    title: "Verification",
+    detail: "Background check and reference review. 3-5 days.",
+  },
+  {
+    num: "03",
+    icon: Phone,
+    title: "Onboarding call",
+    detail: "Quick call to discuss the partnership.",
+  },
+  {
+    num: "04",
+    icon: Rocket,
+    title: "Start getting jobs",
+    detail: "Qualified leads sent directly to you.",
+  },
 ];
 
-const networkTrades = [
-  { icon: Wrench, label: "Licensed Plumbers", color: "text-blue-500" },
-  { icon: Thermometer, label: "Certified HVAC Technicians", color: "text-red-500" },
-  { icon: Zap, label: "Insured Electricians", color: "text-yellow-500" },
-  { icon: Flower2, label: "Professional Landscapers", color: "text-green-500" },
-  { icon: Home, label: "Expert Roofers", color: "text-orange-500" },
-  { icon: Sparkles, label: "Certified Cleaners", color: "text-purple-500" },
-  { icon: Snowflake, label: "Snow Removal Pros", color: "text-cyan-500" },
-  { icon: Bug, label: "Pest Control Experts", color: "text-amber-500" },
+const serviceCategories = [
+  { icon: Scissors, label: "Lawn Care", color: "text-green-600" },
+  { icon: Snowflake, label: "Snow Removal", color: "text-sky-500" },
+  { icon: Sparkles, label: "Cleaning", color: "text-violet-500" },
+  { icon: Thermometer, label: "HVAC", color: "text-orange-500" },
+  { icon: Wrench, label: "Plumbing", color: "text-cyan-600" },
+  { icon: Zap, label: "Electrical", color: "text-yellow-500" },
+  { icon: Bug, label: "Pest Control", color: "text-rose-500" },
+  { icon: Hammer, label: "Handyman", color: "text-amber-600" },
+  { icon: Sun, label: "Window Cleaning", color: "text-teal-500" },
+  { icon: TrendingUp, label: "Landscaping", color: "text-emerald-500" },
 ];
 
-const faqCategories = { general: "General" };
-const faqData = {
-  general: [
-    { question: "Is there really no cost to join?", answer: "Zero. No sign-up fees, no monthly subscriptions, no hidden costs. We make money from the homeowner side, not from you." },
-    { question: "How do I get paid?", answer: "Direct deposit every two weeks for completed jobs. Payment is guaranteed for every job you complete - no chasing invoices." },
-    { question: "Can I set my own schedule?", answer: "Absolutely. You set your available days, hours, and weekly capacity. Need to block off a week? Just update your availability and we handle the rest." },
-    { question: "What area do you serve?", answer: "Currently serving the Okanagan Valley including Kelowna, West Kelowna, Vernon, Penticton, and surrounding areas. We're expanding rapidly." },
-  ],
-};
+/* --- COMPONENTS ---------------------------------------------------- */
 
-// ---- Helpers ----
-
-function ComparisonIcon({ good }: { good: boolean | null }) {
-  if (good === true) return <Check className="mx-auto h-4 w-4 text-emerald-500 sm:h-5 sm:w-5" />;
-  if (good === false) return <X className="mx-auto h-4 w-4 text-red-400 sm:h-5 sm:w-5" />;
-  return <Minus className="mx-auto h-4 w-4 text-amber-400 sm:h-5 sm:w-5" />;
-}
-
-function ComparisonCell({ good, label, highlight }: { good: boolean | null; label: string; highlight?: boolean }) {
+function HeroDashboardCard({
+  card,
+  index,
+}: {
+  card: (typeof heroCards)[0];
+  index: number;
+}) {
   return (
-    <td className="p-3 text-center sm:p-4">
-      <div className="flex flex-col items-center gap-1">
-        <ComparisonIcon good={good} />
-        <span className={`text-xs ${highlight ? "text-primary" : "text-muted-foreground"}`}>{label}</span>
+    <motion.div
+      initial={{ opacity: 0, y: 24, rotateX: -8 }}
+      animate={{ opacity: 1, y: 0, rotateX: 0 }}
+      transition={{
+        duration: 0.6,
+        delay: 0.6 + index * 0.15,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 backdrop-blur-md"
+    >
+      <p className="text-xs font-medium text-white/50">{card.label}</p>
+      <div className="mt-2 flex items-end justify-between">
+        <p className="text-2xl font-bold text-white">{card.value}</p>
+        <span className={`text-xs font-medium ${card.color}`}>
+          {card.change}
+        </span>
       </div>
-    </td>
+    </motion.div>
   );
 }
 
-// ---- Page ----
+function StatItem({
+  stat,
+  index,
+}: {
+  stat: (typeof stats)[0];
+  index: number;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.1,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="text-center"
+    >
+      <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+        {stat.displayText ? (
+          stat.displayText
+        ) : isInView ? (
+          <AnimatedCounter
+            target={stat.value}
+            prefix={stat.prefix}
+            suffix={stat.suffix}
+            duration={1.5}
+          />
+        ) : (
+          "0"
+        )}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+        {stat.label}
+      </p>
+    </motion.div>
+  );
+}
+
+function TimelineStep({
+  step,
+  index,
+  isLast,
+  isActive,
+  onClick,
+}: {
+  step: (typeof timelineSteps)[0];
+  index: number;
+  isLast: boolean;
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.12,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      onClick={onClick}
+      className="group relative flex cursor-pointer gap-5 sm:gap-7"
+    >
+      {/* Timeline spine */}
+      <div className="flex flex-col items-center">
+        <motion.div
+          animate={{
+            scale: isActive ? 1 : 0.85,
+            backgroundColor: isActive
+              ? "oklch(0.55 0.18 250)"
+              : "oklch(0.955 0.005 250)",
+          }}
+          transition={{ duration: 0.3 }}
+          className="relative z-10 flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-sm font-bold shadow-sm sm:h-14 sm:w-14 sm:text-base"
+        >
+          <span className={isActive ? "text-white" : "text-muted-foreground"}>
+            {step.num}
+          </span>
+        </motion.div>
+        {!isLast && (
+          <div
+            className="w-px flex-1 bg-gradient-to-b from-border to-transparent"
+            style={{ minHeight: "2rem" }}
+          />
+        )}
+      </div>
+      {/* Content */}
+      <div className={`pb-8 ${isLast ? "pb-0" : ""}`}>
+        <h3
+          className={`text-lg font-semibold tracking-tight transition-colors duration-200 sm:text-xl ${
+            isActive ? "text-foreground" : "text-muted-foreground"
+          }`}
+        >
+          {step.title}
+        </h3>
+        <motion.p
+          animate={{ opacity: isActive ? 1 : 0.5 }}
+          className="mt-1 text-sm text-muted-foreground sm:text-base"
+        >
+          {step.detail}
+        </motion.p>
+      </div>
+    </motion.div>
+  );
+}
+
+/* --- PAGE ---------------------------------------------------------- */
 
 export function ContractorsContent() {
+  const [activeStep, setActiveStep] = useState(0);
+
   return (
     <div className="flex flex-col overflow-x-hidden">
-      {/* ==================== HERO ==================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary via-blue-700 to-blue-900 py-20 text-white sm:py-28">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-sky-400/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wMyI+PHBhdGggZD0iTTM2IDM0djItSDI0di0yaDEyem0wLTMwVjBoLTEydjRoMTJ6TTI0IDI0djJoMTJ2LTJIMjR6Ii8+PC9nPjwvZz48L3N2Zz4=')] opacity-50" />
+      {/* ====== HERO ====== */}
+      <section className="relative overflow-hidden bg-[#0a0a0a] py-24 sm:py-32">
+        {/* Subtle gradient orbs */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(59,130,246,0.15),transparent)]" />
         <motion.div
-          className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/5 blur-3xl"
-          animate={{ x: [0, 20, 0], y: [0, -15, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute -left-32 bottom-0 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl"
-          animate={{ x: [0, -10, 0], y: [0, 20, 0] }}
+          className="absolute -right-40 top-20 h-[500px] w-[500px] rounded-full bg-blue-500/5 blur-3xl"
+          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
           transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
         />
-        <FadeIn>
-          <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-            <Badge className="mb-4 bg-white/20 text-white hover:bg-white/25 sm:mb-5">
-              Now Accepting Applications
-            </Badge>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              FREE Leads. Guaranteed Pay.
-              <br />
-              <span className="text-sky-300">Zero Marketing Costs.</span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed opacity-90 sm:mt-6 sm:text-lg md:text-xl">
-              Stop paying for leads that go nowhere. Join My Home Plan and get
-              steady, qualified jobs sent directly to you - completely free.
-            </p>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:mt-10 sm:flex-row sm:gap-4">
-              <Link href="/onboarding?type=contractor">
-                <ShimmerButton className="h-12 w-full px-8 text-base font-semibold sm:h-13 sm:w-auto">
-                  Apply Now - Takes 10 Minutes <ArrowRight className="ml-2 h-4 w-4" />
-                </ShimmerButton>
-              </Link>
-              <Button
-                size="lg"
-                variant="outline"
-                className="h-12 w-full border-white/30 px-8 text-base text-white hover:bg-white/10 sm:h-13 sm:w-auto"
-                onClick={() => document.getElementById("benefits")?.scrollIntoView({ behavior: "smooth" })}
-              >
-                See the Benefits <ArrowDown className="ml-2 h-4 w-4" />
-              </Button>
+        <motion.div
+          className="absolute -left-40 bottom-0 h-[400px] w-[400px] rounded-full bg-violet-500/5 blur-3xl"
+          animate={{ x: [0, -20, 0], y: [0, 30, 0] }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+
+        <div className="relative mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-20">
+            {/* Left - Copy */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-blue-400/80 sm:text-sm">
+                  Now accepting contractors
+                </p>
+                <h1 className="mt-5 text-3xl font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-[3.5rem] lg:leading-[1.1]">
+                  Free leads.
+                  <br />
+                  Guaranteed pay.
+                  <br />
+                  <span className="bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent">
+                    Zero cost.
+                  </span>
+                </h1>
+                <p className="mt-6 max-w-lg text-lg leading-relaxed text-white/60">
+                  Join the network that sends you qualified homeowners, handles
+                  admin, and pays on time - every time.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.2}>
+                <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  <Link href="/onboarding?type=contractor">
+                    <ShimmerButton className="h-12 w-full px-8 text-base font-semibold sm:w-auto">
+                      Apply Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </ShimmerButton>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-12 border-white/15 px-8 text-base text-white hover:bg-white/5"
+                    onClick={() =>
+                      document
+                        .getElementById("benefits")
+                        ?.scrollIntoView({ behavior: "smooth" })
+                    }
+                  >
+                    Learn More
+                  </Button>
+                </div>
+              </FadeIn>
+            </div>
+
+            {/* Right - Dashboard mockup */}
+            <div className="hidden lg:block">
+              <div className="relative">
+                {/* Glow behind cards */}
+                <div className="absolute inset-0 -m-8 rounded-3xl bg-gradient-to-br from-blue-500/10 via-transparent to-violet-500/10 blur-2xl" />
+                <div className="relative space-y-4">
+                  {/* Header bar */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.4 }}
+                    className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-4 backdrop-blur-md"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500">
+                        <Briefcase className="h-4 w-4 text-white" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-white">
+                          Contractor Dashboard
+                        </p>
+                        <p className="text-xs text-white/40">March 2026</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                      <span className="text-sm font-medium text-white/80">
+                        4.9
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Metric cards */}
+                  <div className="grid grid-cols-1 gap-3">
+                    {heroCards.map((card, i) => (
+                      <HeroDashboardCard key={card.label} card={card} index={i} />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ====== STATS BANNER ====== */}
+      <section className="border-y border-border/40 py-20 sm:py-24">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <p className="mb-12 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-16 sm:text-sm">
+              By the numbers
+            </p>
+          </FadeIn>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
+            {stats.map((stat, i) => (
+              <StatItem key={i} stat={stat} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ====== BENEFITS GRID ====== */}
+      <section id="benefits" className="py-24 sm:py-32">
+        <FadeIn>
+          <Feature
+            badge="Why join us"
+            title="Built for contractors who want more"
+            subtitle="No chasing leads. No unpaid invoices. Just steady work."
+            items={benefitItems}
+            columns={3}
+          />
         </FadeIn>
       </section>
 
-      {/* ==================== SOCIAL PROOF BAR ==================== */}
-      <SocialProofBar />
-
-      {/* ==================== KEY BENEFITS - DISPLAY CARDS ==================== */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <FadeIn>
-            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  Built for Contractors Who Want More
-                </h2>
-                <p className="mt-3 text-muted-foreground sm:text-lg">
-                  No chasing leads, no unpaid invoices, no wasted ad spend. Just steady work from qualified homeowners.
+      {/* ====== HOW TO JOIN ====== */}
+      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+            {/* Left - text */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                  How to join
                 </p>
-              </div>
-              <div className="flex-1">
-                <DisplayCards
-                  cards={[
-                    {
-                      className:
-                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <Target className="size-4 text-emerald-300" />,
-                      title: "Free Leads",
-                      description: "Qualified jobs sent to you at $0",
-                      date: "No pay-per-lead",
-                      iconClassName: "text-emerald-500",
-                      titleClassName: "text-emerald-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <DollarSign className="size-4 text-sky-300" />,
-                      title: "Guaranteed Pay",
-                      description: "Every completed job, paid on time",
-                      date: "Bi-weekly deposits",
-                      iconClassName: "text-sky-500",
-                      titleClassName: "text-sky-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-                      icon: <Zap className="size-4 text-amber-300" />,
-                      title: "Zero Marketing Costs",
-                      description: "We handle all customer acquisition",
-                      date: "You just do great work",
-                      iconClassName: "text-amber-500",
-                      titleClassName: "text-amber-500",
-                    },
-                  ]}
-                />
-              </div>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  Four steps to your first job
+                </h2>
+                <p className="mt-5 text-lg text-muted-foreground">
+                  From application to earning - as fast as two weeks.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.3}>
+                <div className="mt-10">
+                  <Link href="/onboarding?type=contractor">
+                    <ShimmerButton className="h-12 px-10 text-base">
+                      Apply Now
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </ShimmerButton>
+                  </Link>
+                </div>
+              </FadeIn>
             </div>
-          </FadeIn>
-        </div>
-      </section>
-
-      {/* ==================== BENEFITS ==================== */}
-      <section id="benefits" className="mx-auto max-w-7xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-        <SectionHeader
-          badge="Why Join Us"
-          badgeColor="emerald"
-          title="Everything You Need to Succeed. Nothing You Don't."
-          subtitle="We built this platform to eliminate the biggest headaches contractors deal with every single day."
-        />
-        <div className="mt-10 sm:mt-14">
-          <BentoGrid items={benefitItems} />
-        </div>
-      </section>
-
-      {/* ==================== COMPARISON TABLE ==================== */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Side by Side"
-            badgeColor="primary"
-            title="My Home Plan vs. The Alternatives"
-            subtitle="See how we stack up against traditional lead sources."
-          />
-          <div className="mx-auto mt-8 max-w-3xl overflow-x-auto sm:mt-10">
-            <div className="min-w-[480px] overflow-hidden rounded-2xl border">
-              <table className="w-full text-xs sm:text-sm">
-                <thead>
-                  <tr className="border-b bg-muted/50">
-                    <th className="p-3 text-left font-medium sm:p-4">Feature</th>
-                    <th className="p-3 text-center sm:p-4"><span className="font-semibold text-primary">My Home Plan</span></th>
-                    <th className="p-3 text-center text-muted-foreground sm:p-4">Lead Sites</th>
-                    <th className="p-3 text-center text-muted-foreground sm:p-4">Word of Mouth</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {comparisonRows.map((row) => (
-                    <tr key={row.feature} className="border-b last:border-0">
-                      <td className="p-3 font-medium sm:p-4">{row.feature}</td>
-                      <ComparisonCell good={row.mhpGood} label={row.mhp} highlight />
-                      <ComparisonCell good={row.leadsGood} label={row.leads} />
-                      <ComparisonCell good={row.womGood} label={row.wom} />
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Right - timeline */}
+            <div className="mt-2">
+              {timelineSteps.map((step, i) => (
+                <TimelineStep
+                  key={step.num}
+                  step={step}
+                  index={i}
+                  isLast={i === timelineSteps.length - 1}
+                  isActive={activeStep === i}
+                  onClick={() => setActiveStep(i)}
+                />
+              ))}
             </div>
           </div>
         </div>
       </section>
 
-      {/* ==================== SERVICE CATEGORIES ==================== */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-        <SectionHeader
-          badge="Now Recruiting"
-          badgeColor="sky"
-          title="Services We're Hiring For"
-          subtitle="We're actively recruiting skilled contractors across these categories."
-        />
-        <div className="mt-8 sm:mt-12">
+      {/* ====== SERVICE CATEGORIES MARQUEE ====== */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Categories
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Services we're hiring for
+              </h2>
+            </div>
+          </FadeIn>
+        </div>
+        <div className="mt-12 sm:mt-16">
           <InfiniteMarquee speed={35} direction="left">
             {serviceCategories.map((svc) => (
               <MarqueeServiceItem
-                key={svc.name}
+                key={svc.label}
                 icon={svc.icon}
-                label={svc.hiring ? `${svc.name} - Now Hiring` : svc.name}
+                label={svc.label}
                 color={svc.color}
               />
             ))}
@@ -284,135 +479,65 @@ export function ContractorsContent() {
         </div>
       </section>
 
-      {/* ==================== APPLICATION TIMELINE ==================== */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
-        <SectionHeader
-          badge="Get Started"
-          badgeColor="violet"
-          title="How the Application Process Works"
-          subtitle="From application to your first job in as little as two weeks."
-        />
-        {/* Desktop */}
-        <div className="mx-auto mt-12 hidden max-w-4xl px-4 md:block lg:px-8">
-          <div className="relative">
-            <div className="absolute left-0 right-0 top-8 h-0.5 bg-border" />
-            <div className="grid grid-cols-4 gap-6">
-              {timelineSteps.map((step, i) => (
-                <FadeIn key={step.title} delay={i * 0.12}>
-                  <div className="relative flex flex-col items-center text-center">
-                    <div className="relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-2 border-primary bg-background">
-                      <step.icon className="h-6 w-6 text-primary" />
-                    </div>
-                    <Badge variant="outline" className="mt-3 text-xs font-normal">{step.timing}</Badge>
-                    <h3 className="mt-2 text-sm font-semibold">{step.title}</h3>
-                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{step.description}</p>
-                  </div>
-                </FadeIn>
-              ))}
+      {/* ====== TESTIMONIALS ====== */}
+      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Contractor stories
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Hear from our network
+              </h2>
             </div>
-          </div>
-        </div>
-        {/* Mobile */}
-        <div className="mx-auto mt-8 max-w-md px-4 md:hidden">
-          <div className="relative ml-6 border-l-2 border-border pl-8">
-            {timelineSteps.map((step, i) => (
-              <FadeIn key={step.title} delay={i * 0.1}>
-                <div className="relative pb-8 last:pb-0">
-                  <div className="absolute -left-[calc(2rem+1px)] flex h-10 w-10 items-center justify-center rounded-full border-2 border-primary bg-background">
-                    <step.icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <Badge variant="outline" className="mb-1.5 text-xs font-normal">{step.timing}</Badge>
-                  <h3 className="text-sm font-semibold">{step.title}</h3>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{step.description}</p>
-                </div>
-              </FadeIn>
-            ))}
+          </FadeIn>
+          <div className="mt-14 sm:mt-16">
+            <TestimonialsMarquee audience="contractor" />
           </div>
         </div>
       </section>
 
-      {/* ==================== TESTIMONIALS ==================== */}
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:py-20 sm:px-6 lg:px-8">
-        <SectionHeader
-          badge="Contractor Stories"
-          badgeColor="amber"
-          title="What Our Contractors Say"
-          subtitle="Hear from professionals who have already joined the network."
-        />
-        <div className="mx-auto mt-8 max-w-5xl sm:mt-12">
-          <Testimonials3D audience="contractor" maxItems={3} />
-        </div>
-      </section>
-
-      {/* ==================== JOIN OUR NETWORK MARQUEE ==================== */}
-      <section className="border-y bg-muted/20 py-12 sm:py-16">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Growing Network"
-            badgeColor="violet"
-            title="Join Our Growing Network"
-            subtitle="We're building the largest network of vetted home service professionals in the Okanagan."
-          />
-        </div>
-        <div className="mt-8 sm:mt-10">
-          <InfiniteMarquee speed={40} direction="right">
-            {networkTrades.map((t) => (
-              <MarqueeServiceItem
-                key={t.label}
-                icon={t.icon}
-                label={t.label}
-                color={t.color}
-              />
-            ))}
-          </InfiniteMarquee>
-        </div>
-      </section>
-
-      {/* ==================== FAQ ==================== */}
-      <section className="border-t bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Questions?"
-            badgeColor="rose"
-            title="Frequently Asked Questions"
-            subtitle="Everything you need to know about joining as a contractor."
-          />
-          <FAQ
-            title=""
-            subtitle=""
-            categories={faqCategories}
-            faqData={faqData}
-            className="w-full py-0"
-          />
-        </div>
-      </section>
-
-      {/* ==================== FINAL CTA ==================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-sky-400/10 via-transparent to-transparent" />
-        <FadeIn>
-          <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-            <motion.div
-              className="mx-auto mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm"
-              animate={{ scale: [1, 1.08, 1] }}
-              transition={{ duration: 3, repeat: Infinity }}
-            >
-              <Rocket className="h-7 w-7 text-sky-300" />
-            </motion.div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl">
-              Stop Chasing Leads.<br />Let Them Come to You.
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-relaxed opacity-90 sm:text-lg">
-              Join our growing network of Okanagan contractors. Free to apply,
-              free to join, and your first jobs could be lined up within two weeks.
-            </p>
-            <div className="mt-8 flex justify-center sm:mt-10">
-              <FlowButton text="Apply Now - Takes 10 Minutes" href="/onboarding?type=contractor" className="h-12 px-10 text-base font-semibold border-white/30 text-white" />
-            </div>
-            <p className="mt-4 text-sm opacity-70">No fees. No commitments. No credit card required.</p>
+      {/* ====== FINAL CTA ====== */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <FadeIn>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Ready to grow your business?
+              </h2>
+              <p className="mt-5 text-lg text-muted-foreground">
+                Free to apply. Free to join. Your first jobs could arrive within
+                two weeks.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                <Link href="/onboarding?type=contractor">
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Apply Now
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-12 px-8 text-base"
+                  onClick={() =>
+                    document
+                      .getElementById("benefits")
+                      ?.scrollIntoView({ behavior: "smooth" })
+                  }
+                >
+                  Learn More
+                </Button>
+              </div>
+              <p className="mt-5 text-sm text-muted-foreground/70">
+                No fees &middot; No commitments &middot; No credit card required
+              </p>
+            </FadeIn>
           </div>
-        </FadeIn>
+        </div>
       </section>
     </div>
   );

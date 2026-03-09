@@ -1,466 +1,678 @@
 "use client";
 
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import {
-  FadeIn,
-  StaggerContainer,
-  StaggerItem,
-  GlowCard,
-  ShimmerButton,
-  AnimatedCounter,
-  FloatingElement,
-} from "@/components/ui/motion";
-import { SectionHeader } from "@/components/marketing/section-header";
-import { SocialProofBar } from "@/components/marketing/social-proof-bar";
-import { BentoGrid } from "@/components/marketing/bento-grid";
-import {
-  InfiniteMarquee,
-  MarqueeServiceItem,
-} from "@/components/marketing/infinite-marquee";
+import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 
-// Lazy-load heavy below-fold component
-const Testimonials3D = dynamic(
-  () => import("@/components/marketing/testimonials-3d").then((mod) => ({ default: mod.Testimonials3D })),
-  { ssr: false }
-);
+import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
+import { Feature } from "@/components/ui/feature-section-with-grid";
+
 import {
   ArrowRight,
-  CheckCircle2,
   Building2,
   Sparkles,
   Scissors,
   Snowflake,
-  Waves,
   Droplets,
   Bug,
   Thermometer,
-  Sun,
   Shield,
   DollarSign,
   Clock,
-  ArrowUpDown,
   Car,
-  AlertTriangle,
-  Receipt,
-  MessageSquareWarning,
-  ClipboardCheck,
-  Handshake,
-  Timer,
-  BadgePercent,
-  ShieldCheck,
-  PhoneCall,
+  X,
+  Check,
+  CalendarCheck,
+  Wrench,
+  ClipboardList,
+  Users,
+  Zap,
+  Lock,
+  HeartHandshake,
+  Siren,
 } from "lucide-react";
-import { FAQ } from "@/components/ui/faq-tabs";
+
+/* --- DATA ----------------------------------------------------------- */
+
+const stats = [
+  { value: 200, suffix: "+", label: "Buildings managed" },
+  { value: 35, suffix: "%", label: "Avg. cost savings" },
+  { value: 10, suffix: "+", label: "Services covered" },
+  { value: 1, suffix: "", label: "Invoice per month" },
+];
 
 const painPoints = [
-  {
-    icon: Receipt,
-    title: "Juggling 8+ Vendor Contracts",
-    description:
-      "Each vendor has their own contract, invoice, and schedule. Managing them all is a part-time job.",
-  },
-  {
-    icon: AlertTriangle,
-    title: "Surprise Maintenance Costs",
-    description:
-      "Emergency repairs and seasonal price hikes blow up your budget. Owners lose trust when special assessments keep coming.",
-  },
-  {
-    icon: MessageSquareWarning,
-    title: "Council Debates About Spending",
-    description:
-      "Hours wasted comparing contractor quotes and defending maintenance decisions at every meeting.",
-  },
-  {
-    icon: ClipboardCheck,
-    title: "Compliance Tracking Nightmare",
-    description:
-      "Fire inspections, elevator certs, HVAC servicing - tracking what's due and what's overdue is a full-time job.",
-  },
+  "8+ vendor contracts to manage",
+  "Surprise maintenance costs",
+  "Endless council debates over quotes",
+  "Compliance tracking chaos",
 ];
 
-const benefitsBento = [
-  {
-    icon: Handshake,
-    title: "Single Vendor Simplicity",
-    description: "One contract. One invoice. One point of contact for every building service.",
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10",
-    span: "large" as const,
-  },
-  {
-    icon: DollarSign,
-    title: "Predictable Monthly Costs",
-    description: "Fixed per-unit pricing means no budget surprises - this month, next month, or next year.",
-    color: "text-sky-600",
-    bg: "bg-sky-500/10",
-  },
-  {
-    icon: Timer,
-    title: "Reduce Council Meeting Time",
-    description: "One clear maintenance report instead of debating ten vendor quotes.",
-    color: "text-amber-600",
-    bg: "bg-amber-500/10",
-  },
-  {
-    icon: BadgePercent,
-    title: "Volume Discounts Built In",
-    description: "Our network serves hundreds of buildings. You get bulk pricing individual stratas can't negotiate.",
-    color: "text-violet-600",
-    bg: "bg-violet-500/10",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Compliance Tracking Included",
-    description: "Every inspection, certification, and maintenance schedule tracked. Nothing falls through the cracks.",
-    color: "text-emerald-600",
-    bg: "bg-emerald-500/10",
-  },
-  {
-    icon: PhoneCall,
-    title: "Emergency Response Covered",
-    description: "Burst pipe at 2 AM? We coordinate emergency contractors and notify your strata manager.",
-    color: "text-rose-600",
-    bg: "bg-rose-500/10",
-    span: "large" as const,
-  },
+const solutionPoints = [
+  "Single vendor relationship",
+  "Predictable monthly costs",
+  "Council time cut by 60%",
+  "Built-in compliance tracking",
 ];
 
-const strataServices = [
-  { name: "Common Area Cleaning", icon: Sparkles },
-  { name: "Grounds Maintenance", icon: Scissors },
-  { name: "Snow & Ice Removal", icon: Snowflake },
-  { name: "Building Exterior Wash", icon: Waves },
-  { name: "Gutter Cleaning", icon: Droplets },
-  { name: "Parkade Maintenance", icon: Car },
-  { name: "Common Area Windows", icon: Sun },
-  { name: "Pest Control", icon: Bug },
-  { name: "Common HVAC", icon: Thermometer },
-  { name: "Elevator Lobby Care", icon: ArrowUpDown },
-];
-
-const strataSteps = [
-  { step: "01", title: "Tell us about your building", description: "Units, common areas, parking, amenities. We'll build a custom scope." },
-  { step: "02", title: "Select your services", description: "Choose which building maintenance services your strata needs." },
-  { step: "03", title: "Get your strata plan", description: "A comprehensive maintenance plan with transparent per-unit pricing." },
-  { step: "04", title: "We handle everything", description: "Vetted contractors, scheduling, quality control - all managed for you." },
+const featureItems = [
+  { title: "Unified contract management", description: "One agreement replaces a dozen vendor contracts." },
+  { title: "Predictable budgeting", description: "Fixed per-unit pricing. No surprise assessments." },
+  { title: "Compliance autopilot", description: "Fire, elevator, HVAC - every cert tracked for you." },
+  { title: "Emergency coordination", description: "Burst pipe at 2 AM? We handle it, you sleep." },
+  { title: "Volume-based savings", description: "Bulk pricing across hundreds of buildings." },
+  { title: "Council-ready reporting", description: "One clear report instead of ten vendor summaries." },
 ];
 
 const pricingTiers = [
   {
     name: "Small Building",
     units: "4-20 units",
-    price: "From $18",
+    price: "$18",
     per: "/unit/mo",
-    features: ["Common area cleaning", "Grounds maintenance", "Snow removal", "Gutter cleaning"],
+    borderColor: "border-t-blue-500",
+    glowColor: "hover:shadow-blue-500/10",
+    features: [
+      "Common area cleaning",
+      "Grounds maintenance",
+      "Snow removal",
+      "Gutter cleaning",
+    ],
   },
   {
     name: "Mid-Size Building",
     units: "21-50 units",
-    price: "From $15",
+    price: "$15",
     per: "/unit/mo",
     popular: true,
-    features: ["Everything in Small", "Exterior wash", "Pest control", "Window cleaning", "Parkade maintenance"],
+    borderColor: "border-t-emerald-500",
+    glowColor: "hover:shadow-emerald-500/10",
+    features: [
+      "Everything in Small",
+      "Exterior wash",
+      "Pest control",
+      "Window cleaning",
+      "Parkade maintenance",
+    ],
   },
   {
     name: "Large Complex",
     units: "50+ units",
     price: "Custom",
     per: "pricing",
-    features: ["Full service package", "Dedicated account manager", "Emergency response", "Volume discounts"],
+    borderColor: "border-t-violet-500",
+    glowColor: "hover:shadow-violet-500/10",
+    features: [
+      "Full service package",
+      "Dedicated account manager",
+      "Emergency response",
+      "Volume discounts",
+    ],
   },
 ];
 
-const faqCategories = { general: "General" };
-const faqDataItems = {
-  general: [
-    { question: "How does strata pricing work?", answer: "Pricing is per-unit per month, based on the services selected and building size. Common areas and special features are factored into the per-unit rate." },
-    { question: "What's included in the contract?", answer: "Everything is clearly outlined: service frequency, scope, pricing, and quality guarantees. No hidden fees or surprise charges." },
-    { question: "How do you handle emergencies?", answer: "Mid-size and large building plans include emergency response. We coordinate emergency contractors and notify the strata manager." },
-  ],
-};
-
 const guarantees = [
-  { icon: Shield, title: "Quality Guarantee", description: "If any service doesn't meet your standards, we'll re-do it at no cost. Period." },
-  { icon: DollarSign, title: "Price Lock Guarantee", description: "Your per-unit rate is locked for the full contract term. No surprise increases." },
-  { icon: Clock, title: "Response Time Guarantee", description: "Emergency requests acknowledged within 30 minutes. Routine requests within 24 hours." },
+  {
+    icon: HeartHandshake,
+    title: "Quality Guarantee",
+    desc: "Any service below standard gets re-done at no cost.",
+  },
+  {
+    icon: Lock,
+    title: "Price Lock Guarantee",
+    desc: "Your per-unit rate is locked for the full contract term.",
+  },
+  {
+    icon: Zap,
+    title: "Emergency Response",
+    desc: "Acknowledged in 30 minutes. Routine requests within 24 hours.",
+  },
 ];
+
+/* --- SUB-COMPONENTS -------------------------------------------------- */
+
+function RevealItem({
+  children,
+  index,
+  variant,
+}: {
+  children: React.ReactNode;
+  index: number;
+  variant: "problem" | "solution";
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, x: -16 }}
+      animate={isInView ? { opacity: 1, x: 0 } : {}}
+      transition={{
+        duration: 0.4,
+        delay: index * 0.08,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="flex items-center gap-3.5 py-2"
+    >
+      <div
+        className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${
+          variant === "problem" ? "bg-red-50" : "bg-emerald-50"
+        }`}
+      >
+        {variant === "problem" ? (
+          <X className="h-3.5 w-3.5 text-red-500" />
+        ) : (
+          <Check className="h-3.5 w-3.5 text-emerald-600" />
+        )}
+      </div>
+      <p
+        className={`text-lg font-medium sm:text-xl ${
+          variant === "problem" ? "text-muted-foreground" : "text-foreground"
+        }`}
+      >
+        {children}
+      </p>
+    </motion.div>
+  );
+}
+
+function StatItem({
+  stat,
+  index,
+}: {
+  stat: (typeof stats)[0];
+  index: number;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.1,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="text-center"
+    >
+      <p className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+        {isInView ? (
+          <AnimatedCounter
+            target={stat.value}
+            suffix={stat.suffix}
+            duration={1.5}
+          />
+        ) : (
+          "0"
+        )}
+      </p>
+      <p className="mt-2 text-sm text-muted-foreground sm:text-base">
+        {stat.label}
+      </p>
+    </motion.div>
+  );
+}
+
+function PricingCard({
+  tier,
+  index,
+}: {
+  tier: (typeof pricingTiers)[0];
+  index: number;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 24 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.12,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className={`group relative rounded-2xl border border-border/50 bg-card transition-all duration-300 hover:shadow-xl ${tier.glowColor} border-t-4 ${tier.borderColor} ${
+        tier.popular ? "ring-1 ring-emerald-500/20" : ""
+      }`}
+    >
+      {tier.popular && (
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+          <span className="rounded-full bg-emerald-600 px-4 py-1 text-xs font-semibold text-white shadow-sm">
+            Most Popular
+          </span>
+        </div>
+      )}
+      <div className="p-6 sm:p-8">
+        <p className="text-sm font-medium text-muted-foreground">
+          {tier.units}
+        </p>
+        <h3 className="mt-1 text-xl font-bold tracking-tight">{tier.name}</h3>
+        <div className="mt-4 flex items-baseline gap-1">
+          <span className="text-4xl font-bold tracking-tight">
+            {tier.price}
+          </span>
+          <span className="text-base text-muted-foreground">{tier.per}</span>
+        </div>
+        <ul className="mt-6 space-y-3">
+          {tier.features.map((f) => (
+            <li key={f} className="flex items-start gap-2.5 text-sm">
+              <Check className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
+              <span className="text-muted-foreground">{f}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-8">
+          {tier.popular ? (
+            <Link href="/onboarding?type=strata">
+              <ShimmerButton className="h-11 w-full text-sm">
+                Get Started
+                <ArrowRight className="ml-2 inline h-4 w-4" />
+              </ShimmerButton>
+            </Link>
+          ) : (
+            <Button
+              variant="outline"
+              className="h-11 w-full text-sm"
+              asChild
+            >
+              <Link href="/onboarding?type=strata">Get Started</Link>
+            </Button>
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function GuaranteeCard({
+  guarantee,
+  index,
+}: {
+  guarantee: (typeof guarantees)[0];
+  index: number;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      transition={{
+        duration: 0.5,
+        delay: index * 0.1,
+        ease: [0.21, 0.47, 0.32, 0.98],
+      }}
+      className="rounded-2xl border border-border/50 bg-card p-6 text-center transition-all duration-300 hover:border-border hover:shadow-lg hover:shadow-black/5 sm:p-8"
+    >
+      <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 transition-transform duration-300 hover:scale-110">
+        <guarantee.icon className="h-6 w-6 text-emerald-600" />
+      </div>
+      <h3 className="mt-5 text-lg font-semibold tracking-tight">
+        {guarantee.title}
+      </h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+        {guarantee.desc}
+      </p>
+    </motion.div>
+  );
+}
+
+/* --- DASHBOARD MOCKUP ------------------------------------------------ */
+
+function DashboardMockup() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 32, rotateX: 8 }}
+      animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+      transition={{ duration: 0.8, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="relative"
+    >
+      {/* Glow behind the card */}
+      <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-emerald-500/20 via-blue-500/10 to-violet-500/10 blur-2xl" />
+
+      {/* Main dashboard card */}
+      <div className="relative rounded-2xl border border-border/60 bg-card shadow-2xl shadow-black/10">
+        {/* Title bar */}
+        <div className="flex items-center gap-2 border-b border-border/40 px-5 py-3">
+          <div className="h-2.5 w-2.5 rounded-full bg-red-400" />
+          <div className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+          <div className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+          <span className="ml-2 text-xs text-muted-foreground">
+            Strata Dashboard
+          </span>
+        </div>
+
+        <div className="p-5 sm:p-6">
+          {/* Building overview row */}
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+                Building
+              </p>
+              <p className="mt-0.5 text-sm font-semibold">
+                Oakridge Towers - 48 Units
+              </p>
+            </div>
+            <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-medium text-emerald-700">
+              All Clear
+            </span>
+          </div>
+
+          {/* Service cards */}
+          <div className="mt-5 grid grid-cols-2 gap-3">
+            {[
+              {
+                icon: Sparkles,
+                name: "Cleaning",
+                status: "Completed",
+                color: "text-emerald-600",
+              },
+              {
+                icon: Scissors,
+                name: "Grounds",
+                status: "Scheduled",
+                color: "text-blue-600",
+              },
+              {
+                icon: Thermometer,
+                name: "HVAC",
+                status: "Next: Apr 12",
+                color: "text-amber-600",
+              },
+              {
+                icon: Bug,
+                name: "Pest Control",
+                status: "Scheduled",
+                color: "text-violet-600",
+              },
+            ].map((svc) => (
+              <div
+                key={svc.name}
+                className="rounded-xl border border-border/40 bg-muted/30 p-3"
+              >
+                <div className="flex items-center gap-2">
+                  <svc.icon className={`h-3.5 w-3.5 ${svc.color}`} />
+                  <span className="text-xs font-medium">{svc.name}</span>
+                </div>
+                <p className="mt-1 text-[11px] text-muted-foreground">
+                  {svc.status}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Monthly cost bar */}
+          <div className="mt-5 flex items-center justify-between rounded-xl bg-muted/40 px-4 py-3">
+            <div>
+              <p className="text-xs text-muted-foreground">Monthly cost</p>
+              <p className="text-lg font-bold tracking-tight">$720</p>
+            </div>
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">Per unit</p>
+              <p className="text-lg font-bold tracking-tight text-emerald-600">
+                $15
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+/* --- PAGE ------------------------------------------------------------ */
 
 export function StrataContent() {
   return (
     <div className="flex flex-col overflow-x-hidden">
-      {/* Hero */}
-      <section className="relative overflow-hidden py-20 sm:py-28">
-        <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/[0.08] via-emerald-500/[0.03] to-background" />
-        <div className="absolute left-1/2 top-0 -z-10 h-[500px] w-[800px] -translate-x-1/2 rounded-full bg-emerald-500/[0.06] blur-3xl" />
-        <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6 lg:px-8">
-          <FadeIn>
-            <Badge className="mb-6 bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/15">
-              For Strata Corporations
-            </Badge>
-            <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
-              One Plan for Every{" "}
-              <span className="bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">
-                Building Service.
-              </span>
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base text-muted-foreground sm:mt-6 sm:text-lg">
-              Stop juggling eight contractors, surprise invoices, and
-              never-ending council debates. My Home Plan bundles every building
-              maintenance service into one contract with predictable per-unit
-              pricing.
-            </p>
-          </FadeIn>
-          <FadeIn delay={0.2}>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link href="/onboarding?type=strata">
-                <ShimmerButton className="h-12 w-full bg-emerald-600 px-8 text-base hover:bg-emerald-700 sm:w-auto">
-                  Get Your Strata Quote <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
-              <Button variant="outline" size="lg" className="w-full border-emerald-500/30 text-emerald-600 hover:bg-emerald-50 sm:w-auto" asChild>
-                <Link href="#pricing">See Pricing</Link>
-              </Button>
-            </div>
-          </FadeIn>
-          <FadeIn delay={0.4}>
-            <div className="mx-auto mt-12 grid max-w-lg grid-cols-3 gap-6 sm:max-w-xl">
-              {[
-                { target: 200, suffix: "+", label: "Buildings Served" },
-                { target: 35, suffix: "%", label: "Avg. Cost Savings" },
-                { target: 10, suffix: "+", label: "Services Covered" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <div className="text-2xl font-bold text-emerald-600 sm:text-3xl">
-                    <AnimatedCounter target={stat.target} />{stat.suffix}
-                  </div>
-                  <p className="mt-1 text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
+      {/* ========== HERO ========== */}
+      <section className="relative overflow-hidden py-24 sm:py-32">
+        {/* Background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-b from-emerald-500/[0.06] via-transparent to-transparent" />
+        <div className="absolute left-1/4 top-0 -z-10 h-[600px] w-[800px] rounded-full bg-emerald-500/[0.04] blur-3xl" />
+
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            {/* Left - copy */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-600/80 sm:text-sm">
+                  For strata corporations
+                </p>
+                <h1 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                  One contract. One invoice.{" "}
+                  <span className="bg-gradient-to-r from-emerald-600 to-teal-500 bg-clip-text text-transparent">
+                    Every building service.
+                  </span>
+                </h1>
+                <p className="mt-5 max-w-lg text-lg text-muted-foreground">
+                  Replace vendor chaos with a single maintenance partnership
+                  built for strata councils.
+                </p>
+              </FadeIn>
+              <FadeIn delay={0.2}>
+                <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:gap-4">
+                  <Link href="/onboarding?type=strata">
+                    <ShimmerButton className="h-12 w-full px-8 text-base sm:w-auto">
+                      Get Your Strata Quote
+                      <ArrowRight className="ml-2 inline h-4 w-4" />
+                    </ShimmerButton>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    className="h-12 w-full px-8 text-base sm:w-auto"
+                    asChild
+                  >
+                    <Link href="#pricing">See Pricing</Link>
+                  </Button>
                 </div>
-              ))}
+              </FadeIn>
             </div>
-          </FadeIn>
-        </div>
-      </section>
 
-      <SocialProofBar />
-
-      {/* Pain Points */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Sound Familiar?"
-            badgeColor="rose"
-            title="Strata maintenance shouldn't be this painful"
-            subtitle="If you're on a strata council, you know the drill. These headaches eat up your time, your budget, and your patience."
-          />
-          <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6">
-            {painPoints.map((point) => (
-              <StaggerItem key={point.title}>
-                <Card className="h-full border-red-200/30 bg-red-500/[0.02] transition-all duration-300 hover:shadow-lg hover:shadow-red-500/10 hover:border-red-300/50">
-                  <CardContent className="flex gap-4 p-5 sm:p-6">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/10">
-                      <point.icon className="h-5 w-5 text-red-500" />
-                    </div>
-                    <div>
-                      <h3 className="text-sm font-semibold sm:text-base">{point.title}</h3>
-                      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground sm:text-sm">{point.description}</p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* Benefits */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="The My Home Plan Difference"
-            badgeColor="emerald"
-            title="What changes when you switch to one plan"
-            subtitle="Replace the chaos with a single, streamlined maintenance partnership built for strata corporations."
-          />
-          <div className="mt-10 sm:mt-12">
-            <BentoGrid items={benefitsBento} />
+            {/* Right - dashboard mockup */}
+            <div className="lg:pl-4">
+              <DashboardMockup />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Services Marquee */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Comprehensive Coverage"
-            badgeColor="emerald"
-            title="10 services, one contract"
-            subtitle="Comprehensive building maintenance tailored for strata corporations."
-          />
-          <div className="mt-10 sm:mt-12">
-            <InfiniteMarquee speed={35}>
-              {strataServices.map((s) => (
-                <MarqueeServiceItem key={s.name} icon={s.icon} label={s.name} color="text-emerald-600" />
-              ))}
-            </InfiniteMarquee>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Simple Process"
-            badgeColor="emerald"
-            title="How strata plans work"
-            subtitle="From first contact to full coverage in four straightforward steps."
-          />
-          <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-2 sm:gap-6">
-            {strataSteps.map((s) => (
-              <StaggerItem key={s.step}>
-                <Card className="h-full border-border/50">
-                  <CardContent className="p-5">
-                    <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-xs font-bold text-white">
-                      {s.step}
-                    </span>
-                    <h3 className="mt-3 text-sm font-semibold">{s.title}</h3>
-                    <p className="mt-1.5 text-xs text-muted-foreground">{s.description}</p>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Trusted by Strata Councils"
-            badgeColor="emerald"
-            title="What strata corporations are saying"
-            subtitle="Councils across BC are simplifying their building maintenance with My Home Plan."
-          />
-          <div className="mt-10 sm:mt-12">
-            <Testimonials3D audience="strata" maxItems={3} />
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section id="pricing" className="border-y bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Transparent Pricing"
-            badgeColor="emerald"
-            title="Strata pricing tiers"
-            subtitle="Transparent per-unit pricing. No hidden fees."
-          />
-          <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:gap-6 md:grid-cols-3">
-            {pricingTiers.map((tier) => (
-              <StaggerItem key={tier.name}>
-                <Card className={`h-full ${tier.popular ? "border-emerald-500 shadow-lg shadow-emerald-500/10" : "border-border/50"}`}>
-                  {tier.popular && (
-                    <div className="bg-emerald-600 px-4 py-1.5 text-center text-xs font-semibold text-white">Most Popular</div>
-                  )}
-                  <CardContent className="p-5 sm:p-6">
-                    <p className="text-sm text-muted-foreground">{tier.units}</p>
-                    <h3 className="text-xl font-bold">{tier.name}</h3>
-                    <div className="mt-2 flex items-baseline gap-1">
-                      <span className="text-3xl font-bold">{tier.price}</span>
-                      <span className="text-muted-foreground">{tier.per}</span>
-                    </div>
-                    <ul className="mt-4 space-y-2">
-                      {tier.features.map((f) => (
-                        <li key={f} className="flex items-start gap-2 text-xs sm:text-sm">
-                          <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
-                          {f}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      className={`mt-5 w-full ${tier.popular ? "bg-emerald-600 hover:bg-emerald-700" : ""}`}
-                      variant={tier.popular ? "default" : "outline"}
-                      asChild
-                    >
-                      <Link href="/onboarding?type=strata">Get Started</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* Guarantees */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader badge="Our Promises" badgeColor="emerald" title="Guarantees built into every strata plan" />
-          <StaggerContainer className="mt-10 grid gap-4 sm:mt-12 sm:grid-cols-3 sm:gap-6">
-            {guarantees.map((g) => (
-              <StaggerItem key={g.title}>
-                <GlowCard glowColor="emerald" className="h-full text-center">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
-                    <g.icon className="h-6 w-6 text-emerald-600" />
-                  </div>
-                  <h3 className="mt-4 text-sm font-semibold sm:text-base">{g.title}</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-muted-foreground sm:text-sm">{g.description}</p>
-                </GlowCard>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* FAQ */}
-      <section className="border-y bg-muted/20 py-16 sm:py-20">
-        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader badge="Questions?" badgeColor="emerald" title="Strata FAQ" />
-          <FAQ
-            title=""
-            subtitle=""
-            categories={faqCategories}
-            faqData={faqDataItems}
-            className="w-full py-0"
-          />
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
-        <div className="relative mx-auto max-w-3xl px-4 text-center">
-          <FloatingElement amplitude={8} duration={5}>
-            <Building2 className="mx-auto h-12 w-12 opacity-80" />
-          </FloatingElement>
+      {/* ========== STATS BANNER ========== */}
+      <section className="border-y border-border/40 py-20 sm:py-24">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           <FadeIn>
-            <h2 className="mt-6 text-2xl font-bold sm:text-3xl md:text-4xl">
-              Ready to simplify your building maintenance?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-base opacity-90 sm:text-lg">
-              Get a custom maintenance plan with transparent pricing.
-              Most councils approve within one meeting.
+            <p className="mb-12 text-center text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:mb-16 sm:text-sm">
+              By the numbers
             </p>
           </FadeIn>
-          <FadeIn delay={0.2}>
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-              <Link href="/onboarding?type=strata">
-                <ShimmerButton className="h-12 w-full bg-white/20 px-8 text-base hover:bg-white/30 sm:w-auto">
-                  Get Your Strata Quote <ArrowRight className="ml-2 inline h-4 w-4" />
-                </ShimmerButton>
-              </Link>
-              <Button size="lg" variant="secondary" className="h-12 w-full px-8 text-base text-primary sm:w-auto" asChild>
-                <Link href="#pricing">View Pricing Tiers</Link>
-              </Button>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4 md:gap-12">
+            {stats.map((stat, i) => (
+              <StatItem key={stat.label} stat={stat} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== PROBLEM / SOLUTION ========== */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid gap-16 lg:grid-cols-2 lg:gap-24">
+            {/* Problems */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-red-500/80 sm:text-sm">
+                  The problem
+                </p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  Strata maintenance is broken
+                </h2>
+              </FadeIn>
+              <div className="mt-10 space-y-1">
+                {painPoints.map((p, i) => (
+                  <RevealItem key={i} index={i} variant="problem">
+                    {p}
+                  </RevealItem>
+                ))}
+              </div>
+            </div>
+            {/* Solutions */}
+            <div>
+              <FadeIn>
+                <p className="text-xs font-medium uppercase tracking-[0.2em] text-emerald-600/80 sm:text-sm">
+                  The solution
+                </p>
+                <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                  We fixed it
+                </h2>
+              </FadeIn>
+              <div className="mt-10 space-y-1">
+                {solutionPoints.map((s, i) => (
+                  <RevealItem key={i} index={i} variant="solution">
+                    {s}
+                  </RevealItem>
+                ))}
+              </div>
+              <FadeIn delay={0.4}>
+                <div className="mt-10">
+                  <Link href="/onboarding?type=strata">
+                    <ShimmerButton className="h-12 px-8 text-base">
+                      See How It Works
+                      <ArrowRight className="ml-2 inline h-4 w-4" />
+                    </ShimmerButton>
+                  </Link>
+                </div>
+              </FadeIn>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FEATURES ========== */}
+      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+        <FadeIn>
+          <Feature
+            badge="Why strata councils choose us"
+            title="Everything managed. Nothing missed."
+            items={featureItems}
+            columns={3}
+          />
+        </FadeIn>
+      </section>
+
+      {/* ========== PRICING TIERS ========== */}
+      <section id="pricing" className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Transparent pricing
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Simple per-unit pricing
+              </h2>
+              <p className="mt-5 text-lg text-muted-foreground">
+                No hidden fees. No surprise assessments.
+              </p>
             </div>
           </FadeIn>
+          <div className="mx-auto mt-14 grid max-w-5xl gap-6 sm:mt-16 md:grid-cols-3">
+            {pricingTiers.map((tier, i) => (
+              <PricingCard key={tier.name} tier={tier} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== GUARANTEES ========== */}
+      <section className="border-y border-border/40 bg-muted/20 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Our promises
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Guarantees built into every plan
+              </h2>
+            </div>
+          </FadeIn>
+          <div className="mx-auto mt-14 grid max-w-4xl gap-5 sm:mt-16 sm:grid-cols-3">
+            {guarantees.map((g, i) => (
+              <GuaranteeCard key={g.title} guarantee={g} index={i} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ========== TESTIMONIALS ========== */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                Real results
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Trusted by strata councils across BC
+              </h2>
+            </div>
+          </FadeIn>
+          <div className="mt-14 sm:mt-16">
+            <TestimonialsMarquee audience="strata" />
+          </div>
+        </div>
+      </section>
+
+      {/* ========== FINAL CTA ========== */}
+      <section className="border-t border-border/40 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="mx-auto max-w-2xl text-center">
+            <FadeIn>
+              <h2 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
+                Ready to simplify building maintenance?
+              </h2>
+              <p className="mt-5 text-lg text-muted-foreground">
+                Get a custom strata plan in one council meeting.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.2}>
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
+                <Link href="/onboarding?type=strata">
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Get Your Strata Quote
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="h-12 px-8 text-base"
+                  asChild
+                >
+                  <Link href="#pricing">View Pricing Tiers</Link>
+                </Button>
+              </div>
+              <p className="mt-5 text-sm text-muted-foreground/70">
+                Per-unit pricing from $15/mo &middot; No hidden fees &middot;
+                Cancel anytime
+              </p>
+            </FadeIn>
+          </div>
         </div>
       </section>
     </div>

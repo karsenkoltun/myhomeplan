@@ -1,20 +1,15 @@
 "use client";
 
+import { useRef } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  FadeIn,
-  StaggerContainer,
-  StaggerItem,
-  GlowCard,
-} from "@/components/ui/motion";
-import { SectionHeader } from "@/components/marketing/section-header";
-import { SocialProofBar } from "@/components/marketing/social-proof-bar";
+import { FadeIn, ShimmerButton } from "@/components/ui/motion";
 import {
   InfiniteMarquee,
   MarqueeCityItem,
 } from "@/components/marketing/infinite-marquee";
+import { motion, useInView } from "framer-motion";
 import { CheckCircle2, MapPin, ArrowRight, Clock } from "lucide-react";
 
 const ServiceMap = dynamic(() => import("@/components/ui/service-map"), {
@@ -34,130 +29,195 @@ const ExpandMap = dynamic(() => import("@/components/ui/expand-map"), {
 });
 
 const activeCities = [
-  { name: "Kelowna", population: "150,000+", contractors: "Growing network" },
-  { name: "West Kelowna", population: "36,000+", contractors: "Growing network" },
-  { name: "Vernon", population: "44,000+", contractors: "Growing network" },
-  { name: "Penticton", population: "37,000+", contractors: "Growing network" },
-  { name: "Lake Country", population: "15,000+", contractors: "Growing network" },
-  { name: "Summerland", population: "12,000+", contractors: "Growing network" },
-  { name: "Peachland", population: "5,500+", contractors: "Growing network" },
+  { name: "Kelowna", population: "150,000+" },
+  { name: "West Kelowna", population: "36,000+" },
+  { name: "Vernon", population: "44,000+" },
+  { name: "Penticton", population: "37,000+" },
+  { name: "Lake Country", population: "15,000+" },
+  { name: "Summerland", population: "12,000+" },
+  { name: "Peachland", population: "5,500+" },
 ];
 
-const comingSoon = ["Kamloops", "Vancouver", "Victoria", "Nanaimo", "Prince George", "Abbotsford", "Chilliwack", "Courtenay"];
+const comingSoon = [
+  "Kamloops",
+  "Vancouver",
+  "Victoria",
+  "Nanaimo",
+  "Prince George",
+  "Abbotsford",
+  "Chilliwack",
+  "Courtenay",
+];
 
 export default function ServiceAreaContent() {
+  const citiesRef = useRef(null);
+  const citiesInView = useInView(citiesRef, { once: true, margin: "-100px" });
+
+  const comingSoonRef = useRef(null);
+  const comingSoonInView = useInView(comingSoonRef, {
+    once: true,
+    margin: "-100px",
+  });
+
   return (
-    <div className="flex flex-col overflow-x-hidden">
+    <div className="flex flex-col">
       {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 pt-12 sm:px-6 sm:pt-16 lg:px-8">
-        <SectionHeader
-          badge="Service Coverage"
-          badgeColor="primary"
-          title="Serving the Okanagan Valley"
-          subtitle="Currently operating in 7 Okanagan cities with plans to expand across British Columbia."
-        />
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Service Coverage
+              </p>
+              <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Serving the Okanagan Valley
+              </h1>
+              <p className="mt-6 text-lg text-muted-foreground">
+                Currently live in 7 cities with plans to expand across British
+                Columbia.
+              </p>
+            </div>
+          </FadeIn>
+        </div>
       </section>
 
-      {/* Social Proof */}
-      <div className="mt-8">
-        <SocialProofBar />
-      </div>
-
       {/* Cities Marquee */}
-      <section className="py-10 sm:py-14">
+      <section className="py-12">
         <InfiniteMarquee speed={40} direction="right">
-          {[...activeCities.map(c => c.name), ...comingSoon].map((city) => (
+          {[...activeCities.map((c) => c.name), ...comingSoon].map((city) => (
             <MarqueeCityItem key={city} city={city} />
           ))}
         </InfiniteMarquee>
       </section>
 
       {/* Active Cities */}
-      <section className="mx-auto max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
-        <FadeIn>
-          <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-5 w-5 text-primary" />
-            <h2 className="text-xl font-bold sm:text-2xl">Currently Serving</h2>
-          </div>
-        </FadeIn>
-        <StaggerContainer className="mt-4 grid gap-3 sm:mt-6 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
-          {activeCities.map((city) => (
-            <StaggerItem key={city.name}>
-              <GlowCard glowColor="primary" className="h-full">
+      <section className="py-24 sm:py-32" ref={citiesRef}>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Currently serving
+              </p>
+              <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                7 cities and counting
+              </h2>
+            </div>
+          </FadeIn>
+          <div className="mx-auto mt-16 grid max-w-5xl gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {activeCities.map((city, i) => (
+              <motion.div
+                key={city.name}
+                initial={{ opacity: 0, y: 30 }}
+                animate={citiesInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.5, delay: i * 0.08 }}
+                className="group rounded-2xl border border-border/50 bg-card p-6 hover:shadow-lg hover:shadow-black/5 transition-all duration-300"
+              >
                 <div className="flex items-start justify-between">
                   <div>
-                    <h3 className="text-base font-semibold sm:text-lg">{city.name}</h3>
-                    <p className="text-xs text-muted-foreground sm:text-sm">Pop. {city.population}</p>
+                    <h3 className="text-base font-semibold tracking-tight">
+                      {city.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Pop. {city.population}
+                    </p>
                   </div>
-                  <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-semibold text-primary">Active</span>
+                  <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Active
+                  </span>
                 </div>
-                <div className="mt-2.5 flex items-center gap-2 text-xs text-muted-foreground sm:mt-3 sm:text-sm">
-                  <MapPin className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-                  <span>{city.contractors}</span>
-                </div>
-              </GlowCard>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </section>
 
       {/* Interactive Map */}
-      <FadeIn delay={0.2}>
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="mb-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-bold sm:text-2xl">Service Area</h2>
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Interactive map
+              </p>
+              <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Explore our service area
+              </h2>
             </div>
-            <ExpandMap />
-          </div>
-          <ServiceMap />
-          <p className="mt-3 text-center text-xs text-muted-foreground sm:text-sm">
-            Click any marker to see city details. Scroll to zoom is disabled - use the controls or pinch to zoom.
-          </p>
+          </FadeIn>
+          <FadeIn delay={0.2}>
+            <div className="mt-16">
+              <div className="mb-3 flex items-center justify-end">
+                <ExpandMap />
+              </div>
+              <ServiceMap />
+              <p className="mt-4 text-center text-xs text-muted-foreground">
+                Click any marker to see city details. Use controls or pinch to
+                zoom.
+              </p>
+            </div>
+          </FadeIn>
         </div>
-      </FadeIn>
+      </section>
 
       {/* Coming Soon */}
-      <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
-        <FadeIn>
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-amber-500" />
-            <h2 className="text-xl font-bold sm:text-2xl">Coming Soon</h2>
+      <section className="py-24 sm:py-32" ref={comingSoonRef}>
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Coming soon
+              </p>
+              <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Expanding across BC
+              </h2>
+              <p className="mt-6 text-lg text-muted-foreground">
+                These cities are next on our roadmap.
+              </p>
+            </div>
+          </FadeIn>
+          <div className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-4 sm:grid-cols-4">
+            {comingSoon.map((city, i) => (
+              <motion.div
+                key={city}
+                initial={{ opacity: 0, y: 20 }}
+                animate={comingSoonInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.4, delay: i * 0.06 }}
+                className="flex items-center gap-2.5 rounded-2xl border border-border/50 p-4 transition-all duration-300 hover:shadow-lg hover:shadow-black/5"
+              >
+                <Clock className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <span className="text-sm font-medium">{city}</span>
+              </motion.div>
+            ))}
           </div>
-          <p className="mt-1.5 text-sm text-muted-foreground sm:mt-2">Expanding! These cities are next.</p>
-        </FadeIn>
-        <StaggerContainer className="mt-4 grid grid-cols-2 gap-2 sm:mt-6 sm:grid-cols-4 sm:gap-3">
-          {comingSoon.map((city) => (
-            <StaggerItem key={city}>
-              <div className="flex items-center gap-2 rounded-xl border border-dashed border-amber-300/40 bg-amber-50/30 p-2.5 transition-colors hover:bg-amber-50/60 sm:p-3">
-                <Clock className="h-3 w-3 text-amber-500 sm:h-3.5 sm:w-3.5" />
-                <span className="text-xs font-medium sm:text-sm">{city}</span>
-              </div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        </div>
       </section>
 
       {/* CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-12 text-primary-foreground sm:py-16">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
-        <FadeIn>
-          <div className="relative mx-auto max-w-2xl px-4 text-center">
-            <h3 className="text-xl font-bold sm:text-2xl">Don&apos;t See Your City?</h3>
-            <p className="mt-2 text-sm opacity-90">
-              Let us know and we&apos;ll prioritize expansion to areas with the most demand.
-            </p>
-            <div className="mt-6 flex flex-col items-center gap-2.5 sm:flex-row sm:justify-center sm:gap-3">
-              <Button size="lg" variant="secondary" className="w-full text-primary sm:w-auto" asChild>
-                <Link href="/plan-builder">Get Started in the Okanagan <ArrowRight className="ml-2 h-4 w-4" /></Link>
-              </Button>
-              <Button size="lg" variant="outline" className="w-full border-white/30 text-white hover:bg-white/10 sm:w-auto">
-                Request My City
-              </Button>
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Don&apos;t see your city?
+              </h2>
+              <p className="mt-6 text-lg text-muted-foreground">
+                Let us know and we will prioritize expansion to your area.
+              </p>
+              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+                <Link href="/plan-builder">
+                  <ShimmerButton className="px-8 py-3 text-base">
+                    Get Started in the Okanagan{" "}
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Button variant="outline" size="lg" asChild>
+                  <a href="mailto:hello@myhomeplan.ca">Request My City</a>
+                </Button>
+              </div>
             </div>
-          </div>
-        </FadeIn>
+          </FadeIn>
+        </div>
       </section>
     </div>
   );

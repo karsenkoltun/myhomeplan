@@ -14,7 +14,7 @@ export interface Testimonial {
 export const ALL_TESTIMONIALS: Testimonial[] = [
   // ── Homeowner testimonials ──────────────────────────────────────────
   {
-    name: "Sarah M.",
+    name: "S.M.",
     role: "Busy Parent",
     location: "Kelowna, BC",
     quote:
@@ -24,7 +24,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "7 months contractor-free",
   },
   {
-    name: "Greg & Linda T.",
+    name: "G. & L.",
     role: "Snowbirds",
     location: "Penticton, BC",
     quote:
@@ -34,7 +34,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "No more spring surprises",
   },
   {
-    name: "Jordan K.",
+    name: "J.K.",
     role: "First-Time Homeowner",
     location: "Vernon, BC",
     quote:
@@ -44,7 +44,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "First-year confidence",
   },
   {
-    name: "Michelle D.",
+    name: "M.D.",
     role: "Working Professional",
     location: "West Kelowna, BC",
     quote:
@@ -54,7 +54,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Weekends back",
   },
   {
-    name: "Rob & Trish P.",
+    name: "R. & T.",
     role: "Retirees",
     location: "Summerland, BC",
     quote:
@@ -64,7 +64,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Safer & cheaper",
   },
   {
-    name: "Anika L.",
+    name: "A.L.",
     role: "Busy Parent",
     location: "Lake Country, BC",
     quote:
@@ -74,7 +74,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "One less thing",
   },
   {
-    name: "Derek H.",
+    name: "D.H.",
     role: "First-Time Homeowner",
     location: "Kelowna, BC",
     quote:
@@ -84,7 +84,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "No more surprise bills",
   },
   {
-    name: "Pat & Sharon W.",
+    name: "P. & S.",
     role: "Snowbirds",
     location: "Peachland, BC",
     quote:
@@ -94,7 +94,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Winterization saved us",
   },
   {
-    name: "Nina C.",
+    name: "N.C.",
     role: "Working Professional",
     location: "Penticton, BC",
     quote:
@@ -104,7 +104,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Quick response",
   },
   {
-    name: "Marcus J.",
+    name: "M.J.",
     role: "Retiree",
     location: "Vernon, BC",
     quote:
@@ -116,7 +116,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
 
   // ── Contractor testimonials ─────────────────────────────────────────
   {
-    name: "Dave R.",
+    name: "D.R.",
     role: "Landscaping Pro",
     location: "Kelowna, BC",
     quote:
@@ -126,7 +126,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "15 hrs/week saved",
   },
   {
-    name: "Maria S.",
+    name: "M.S.",
     role: "Cleaning Services",
     location: "Lake Country, BC",
     quote:
@@ -136,7 +136,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Stable enough to hire",
   },
   {
-    name: "Tyler B.",
+    name: "T.B.",
     role: "HVAC Technician",
     location: "Penticton, BC",
     quote:
@@ -148,7 +148,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
 
   // ── Strata testimonials ─────────────────────────────────────────────
   {
-    name: "Pinnacle Strata Council",
+    name: "Strata Council",
     role: "48-Unit Complex",
     location: "Kelowna, BC",
     quote:
@@ -158,7 +158,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "30% cost reduction",
   },
   {
-    name: "Lakeview Towers",
+    name: "Strata Council",
     role: "120-Unit Building",
     location: "West Kelowna, BC",
     quote:
@@ -168,7 +168,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "$40K annual savings",
   },
   {
-    name: "Summit Ridge Strata",
+    name: "Strata Council",
     role: "75-Unit Complex",
     location: "Vernon, BC",
     quote:
@@ -180,7 +180,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
 
   // ── Property Manager testimonials ───────────────────────────────────
   {
-    name: "Rachel F.",
+    name: "R.F.",
     role: "Portfolio Manager (35 properties)",
     location: "Kelowna, BC",
     quote:
@@ -190,8 +190,8 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "60% less admin",
   },
   {
-    name: "Pacific Properties Group",
-    role: "Property Management Co.",
+    name: "Property Management Co.",
+    role: "Multi-Property Firm",
     location: "Penticton, BC",
     quote:
       "Tenant satisfaction scores went up noticeably after we onboarded with My Home Plan. Maintenance requests get handled faster and our owners are happy with what they're spending. It's a win all around.",
@@ -200,7 +200,7 @@ export const ALL_TESTIMONIALS: Testimonial[] = [
     highlight: "Higher tenant satisfaction",
   },
   {
-    name: "James W.",
+    name: "J.W.",
     role: "Independent PM (12 properties)",
     location: "Lake Country, BC",
     quote:

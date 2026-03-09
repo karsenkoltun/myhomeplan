@@ -1,274 +1,518 @@
 "use client";
 
+import { useState, useRef } from "react";
 import Link from "next/link";
-import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import {
-  FadeIn,
-  SlideIn,
-  StaggerContainer,
-  StaggerItem,
-  GlowCard,
-  ShimmerButton,
-  FloatingElement,
-} from "@/components/ui/motion";
-import { FlowButton } from "@/components/ui/flow-button";
-import DisplayCards from "@/components/ui/display-cards";
-import { SectionHeader } from "@/components/marketing/section-header";
-import { SocialProofBar } from "@/components/marketing/social-proof-bar";
-
-// Lazy-load heavy below-fold components (3D transforms, GSAP scroll, charts)
-const Testimonials3D = dynamic(
-  () => import("@/components/marketing/testimonials-3d").then((mod) => ({ default: mod.Testimonials3D })),
-  { ssr: false }
-);
-const ScrollRoadmap = dynamic(
-  () => import("@/components/marketing/scroll-roadmap").then((mod) => ({ default: mod.ScrollRoadmap })),
-  { ssr: false }
-);
-const CostComparison = dynamic(
-  () => import("@/components/marketing/cost-comparison").then((mod) => ({ default: mod.CostComparison })),
-  { ssr: false }
-);
+import { FadeIn, ShimmerButton } from "@/components/ui/motion";
+import { motion, useInView } from "framer-motion";
 import {
   ArrowRight,
+  Check,
+  X,
   Shield,
   Clock,
-  ClipboardList,
   DollarSign,
-  CheckCircle2,
-  XCircle,
   Unlock,
+  ClipboardList,
   Users,
+  Calendar,
   Home,
 } from "lucide-react";
 
-const oldWay = [
-  "Research contractors on Google",
-  "Call around for quotes (and wait days)",
-  "Schedule each service separately",
-  "Chase contractors who don't show up",
-  "Deal with surprise charges",
+import { TestimonialsMarquee } from "@/components/marketing/testimonials-marquee";
+
+/* ------------------------------------------------------------------ */
+/*  Data                                                               */
+/* ------------------------------------------------------------------ */
+
+const oldWayItems = [
+  "Google contractors for hours",
+  "Wait days for quotes",
+  "Schedule each service yourself",
+  "Chase no-show contractors",
+  "Get hit with surprise fees",
 ];
 
-const newWay = [
-  "Tell us about your home once",
-  "One plan, one predictable price",
-  "We schedule everything for you",
-  "Guaranteed service, guaranteed quality",
-  "Everything handled, nothing forgotten",
+const newWayItems = [
+  "Tell us about your home",
+  "One plan, one price",
+  "We schedule everything",
+  "Guaranteed service quality",
+  "Nothing gets forgotten",
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Build Your Plan",
+    icon: ClipboardList,
+    headline: "Pick the services your home needs",
+    description:
+      "Choose from lawn care, snow removal, window cleaning, gutter maintenance, and more. We recommend a plan based on your home type, size, and location.",
+    detail: "Takes under 5 minutes",
+  },
+  {
+    number: "02",
+    title: "We Match Pros",
+    icon: Users,
+    headline: "Vetted contractors assigned to your home",
+    description:
+      "We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.",
+    detail: "All pros are pre-vetted",
+  },
+  {
+    number: "03",
+    title: "Auto-Scheduled",
+    icon: Calendar,
+    headline: "Services happen on time, every time",
+    description:
+      "Your maintenance calendar is built automatically. Services are scheduled at the right time of year, and you get notified before every visit.",
+    detail: "Zero effort from you",
+  },
+  {
+    number: "04",
+    title: "Stay Protected",
+    icon: Shield,
+    headline: "Your home stays in top shape year-round",
+    description:
+      "Track completed services, upcoming visits, and your home's maintenance history in your dashboard. We handle everything so you don't have to.",
+    detail: "Full visibility always",
+  },
 ];
 
 const guarantees = [
-  { icon: Clock, title: "Scheduling Guarantee", description: "Every service happens when planned. If we miss a window, your next service is free." },
-  { icon: DollarSign, title: "Price Guarantee", description: "Your plan price is locked in. No surprise charges, no rate hikes." },
-  { icon: Shield, title: "Quality Guarantee", description: "Not satisfied? We'll send another pro to make it right at no cost." },
-  { icon: Unlock, title: "Flexibility Guarantee", description: "Upgrade, downgrade, add services, or cancel anytime. No lock-in." },
+  {
+    icon: Clock,
+    title: "On-Time Guarantee",
+    description: "Miss a window and your next service is free.",
+  },
+  {
+    icon: DollarSign,
+    title: "Price Lock",
+    description: "No surprise charges. No rate hikes. Ever.",
+  },
+  {
+    icon: Shield,
+    title: "Quality Guarantee",
+    description: "Not happy? We send another pro at no cost.",
+  },
+  {
+    icon: Unlock,
+    title: "No Lock-In",
+    description: "Upgrade, downgrade, or cancel anytime.",
+  },
 ];
 
+/* ------------------------------------------------------------------ */
+/*  Animated item wrapper                                              */
+/* ------------------------------------------------------------------ */
+
+function AnimatedItem({
+  children,
+  index = 0,
+  className = "",
+}: {
+  children: React.ReactNode;
+  index?: number;
+  className?: string;
+}) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-40px" });
+
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 20 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+      transition={{ duration: 0.5, delay: index * 0.1, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
 
 export function HowItWorksContent() {
+  const [activeStep, setActiveStep] = useState(0);
+
   return (
-    <div className="flex flex-col overflow-x-hidden">
-      {/* Hero */}
-      <section className="mx-auto max-w-7xl px-4 pb-8 pt-16 sm:px-6 sm:pb-12 sm:pt-20 lg:px-8">
-        <SectionHeader
-          badge="How It Works"
-          badgeColor="primary"
-          title="Managing Your Home Shouldn't Feel Like a Second Job"
-          subtitle="We built My Home Plan so you never have to research, negotiate, schedule, or chase down a contractor again."
-        />
+    <div className="flex flex-col">
+      {/* ============================================================ */}
+      {/*  Hero                                                        */}
+      {/* ============================================================ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
+            {/* Left column */}
+            <FadeIn>
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                How It Works
+              </p>
+              <h1 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Home maintenance
+                <br />
+                on autopilot
+              </h1>
+              <p className="mt-6 max-w-lg text-lg text-muted-foreground">
+                Build a plan in 5 minutes. We handle scheduling, contractors,
+                and quality - so you never think about home maintenance again.
+              </p>
+              <div className="mt-10 flex items-center gap-4">
+                <Link href="/onboarding">
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Get Started
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Link href="/pricing">
+                  <Button variant="outline" className="h-12 px-6 text-base">
+                    View Pricing
+                  </Button>
+                </Link>
+              </div>
+            </FadeIn>
+
+            {/* Right column - floating product card */}
+            <FadeIn delay={0.2}>
+              <div className="relative">
+                {/* Main card */}
+                <div className="rounded-2xl border border-border/50 bg-card p-6 shadow-xl shadow-black/5">
+                  {/* Card header */}
+                  <div className="flex items-center justify-between border-b border-border/50 pb-4">
+                    <div>
+                      <p className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
+                        Upcoming Schedule
+                      </p>
+                      <p className="mt-1 text-sm font-semibold">March 2026</p>
+                    </div>
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10">
+                      <Calendar className="h-4 w-4 text-primary" />
+                    </div>
+                  </div>
+
+                  {/* Schedule items */}
+                  <div className="mt-4 space-y-3">
+                    {[
+                      {
+                        service: "Lawn Mowing",
+                        date: "Mar 12",
+                        status: "Scheduled",
+                        color: "bg-emerald-500",
+                      },
+                      {
+                        service: "Gutter Cleaning",
+                        date: "Mar 18",
+                        status: "Confirmed",
+                        color: "bg-blue-500",
+                      },
+                      {
+                        service: "Window Washing",
+                        date: "Mar 25",
+                        status: "Pending",
+                        color: "bg-amber-500",
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.service}
+                        className="flex items-center justify-between rounded-xl border border-border/30 bg-muted/30 px-4 py-3"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`h-2 w-2 rounded-full ${item.color}`}
+                          />
+                          <div>
+                            <p className="text-sm font-medium">
+                              {item.service}
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              {item.date}
+                            </p>
+                          </div>
+                        </div>
+                        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+                          {item.status}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Card footer */}
+                  <div className="mt-4 flex items-center justify-between border-t border-border/50 pt-4">
+                    <p className="text-xs text-muted-foreground">
+                      3 services this month
+                    </p>
+                    <p className="text-xs font-medium text-primary">
+                      All on track
+                    </p>
+                  </div>
+                </div>
+
+                {/* Floating badge */}
+                <div className="absolute -right-3 -top-3 rounded-xl border border-border/50 bg-card px-4 py-2 shadow-lg shadow-black/5">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-6 w-6 items-center justify-center rounded-full bg-emerald-500/10">
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    </div>
+                    <span className="text-xs font-semibold">Auto-scheduled</span>
+                  </div>
+                </div>
+              </div>
+            </FadeIn>
+          </div>
+        </div>
       </section>
 
-      {/* Process Preview - DisplayCards */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+      {/* ============================================================ */}
+      {/*  Old Way vs New Way                                          */}
+      {/* ============================================================ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
           <FadeIn>
-            <div className="flex flex-col items-center gap-10 md:flex-row md:gap-16">
-              <div className="flex-1 text-center md:text-left">
-                <h2 className="text-2xl font-bold tracking-tight sm:text-3xl">
-                  Three Steps to a Stress-Free Home
-                </h2>
-                <p className="mt-3 text-muted-foreground sm:text-lg">
-                  Pick your services, we match you with vetted contractors, and your home stays maintained year-round.
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                The Difference
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                There's a better way
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="mt-16 grid gap-8 md:grid-cols-2">
+            {/* Old Way */}
+            <AnimatedItem>
+              <div className="h-full rounded-2xl border border-red-200/40 bg-red-50/30 p-8 dark:border-red-500/10 dark:bg-red-950/10">
+                <div className="mb-8 flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-500/10">
+                    <X className="h-4 w-4 text-red-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-red-700 dark:text-red-400">
+                    The Old Way
+                  </h3>
+                </div>
+                <ul className="space-y-4">
+                  {oldWayItems.map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <X className="h-4 w-4 shrink-0 text-red-400" />
+                      <span className="text-sm text-red-800/70 dark:text-red-300/70">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </AnimatedItem>
+
+            {/* New Way */}
+            <AnimatedItem index={1}>
+              <div className="h-full rounded-2xl border border-emerald-200/40 bg-emerald-50/30 p-8 dark:border-emerald-500/10 dark:bg-emerald-950/10">
+                <div className="mb-8 flex items-center gap-3">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-500/10">
+                    <Check className="h-4 w-4 text-emerald-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-emerald-700 dark:text-emerald-400">
+                    The My Home Plan Way
+                  </h3>
+                </div>
+                <ul className="space-y-4">
+                  {newWayItems.map((item) => (
+                    <li key={item} className="flex items-center gap-3">
+                      <Check className="h-4 w-4 shrink-0 text-emerald-500" />
+                      <span className="text-sm text-emerald-800/70 dark:text-emerald-300/70">
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </AnimatedItem>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/*  Interactive Timeline                                        */}
+      {/* ============================================================ */}
+      <section className="bg-muted/30 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                The Process
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Four steps to autopilot
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="mt-16 grid items-start gap-12 lg:grid-cols-[320px_1fr] lg:gap-16">
+            {/* Left - step selector */}
+            <FadeIn delay={0.1}>
+              <div className="space-y-3">
+                {steps.map((step, i) => {
+                  const isActive = activeStep === i;
+                  return (
+                    <button
+                      key={step.number}
+                      onClick={() => setActiveStep(i)}
+                      className={`flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left transition-all duration-300 ${
+                        isActive
+                          ? "border-primary/20 bg-primary/5 shadow-lg shadow-black/5"
+                          : "border-border/50 bg-card hover:border-border hover:shadow-lg hover:shadow-black/5"
+                      }`}
+                    >
+                      <div
+                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-sm font-bold transition-colors duration-300 ${
+                          isActive
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted text-muted-foreground"
+                        }`}
+                      >
+                        {step.number}
+                      </div>
+                      <div>
+                        <p
+                          className={`text-sm font-semibold transition-colors duration-300 ${
+                            isActive
+                              ? "text-foreground"
+                              : "text-muted-foreground"
+                          }`}
+                        >
+                          {step.title}
+                        </p>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </FadeIn>
+
+            {/* Right - active step detail */}
+            <FadeIn delay={0.2}>
+              <motion.div
+                key={activeStep}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+                className="rounded-2xl border border-border/50 bg-card p-8 shadow-lg shadow-black/5 sm:p-10"
+              >
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  {(() => {
+                    const Icon = steps[activeStep].icon;
+                    return <Icon className="h-6 w-6 text-primary" />;
+                  })()}
+                </div>
+                <h3 className="mt-6 text-2xl font-bold tracking-tight">
+                  {steps[activeStep].headline}
+                </h3>
+                <p className="mt-4 text-base leading-relaxed text-muted-foreground">
+                  {steps[activeStep].description}
                 </p>
+                <div className="mt-6 inline-flex items-center gap-2 rounded-full bg-primary/5 px-4 py-2">
+                  <Check className="h-4 w-4 text-primary" />
+                  <span className="text-sm font-medium text-primary">
+                    {steps[activeStep].detail}
+                  </span>
+                </div>
+              </motion.div>
+            </FadeIn>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/*  Guarantees                                                  */}
+      {/* ============================================================ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Our Promise
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Backed by real guarantees
+              </h2>
+            </div>
+          </FadeIn>
+
+          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {guarantees.map((g, i) => (
+              <AnimatedItem key={g.title} index={i}>
+                <div className="group h-full rounded-2xl border border-border/50 bg-card p-6 transition-all duration-300 hover:shadow-lg hover:shadow-black/5">
+                  <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
+                    <g.icon className="h-5 w-5 text-primary" />
+                  </div>
+                  <h3 className="text-sm font-semibold">{g.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {g.description}
+                  </p>
+                </div>
+              </AnimatedItem>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/*  Testimonials                                                */}
+      {/* ============================================================ */}
+      <section className="bg-muted/30 py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="text-center">
+              <p className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
+                Real Stories
+              </p>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                What homeowners are saying
+              </h2>
+            </div>
+          </FadeIn>
+          <div className="mt-16">
+            <TestimonialsMarquee audience="homeowner" />
+          </div>
+        </div>
+      </section>
+
+      {/* ============================================================ */}
+      {/*  Final CTA                                                   */}
+      {/* ============================================================ */}
+      <section className="py-24 sm:py-32">
+        <div className="mx-auto max-w-[1280px] px-6 sm:px-8 lg:px-12">
+          <FadeIn>
+            <div className="mx-auto max-w-2xl text-center">
+              <Home className="mx-auto h-10 w-10 text-primary" />
+              <h2 className="mt-6 text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl">
+                Ready to put your home on autopilot?
+              </h2>
+              <p className="mt-6 text-lg text-muted-foreground">
+                Build your custom plan in under 5 minutes.
+              </p>
+              <div className="mt-10 flex items-center justify-center gap-4">
+                <Link href="/onboarding">
+                  <ShimmerButton className="h-12 px-8 text-base">
+                    Get Started
+                    <ArrowRight className="ml-2 inline h-4 w-4" />
+                  </ShimmerButton>
+                </Link>
+                <Link href="/pricing">
+                  <Button variant="outline" className="h-12 px-6 text-base">
+                    View Pricing
+                  </Button>
+                </Link>
               </div>
-              <div className="flex-1">
-                <DisplayCards
-                  cards={[
-                    {
-                      className:
-                        "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <ClipboardList className="size-4 text-sky-300" />,
-                      title: "Choose Services",
-                      description: "Pick exactly what your home needs",
-                      date: "Step 1",
-                      iconClassName: "text-sky-500",
-                      titleClassName: "text-sky-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration-700 hover:grayscale-0 before:left-0 before:top-0",
-                      icon: <Users className="size-4 text-emerald-300" />,
-                      title: "We Match Contractors",
-                      description: "Vetted pros assigned to your home",
-                      date: "Step 2",
-                      iconClassName: "text-emerald-500",
-                      titleClassName: "text-emerald-500",
-                    },
-                    {
-                      className:
-                        "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
-                      icon: <CheckCircle2 className="size-4 text-violet-300" />,
-                      title: "Home Maintained",
-                      description: "Everything handled automatically",
-                      date: "Ongoing",
-                      iconClassName: "text-violet-500",
-                      titleClassName: "text-violet-500",
-                    },
-                  ]}
-                />
-              </div>
+              <p className="mt-6 text-sm text-muted-foreground">
+                No credit card required. Cancel anytime.
+              </p>
             </div>
           </FadeIn>
         </div>
-      </section>
-
-      {/* Social Proof */}
-      <SocialProofBar />
-
-      {/* Old Way vs New Way */}
-      <section className="bg-muted/30 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            title="There's a Better Way to Manage Your Home"
-          />
-          <div className="mt-10 grid gap-6 sm:mt-14 md:grid-cols-2 md:gap-8">
-            <div className="rounded-2xl border border-red-200/60 bg-red-50/50 p-6 sm:p-8">
-              <div className="mb-6 flex items-center gap-2.5">
-                <XCircle className="h-5 w-5 text-red-500" />
-                <h3 className="text-lg font-semibold text-red-700">The Old Way</h3>
-              </div>
-              <ul className="space-y-3.5">
-                {oldWay.map((item, i) => (
-                  <SlideIn key={item} from="left" delay={i * 0.08}>
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-200/70 text-xs text-red-600">
-                        {i + 1}
-                      </span>
-                      <span className="text-sm text-red-800/80 sm:text-base">{item}</span>
-                    </li>
-                  </SlideIn>
-                ))}
-              </ul>
-            </div>
-            <div className="rounded-2xl border border-emerald-200/60 bg-emerald-50/50 p-6 sm:p-8">
-              <div className="mb-6 flex items-center gap-2.5">
-                <CheckCircle2 className="h-5 w-5 text-emerald-500" />
-                <h3 className="text-lg font-semibold text-emerald-700">The My Home Plan Way</h3>
-              </div>
-              <ul className="space-y-3.5">
-                {newWay.map((item, i) => (
-                  <SlideIn key={item} from="right" delay={i * 0.08}>
-                    <li className="flex items-start gap-3">
-                      <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-200/70 text-xs text-emerald-600">
-                        &#10003;
-                      </span>
-                      <span className="text-sm text-emerald-800/80 sm:text-base">{item}</span>
-                    </li>
-                  </SlideIn>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 6-Step Scroll Roadmap */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="The Process"
-            badgeColor="sky"
-            title="Your Plan in 6 Simple Steps"
-            subtitle="From sign-up to sitting back - here's exactly what happens."
-          />
-          <ScrollRoadmap />
-        </div>
-      </section>
-
-      {/* Guarantees */}
-      <section className="border-y bg-muted/30 py-16 sm:py-20">
-        <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Our Promise"
-            badgeColor="emerald"
-            title="Backed by Real Guarantees"
-            subtitle="Every membership is backed by real guarantees, not vague promises."
-          />
-          <StaggerContainer className="mt-10 grid gap-5 sm:mt-14 sm:grid-cols-2 sm:gap-6 lg:grid-cols-4">
-            {guarantees.map((g) => (
-              <StaggerItem key={g.title}>
-                <GlowCard glowColor="emerald" className="h-full">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10">
-                    <g.icon className="h-5 w-5 text-primary" />
-                  </div>
-                  <h3 className="text-sm font-semibold sm:text-base">{g.title}</h3>
-                  <p className="mt-2 text-xs text-muted-foreground sm:text-sm">{g.description}</p>
-                </GlowCard>
-              </StaggerItem>
-            ))}
-          </StaggerContainer>
-        </div>
-      </section>
-
-      {/* Cost Comparison */}
-      <section className="py-16 sm:py-20">
-        <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            title="Why Plan Members Pay Less"
-            subtitle="Our model creates real savings for everyone involved."
-          />
-          <div className="mt-10">
-            <CostComparison compact />
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials */}
-      <section className="border-y bg-muted/30 py-16 sm:py-20">
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <SectionHeader
-            badge="Real Stories"
-            badgeColor="amber"
-            title="What Homeowners Are Saying"
-          />
-          <div className="mt-10 sm:mt-14">
-            <Testimonials3D audience="homeowner" maxItems={3} />
-          </div>
-        </div>
-      </section>
-
-      {/* Final CTA */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary to-blue-700 py-16 text-primary-foreground sm:py-20">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-white/10 via-transparent to-transparent" />
-        <FadeIn>
-          <div className="relative mx-auto max-w-3xl px-4 text-center sm:px-6 lg:px-8">
-            <FloatingElement amplitude={6} duration={4}>
-              <Home className="mx-auto h-10 w-10 opacity-80" />
-            </FloatingElement>
-            <h2 className="mt-5 text-2xl font-bold sm:text-3xl md:text-4xl">
-              Ready to Simplify Your Home Maintenance?
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-muted-foreground/90 sm:text-lg">
-              Build your custom plan in under 5 minutes.
-            </p>
-            <div className="mt-8 flex justify-center">
-              <FlowButton text="Get Started" href="/onboarding" className="h-12 px-10 text-base border-white/30 text-white" />
-            </div>
-            <p className="mt-4 text-xs opacity-70">No credit card required. Cancel anytime.</p>
-          </div>
-        </FadeIn>
       </section>
     </div>
   );
