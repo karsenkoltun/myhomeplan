@@ -80,9 +80,8 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
         });
 
         if (error) throw error;
-        router.push("/account");
-        router.refresh();
         onSuccess?.();
+        window.location.href = "/account";
       }
     } catch (error: unknown) {
       const message = error instanceof Error ? error.message : "Something went wrong";

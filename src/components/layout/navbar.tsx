@@ -13,8 +13,6 @@ import { useAuth } from "@/components/auth/auth-provider";
 
 const navigation = [
   { name: "How It Works", href: "/how-it-works" },
-  { name: "Packages", href: "/pricing" },
-  { name: "Plan Builder", href: "/plan-builder" },
   { name: "Blog", href: "/blog" },
   { name: "FAQ", href: "/faq" },
 ];

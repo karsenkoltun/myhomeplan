@@ -4,8 +4,6 @@ import Image from "next/image";
 const footerLinks = {
   Platform: [
     { name: "How It Works", href: "/how-it-works" },
-    { name: "Pricing", href: "/pricing" },
-    { name: "Plan Builder", href: "/plan-builder" },
     { name: "Service Area", href: "/service-area" },
   ],
   "Who It's For": [
