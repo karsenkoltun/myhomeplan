@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: string; icon: typeof CheckCircle2 }> = {
   active: { label: "Active", color: "text-emerald-600", bgColor: "bg-emerald-500/10 border-emerald-500/20", icon: CheckCircle2 },
+  draft: { label: "Draft", color: "text-gray-600", bgColor: "bg-gray-500/10 border-gray-500/20", icon: Clock },
   trialing: { label: "Awaiting Payment", color: "text-sky-600", bgColor: "bg-sky-500/10 border-sky-500/20", icon: Clock },
   past_due: { label: "Past Due", color: "text-orange-600", bgColor: "bg-orange-500/10 border-orange-500/20", icon: AlertCircle },
   cancelled: { label: "Cancelled", color: "text-red-600", bgColor: "bg-red-500/10 border-red-500/20", icon: AlertCircle },
@@ -178,6 +179,16 @@ export default function BillingPage() {
                   </div>
                 )}
 
+                {status === "draft" && (
+                  <div className="mt-6 flex items-start gap-3 rounded-xl bg-gray-500/5 border border-gray-500/10 p-4">
+                    <Clock className="h-5 w-5 shrink-0 text-gray-500 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-gray-600">Plan saved as draft</p>
+                      <p className="mt-0.5 text-sm text-muted-foreground">Your plan is configured but not yet active. Activate it when you&apos;re ready to start.</p>
+                    </div>
+                  </div>
+                )}
+
                 {status === "trialing" && (
                   <div className="mt-6 flex items-start gap-3 rounded-xl bg-sky-500/5 border border-sky-500/10 p-4">
                     <Clock className="h-5 w-5 shrink-0 text-sky-500 mt-0.5" />
@@ -229,8 +240,8 @@ export default function BillingPage() {
             </motion.div>
           )}
 
-          {/* Retry payment CTA for trialing */}
-          {status === "trialing" && subscription && (
+          {/* Activate / Complete payment CTA for draft or trialing */}
+          {(status === "draft" || status === "trialing") && subscription && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -238,7 +249,9 @@ export default function BillingPage() {
               className="overflow-hidden rounded-2xl border-2 border-primary/20 bg-card shadow-sm"
             >
               <div className="p-6">
-                <h2 className="text-lg font-semibold">Complete your payment</h2>
+                <h2 className="text-lg font-semibold">
+                  {status === "draft" ? "Activate your plan" : "Complete your payment"}
+                </h2>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Your plan is saved and ready to go. Click below to set up payment and activate your subscription.
                 </p>
@@ -252,7 +265,7 @@ export default function BillingPage() {
                   ) : (
                     <CreditCard className="h-4 w-4" />
                   )}
-                  Complete Payment
+                  {status === "draft" ? "Activate Plan" : "Complete Payment"}
                 </button>
               </div>
             </motion.div>

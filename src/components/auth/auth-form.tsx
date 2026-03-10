@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Mail, Lock, Loader2, Eye, EyeOff } from "lucide-react";
+import { Mail, Lock, Loader2, Eye, EyeOff, User, Phone } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -35,9 +35,12 @@ interface AuthFormProps {
 export function AuthForm({ mode: initialMode = "login", embedded = false, onSuccess }: AuthFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/onboarding";
+  const redirectTo = searchParams.get("redirectTo") || "/account";
   const [mode, setMode] = useState<"login" | "signup">(initialMode);
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
@@ -51,11 +54,20 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
 
     try {
       if (mode === "signup") {
+        if (!firstName.trim() || !lastName.trim()) {
+          toast.error("Please enter your first and last name");
+          return;
+        }
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+            emailRedirectTo: `${window.location.origin}/auth/callback?next=/account`,
+            data: {
+              first_name: firstName.trim(),
+              last_name: lastName.trim(),
+              phone: phone.trim(),
+            },
           },
         });
 
@@ -68,24 +80,8 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
         });
 
         if (error) throw error;
-
-        // Check onboarding status and redirect
-        const { data: { user: loggedInUser } } = await supabase.auth.getUser();
-        if (loggedInUser) {
-          const { data: profile } = await supabase
-            .from("profiles")
-            .select("onboarding_complete")
-            .eq("id", loggedInUser.id)
-            .maybeSingle();
-
-          if (profile?.onboarding_complete) {
-            router.push("/account");
-          } else {
-            router.push(redirectTo);
-          }
-          router.refresh();
-        }
-
+        router.push("/account");
+        router.refresh();
         onSuccess?.();
       }
     } catch (error: unknown) {
@@ -102,7 +98,7 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=${redirectTo}`,
+          redirectTo: `${window.location.origin}/auth/callback?next=/account`,
           scopes: "openid email profile",
         },
       });
@@ -162,6 +158,59 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
 
         {/* Email + Password Form */}
         <form onSubmit={handleEmailAuth} className="space-y-4">
+          {mode === "signup" && (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label htmlFor="auth-first-name" className="text-xs font-medium text-muted-foreground">
+                    First Name
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                    <Input
+                      id="auth-first-name"
+                      type="text"
+                      value={firstName}
+                      onChange={(e) => setFirstName(e.target.value)}
+                      placeholder="John"
+                      className="h-12 rounded-xl border-border/40 bg-muted/50 pl-10 text-sm transition-all focus-visible:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="auth-last-name" className="text-xs font-medium text-muted-foreground">
+                    Last Name
+                  </Label>
+                  <Input
+                    id="auth-last-name"
+                    type="text"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    placeholder="Smith"
+                    className="h-12 rounded-xl border-border/40 bg-muted/50 text-sm transition-all focus-visible:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="auth-phone" className="text-xs font-medium text-muted-foreground">
+                  Phone Number
+                </Label>
+                <div className="relative">
+                  <Phone className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
+                  <Input
+                    id="auth-phone"
+                    type="tel"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    placeholder="250-555-0123"
+                    className="h-12 rounded-xl border-border/40 bg-muted/50 pl-10 text-sm transition-all focus-visible:border-primary/40 focus-visible:ring-[3px] focus-visible:ring-primary/20"
+                  />
+                </div>
+              </div>
+            </>
+          )}
           <div className="space-y-1.5">
             <Label htmlFor="auth-email" className="text-xs font-medium text-muted-foreground">
               Email

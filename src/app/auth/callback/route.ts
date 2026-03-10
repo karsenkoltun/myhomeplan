@@ -4,7 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/onboarding";
+  const next = searchParams.get("next") ?? "/account";
 
   if (code) {
     const supabase = await createClient();
@@ -49,12 +49,10 @@ export async function GET(request: Request) {
         }
       }
 
-      if (profile?.onboarding_complete) {
-        return NextResponse.redirect(`${origin}/account`);
-      }
+      // Always go to dashboard - setup guide handles the rest
     }
 
-    return NextResponse.redirect(`${origin}${next}`);
+    return NextResponse.redirect(`${origin}/account`);
   }
 
   // No code parameter - redirect with error

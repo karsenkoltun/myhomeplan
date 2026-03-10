@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Save, Loader2, Plus, Home, Trash2, Pencil, MapPin } from "lucide-react";
 import { usePropertyStore, type HomeType, type HeatingType, type PropertyProfile } from "@/stores/property-store";
 import { useAuth } from "@/components/auth/auth-provider";
-import { getAllProperties, createProperty, updatePropertyById, deleteProperty } from "@/lib/supabase/queries";
+import { getAllProperties, createProperty, updatePropertyById, deleteProperty, updateSetupProgress } from "@/lib/supabase/queries";
 import { FadeIn } from "@/components/ui/motion";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -173,6 +173,8 @@ export default function PropertyPage() {
       } else {
         await createProperty(user.id, fields);
         toast.success("Property added!");
+        // Mark setup progress when first property is saved
+        await updateSetupProgress(user.id, "details_completed", true).catch(() => {});
       }
       setEditingId(null);
       setAddingNew(false);

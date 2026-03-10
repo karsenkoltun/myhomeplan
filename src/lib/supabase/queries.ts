@@ -25,6 +25,21 @@ export async function updateProfile(userId: string, updates: Record<string, unkn
   return data;
 }
 
+// ---- SETUP PROGRESS ----
+
+export async function updateSetupProgress(userId: string, step: string, value: boolean) {
+  const { data: profile } = await supabase()
+    .from("profiles")
+    .select("setup_progress")
+    .eq("id", userId)
+    .single();
+
+  const progress = ((profile?.setup_progress as Record<string, boolean>) || {});
+  progress[step] = value;
+
+  return updateProfile(userId, { setup_progress: progress });
+}
+
 // ---- HOMEOWNER PROPERTIES ----
 
 /** Get the most recent property for a user (legacy compat) */
@@ -163,6 +178,100 @@ export async function upsertStrataProperty(userId: string, strataData: Record<st
   }
 }
 
+// ---- STRATA PROPERTIES (multi) ----
+
+export async function getAllStrataProperties(userId: string) {
+  const { data, error } = await supabase()
+    .from("strata_properties")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createStrataPropertyRecord(
+  userId: string,
+  strataData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("strata_properties")
+    .insert({ ...strataData, profile_id: userId })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateStrataPropertyById(
+  strataId: string,
+  strataData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("strata_properties")
+    .update(strataData)
+    .eq("id", strataId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deleteStrataPropertyById(strataId: string) {
+  const { error } = await supabase()
+    .from("strata_properties")
+    .delete()
+    .eq("id", strataId);
+  if (error) throw error;
+}
+
+// ---- PM COMPANIES (multi) ----
+
+export async function getAllPMCompanies(userId: string) {
+  const { data, error } = await supabase()
+    .from("pm_companies")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function createPMCompanyRecord(
+  userId: string,
+  companyData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("pm_companies")
+    .insert({ ...companyData, profile_id: userId })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function updatePMCompanyById(
+  companyId: string,
+  companyData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("pm_companies")
+    .update(companyData)
+    .eq("id", companyId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+export async function deletePMCompanyById(companyId: string) {
+  const { error } = await supabase()
+    .from("pm_companies")
+    .delete()
+    .eq("id", companyId);
+  if (error) throw error;
+}
+
 // ---- CONTRACTOR PROFILES ----
 
 export async function getContractorProfile(userId: string) {
@@ -198,6 +307,55 @@ export async function upsertContractorProfile(userId: string, contractorData: Re
     if (error) throw error;
     return data;
   }
+}
+
+/** Get ALL contractor profiles for a user (multi-business support) */
+export async function getAllContractorProfiles(userId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .select("*")
+    .eq("profile_id", userId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Create a new contractor profile */
+export async function createContractorProfileRecord(
+  userId: string,
+  contractorData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .insert({ ...contractorData, profile_id: userId })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Update a contractor profile by ID */
+export async function updateContractorProfileById(
+  contractorProfileId: string,
+  contractorData: Record<string, unknown>
+) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .update(contractorData)
+    .eq("id", contractorProfileId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Delete a contractor profile by ID */
+export async function deleteContractorProfileById(contractorProfileId: string) {
+  const { error } = await supabase()
+    .from("contractor_profiles")
+    .delete()
+    .eq("id", contractorProfileId);
+  if (error) throw error;
 }
 
 // ---- CONTRACTOR REFERENCES ----
@@ -320,7 +478,7 @@ export async function getSubscription(userId: string) {
     .from("subscriptions")
     .select("*, subscription_services(*)")
     .eq("profile_id", userId)
-    .in("status", ["active", "trialing"])
+    .in("status", ["active", "trialing", "draft"])
     .order("created_at", { ascending: false })
     .limit(1)
     .maybeSingle();

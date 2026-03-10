@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,8 @@ import {
   Sun,
   Paintbrush,
   Armchair,
+  Loader2,
+  Save,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -39,6 +41,8 @@ import {
   PLAN_DISCOUNTS,
 } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
+import { getProperty, createSubscription, updateSetupProgress } from "@/lib/supabase/queries";
+import { toast } from "sonner";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors,
@@ -249,9 +253,23 @@ export default function ServicesPage() {
         </Card>
       </FadeIn>
 
-      {/* Quick Actions */}
+      {/* Save Plan as Draft */}
       <FadeIn delay={0.3}>
-        <div className="mt-6 grid grid-cols-2 gap-3">
+        <SavePlanButton
+          userId={user?.id}
+          services={activeServices}
+          servicePrices={servicePrices}
+          monthlyTotal={monthlyTotal}
+          planInterval={planInterval}
+          discount={planInfo.discount}
+          serviceSpecs={serviceSpecs}
+          serviceFrequencies={serviceFrequencies}
+        />
+      </FadeIn>
+
+      {/* Quick Actions */}
+      <FadeIn delay={0.4}>
+        <div className="mt-4 grid grid-cols-2 gap-3">
           <Button variant="outline" className="gap-2" asChild>
             <Link href="/plan-builder">
               <ClipboardList className="h-4 w-4" />
@@ -267,5 +285,66 @@ export default function ServicesPage() {
         </div>
       </FadeIn>
     </div>
+  );
+}
+
+function SavePlanButton({
+  userId,
+  services,
+  servicePrices,
+  monthlyTotal,
+  planInterval,
+  discount,
+  serviceSpecs,
+  serviceFrequencies,
+}: {
+  userId?: string;
+  services: typeof SERVICES;
+  servicePrices: Record<string, number>;
+  monthlyTotal: number;
+  planInterval: string;
+  discount: number;
+  serviceSpecs: Record<string, Record<string, string | number | boolean>>;
+  serviceFrequencies: Record<string, string>;
+}) {
+  const [saving, setSaving] = useState(false);
+
+  const handleSavePlan = async () => {
+    if (!userId || services.length === 0) return;
+    setSaving(true);
+    try {
+      const prop = await getProperty(userId);
+      const serviceItems = services.map((s) => ({
+        serviceId: s.id,
+        frequency: serviceFrequencies[s.id] || s.frequency,
+        specs: serviceSpecs[s.id] || {},
+        monthlyPrice: servicePrices[s.id] || 0,
+      }));
+
+      await createSubscription(
+        userId,
+        prop?.id || null,
+        planInterval as "monthly" | "quarterly" | "annual",
+        monthlyTotal,
+        discount,
+        serviceItems,
+        "draft" as "active" | "trialing"
+      );
+
+      await updateSetupProgress(userId, "plan_configured", true).catch(() => {});
+      toast.success("Plan saved! Activate it when you're ready to start.");
+    } catch (error) {
+      console.error("Failed to save plan:", error);
+      toast.error("Failed to save plan. Please try again.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <Button onClick={handleSavePlan} disabled={saving} className="mt-6 w-full gap-2">
+      {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
+      {saving ? "Saving..." : "Save Plan"}
+    </Button>
   );
 }

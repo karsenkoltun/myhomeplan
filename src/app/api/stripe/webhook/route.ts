@@ -107,12 +107,22 @@ async function handleCheckoutCompleted(
     })
     .eq("id", subId);
 
-  // Complete onboarding for the user
+  // Complete onboarding + mark plan activated for the user
   const userId = session.metadata?.supabase_user_id;
   if (userId) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("setup_progress")
+      .eq("id", userId)
+      .single();
+
+    const progress = profile?.setup_progress || {};
     await supabase
       .from("profiles")
-      .update({ onboarding_complete: true })
+      .update({
+        onboarding_complete: true,
+        setup_progress: { ...progress, plan_activated: true },
+      })
       .eq("id", userId);
   }
 }
