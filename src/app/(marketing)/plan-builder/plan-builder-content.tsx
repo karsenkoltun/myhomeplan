@@ -1,12 +1,10 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { FadeIn } from "@/components/ui/motion";
@@ -37,6 +35,10 @@ import {
   X,
   ChevronUp,
   Check,
+  Home,
+  ChevronDown,
+  Loader2,
+  Building2,
 } from "lucide-react";
 import {
   SERVICES,
@@ -46,19 +48,134 @@ import {
   type ServiceCategory,
 } from "@/data/services";
 import { calculateServicePrice, calculateIndividualComparison } from "@/lib/pricing";
+import { useAuth } from "@/components/auth/auth-provider";
+import { getAllProperties } from "@/lib/supabase/queries";
+import type { PropertyProfile } from "@/stores/property-store";
+import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
 };
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/** Map a DB homeowner_properties row (snake_case) to the PropertyProfile interface (camelCase) */
+function mapDbToPropertyProfile(row: any): PropertyProfile {
+  return {
+    address: row.address ?? "",
+    homeSqft: row.home_sqft ?? 1500,
+    lotSqft: row.lot_sqft ?? 5000,
+    yearBuilt: row.year_built ?? 2000,
+    homeType: row.home_type ?? "detached",
+    bedrooms: row.bedrooms ?? 3,
+    bathrooms: row.bathrooms ?? 2,
+    floors: row.floors ?? 2,
+    heatingType: row.heating_type ?? "furnace",
+    hasAC: row.has_ac ?? false,
+    hasGarage: row.has_garage ?? true,
+    hasDriveway: row.has_driveway ?? true,
+    hasDeck: row.has_deck ?? false,
+    hasFence: row.has_fence ?? false,
+    hasPets: row.has_pets ?? false,
+    roofType: row.roof_type ?? "asphalt",
+    exteriorMaterial: row.exterior_material ?? "vinyl",
+    foundation: row.foundation ?? "slab",
+    windowCount: row.window_count ?? 10,
+    landscapingComplexity: row.landscaping_complexity ?? "moderate",
+    matureTrees: row.mature_trees ?? 0,
+    gardenBeds: row.garden_beds ?? 0,
+    gardenBedSqft: row.garden_bed_sqft ?? 0,
+    deckPatioSqft: row.deck_patio_sqft ?? 0,
+    hasPool: row.has_pool ?? false,
+    hasIrrigation: row.has_irrigation ?? false,
+    drivewayMaterial: row.driveway_material ?? "concrete",
+    drivewayLength: row.driveway_length ?? "medium",
+    fenceType: row.fence_type ?? "none",
+    fenceLinearFeet: row.fence_linear_feet ?? 0,
+    hvacBrand: row.hvac_brand ?? "",
+    hvacAge: row.hvac_age ?? 0,
+    waterHeaterType: row.water_heater_type ?? "tank",
+    waterHeaterAge: row.water_heater_age ?? 0,
+    furnaceFilterSize: row.furnace_filter_size ?? "",
+    accessInstructions: row.access_instructions ?? "",
+    gateCodeExists: row.gate_code_exists ?? false,
+    lockboxExists: row.lockbox_exists ?? false,
+    alarmSystem: row.alarm_system ?? "",
+    petDetails: row.pet_details ?? "",
+    parkingInstructions: row.parking_instructions ?? "",
+    preferredServiceDay: row.preferred_service_day ?? "",
+    chemicalSensitivities: row.chemical_sensitivities ?? "",
+    specialInstructions: row.special_instructions ?? "",
+    homeInsuranceProvider: row.home_insurance_provider ?? "",
+  };
+}
+/* eslint-enable @typescript-eslint/no-explicit-any */
+
+interface DbProperty {
+  id: string;
+  address?: string | null;
+  city?: string | null;
+  home_type?: string | null;
+  home_sqft?: number | null;
+  lot_sqft?: number | null;
+  [key: string]: unknown;
+}
+
 export default function PlanBuilderContent() {
-  const [propertySqft, setPropertySqft] = useState(1500);
-  const [lotSqft, setLotSqft] = useState(5000);
+  const { user, loading: authLoading } = useAuth();
+  const [properties, setProperties] = useState<DbProperty[]>([]);
+  const [selectedPropertyId, setSelectedPropertyId] = useState<string | null>(null);
+  const [propertiesLoading, setPropertiesLoading] = useState(true);
+  const [propertyDropdownOpen, setPropertyDropdownOpen] = useState(false);
   const [selectedServices, setSelectedServices] = useState<Set<string>>(new Set());
   const [planInterval, setPlanInterval] = useState<PlanInterval>("monthly");
   const [mobileReceiptOpen, setMobileReceiptOpen] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
+  const propertyDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close property dropdown on outside click
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (propertyDropdownRef.current && !propertyDropdownRef.current.contains(e.target as Node)) {
+        setPropertyDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
+
+  // Load user's properties from DB
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      setPropertiesLoading(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await getAllProperties(user.id);
+        if (!cancelled) {
+          setProperties(data as DbProperty[]);
+          if (data.length > 0 && !selectedPropertyId) {
+            setSelectedPropertyId(data[0].id);
+          }
+        }
+      } catch {
+        // silently fail
+      } finally {
+        if (!cancelled) setPropertiesLoading(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [user, authLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Derive property profile and sqft from selected property
+  const selectedProperty = properties.find((p) => p.id === selectedPropertyId) || properties[0];
+  const propertyProfile = selectedProperty ? mapDbToPropertyProfile(selectedProperty) : null;
+  const propertySqft = propertyProfile?.homeSqft ?? 1500;
+  const lotSqft = propertyProfile?.lotSqft ?? 5000;
 
   const toggleService = (id: string) => {
     setSelectedServices((prev) => {
@@ -74,7 +191,7 @@ export default function PlanBuilderContent() {
   const receipt = useMemo(() => {
     const items = SERVICES.filter((s) => selectedServices.has(s.id)).map((service) => ({
       service,
-      monthlyPrice: calculateServicePrice(service, propertySqft, lotSqft),
+      monthlyPrice: calculateServicePrice(service, propertySqft, lotSqft, undefined, propertyProfile ?? undefined),
     }));
     const subtotal = items.reduce((sum, item) => sum + item.monthlyPrice, 0);
     const discount = PLAN_DISCOUNTS[planInterval].discount;
@@ -83,7 +200,7 @@ export default function PlanBuilderContent() {
     const withoutPlan = items.reduce((sum, item) => sum + calculateIndividualComparison(item.monthlyPrice), 0);
     const annualSavings = (withoutPlan - total) * 12;
     return { items, subtotal, discount, discountAmount, total, withoutPlan, annualSavings };
-  }, [selectedServices, propertySqft, lotSqft, planInterval]);
+  }, [selectedServices, propertySqft, lotSqft, planInterval, propertyProfile]);
 
   const categories = Object.keys(SERVICE_CATEGORIES) as ServiceCategory[];
 
@@ -99,82 +216,128 @@ export default function PlanBuilderContent() {
             Build Your Custom Home Plan
           </h1>
           <p className="mt-2 text-sm text-muted-foreground sm:mt-3 sm:text-base md:text-lg">
-            Enter your property details, select your services, and see your
+            Select your property, choose your services, and see your
             monthly price build in real-time.
           </p>
         </div>
       </FadeIn>
 
       <div className="mt-8 grid gap-6 sm:mt-12 sm:gap-8 lg:grid-cols-3">
-        {/* Left Column - Property & Services */}
+        {/* Left Column - Property Selector & Services */}
         <div className="space-y-6 sm:space-y-8 lg:col-span-2">
-          {/* Property Details */}
+          {/* Property Selector */}
           <FadeIn>
             <Card>
               <CardHeader className="pb-3 sm:pb-4">
-                <CardTitle className="text-base sm:text-lg">Property Details</CardTitle>
+                <CardTitle className="text-base sm:text-lg">Select Property</CardTitle>
               </CardHeader>
-              <CardContent className="grid gap-6 sm:grid-cols-2 sm:gap-8">
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="property-size" className="text-sm">Home Size</Label>
-                    <div className="flex items-center gap-1">
-                      <Input
-                        id="property-size"
-                        inputMode="numeric"
-                        value={propertySqft}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          if (!isNaN(v)) setPropertySqft(Math.max(0, v));
-                        }}
-                        className="w-24 text-right h-9"
-                      />
-                      <span className="text-sm text-muted-foreground">sq ft</span>
-                    </div>
+              <CardContent>
+                {authLoading || propertiesLoading ? (
+                  <div className="flex items-center gap-2 py-3 text-sm text-muted-foreground">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Loading properties...
                   </div>
-                  <Slider
-                    value={[Math.min(Math.max(propertySqft, 500), 10000)]}
-                    onValueChange={([v]) => setPropertySqft(v)}
-                    min={500}
-                    max={10000}
-                    step={100}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>500 sq ft</span>
-                    <span>10,000 sq ft</span>
+                ) : !user ? (
+                  <div className="rounded-lg border border-dashed border-border p-6 text-center">
+                    <Home className="mx-auto h-8 w-8 text-muted-foreground/40" />
+                    <p className="mt-2 text-sm font-medium">Sign in to get started</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Sign in and add a property to get personalized pricing
+                    </p>
+                    <Button size="sm" className="mt-3" asChild>
+                      <Link href="/login?redirectTo=/plan-builder">Sign In</Link>
+                    </Button>
                   </div>
-                  <p className="text-xs text-muted-foreground">Affects indoor service pricing</p>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <Label htmlFor="lot-size" className="text-sm">Lot Size</Label>
-                    <div className="flex items-center gap-1">
-                      <Input
-                        id="lot-size"
-                        inputMode="numeric"
-                        value={lotSqft}
-                        onChange={(e) => {
-                          const v = Number(e.target.value);
-                          if (!isNaN(v)) setLotSqft(Math.max(0, v));
-                        }}
-                        className="w-24 text-right h-9"
-                      />
-                      <span className="text-sm text-muted-foreground">sq ft</span>
-                    </div>
+                ) : properties.length === 0 ? (
+                  <div className="rounded-lg border border-dashed border-border p-6 text-center">
+                    <Building2 className="mx-auto h-8 w-8 text-muted-foreground/40" />
+                    <p className="mt-2 text-sm font-medium">No properties yet</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      Add a property first to get accurate pricing based on your home details
+                    </p>
+                    <Button size="sm" className="mt-3" asChild>
+                      <Link href="/account/property">Add Property</Link>
+                    </Button>
                   </div>
-                  <Slider
-                    value={[Math.min(Math.max(lotSqft, 1000), 50000)]}
-                    onValueChange={([v]) => setLotSqft(v)}
-                    min={1000}
-                    max={50000}
-                    step={500}
-                  />
-                  <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>1,000 sq ft</span>
-                    <span>50,000 sq ft</span>
+                ) : (
+                  <div className="relative" ref={propertyDropdownRef}>
+                    <button
+                      onClick={() => setPropertyDropdownOpen(!propertyDropdownOpen)}
+                      className="flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-muted/50 px-4 py-3 text-left transition-colors hover:bg-muted"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                          <Home className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-semibold">
+                            {selectedProperty?.address || selectedProperty?.city || "Select property"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {propertySqft.toLocaleString()} sq ft home · {lotSqft.toLocaleString()} sq ft lot
+                            {selectedProperty?.home_type && (
+                              <span className="capitalize"> · {selectedProperty.home_type}</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <ChevronDown className={cn(
+                        "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                        propertyDropdownOpen && "rotate-180"
+                      )} />
+                    </button>
+
+                    <AnimatePresence>
+                      {propertyDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: -4 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -4 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute left-0 right-0 top-full z-50 mt-1.5 rounded-xl border border-border bg-popover p-1.5 shadow-xl"
+                        >
+                          {properties.map((p) => {
+                            const isActive = p.id === (selectedPropertyId || properties[0]?.id);
+                            return (
+                              <button
+                                key={p.id}
+                                onClick={() => {
+                                  setSelectedPropertyId(p.id);
+                                  setPropertyDropdownOpen(false);
+                                }}
+                                className={cn(
+                                  "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition-colors",
+                                  isActive
+                                    ? "bg-primary/10 text-primary"
+                                    : "text-popover-foreground hover:bg-accent/50"
+                                )}
+                              >
+                                <Home className="h-4 w-4 shrink-0 text-muted-foreground" />
+                                <div className="flex-1 text-left min-w-0">
+                                  <p className="truncate font-medium">{p.address || p.city || "Property"}</p>
+                                  <p className="text-xs text-muted-foreground">
+                                    {(p.home_sqft ?? 0).toLocaleString()} sq ft
+                                    {p.home_type && <span className="capitalize"> · {p.home_type}</span>}
+                                  </p>
+                                </div>
+                                {isActive && <Check className="h-4 w-4 shrink-0 text-primary" />}
+                              </button>
+                            );
+                          })}
+                          <Separator className="my-1.5" />
+                          <Link
+                            href="/account/property"
+                            className="flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-accent/50 hover:text-foreground"
+                            onClick={() => setPropertyDropdownOpen(false)}
+                          >
+                            <Building2 className="h-4 w-4" />
+                            <span>Add new property</span>
+                          </Link>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <p className="text-xs text-muted-foreground">Affects outdoor service pricing</p>
-                </div>
+                )}
               </CardContent>
             </Card>
           </FadeIn>
@@ -206,7 +369,7 @@ export default function PlanBuilderContent() {
                       {categoryServices.map((service) => {
                         const Icon = ICON_MAP[service.icon] || CheckCircle2;
                         const isSelected = selectedServices.has(service.id);
-                        const monthlyPrice = calculateServicePrice(service, propertySqft, lotSqft);
+                        const monthlyPrice = calculateServicePrice(service, propertySqft, lotSqft, undefined, propertyProfile ?? undefined);
 
                         return (
                           <motion.div
@@ -268,12 +431,12 @@ export default function PlanBuilderContent() {
               selectedCount={selectedServices.size}
               validationError={validationError}
               onGetStarted={() => {
-                if (selectedServices.size === 0) {
-                  setValidationError("Please select at least one service to build your plan");
+                if (!selectedPropertyId) {
+                  setValidationError("Please select a property to build your plan");
                   return;
                 }
-                if (!propertySqft || !lotSqft) {
-                  setValidationError("Please enter your property and lot size to calculate pricing");
+                if (selectedServices.size === 0) {
+                  setValidationError("Please select at least one service to build your plan");
                   return;
                 }
                 setValidationError(null);
@@ -309,12 +472,12 @@ export default function PlanBuilderContent() {
                   selectedCount={selectedServices.size}
                   validationError={validationError}
                   onGetStarted={() => {
-                    if (selectedServices.size === 0) {
-                      setValidationError("Please select at least one service to build your plan");
+                    if (!selectedPropertyId) {
+                      setValidationError("Please select a property to build your plan");
                       return;
                     }
-                    if (!propertySqft || !lotSqft) {
-                      setValidationError("Please enter your property and lot size to calculate pricing");
+                    if (selectedServices.size === 0) {
+                      setValidationError("Please select at least one service to build your plan");
                       return;
                     }
                     setValidationError(null);
@@ -361,13 +524,13 @@ export default function PlanBuilderContent() {
                 size="lg"
                 className="shrink-0"
                 onClick={() => {
-                  if (selectedServices.size === 0) {
-                    setValidationError("Please select at least one service to build your plan");
+                  if (!selectedPropertyId) {
+                    setValidationError("Please select a property to build your plan");
                     setMobileReceiptOpen(true);
                     return;
                   }
-                  if (!propertySqft || !lotSqft) {
-                    setValidationError("Please enter your property and lot size to calculate pricing");
+                  if (selectedServices.size === 0) {
+                    setValidationError("Please select at least one service to build your plan");
                     setMobileReceiptOpen(true);
                     return;
                   }
