@@ -235,7 +235,7 @@ export default function ServicesPage() {
                 Build your plan to get started with home maintenance!
               </p>
               <Button className="mt-6" asChild>
-                <Link href="/plan-builder">Build Your Plan</Link>
+                <Link href="/account/plan-builder">Build Your Plan</Link>
               </Button>
             </CardContent>
           </Card>
@@ -356,7 +356,7 @@ export default function ServicesPage() {
         <FadeIn delay={0.4}>
           <div className="mt-6 grid grid-cols-2 gap-3">
             <Button variant="outline" className="gap-2" asChild>
-              <Link href="/plan-builder">
+              <Link href="/account/plan-builder">
                 <ClipboardList className="h-4 w-4" /> Modify Plan
               </Link>
             </Button>
@@ -489,7 +489,7 @@ export default function ServicesPage() {
       <FadeIn delay={0.4}>
         <div className="mt-4 grid grid-cols-2 gap-3">
           <Button variant="outline" className="gap-2" asChild>
-            <Link href="/plan-builder">
+            <Link href="/account/plan-builder">
               <ClipboardList className="h-4 w-4" /> Modify Plan
             </Link>
           </Button>

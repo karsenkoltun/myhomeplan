@@ -19,7 +19,9 @@ export default function CheckoutSuccessPage() {
       return;
     }
     completeOnboarding();
-    setReady(true);
+    // Defer state update to avoid cascading renders within effect
+    const id = requestAnimationFrame(() => setReady(true));
+    return () => cancelAnimationFrame(id);
   }, [searchParams, router, completeOnboarding]);
 
   if (!ready) {
