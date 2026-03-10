@@ -4,7 +4,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, ExternalLink, Loader2, Calendar, DollarSign, AlertCircle, ArrowLeft, CheckCircle2, Clock } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
-import { getSubscription } from "@/lib/supabase/queries";
+import { getSubscription, getSubscriptionForProperty } from "@/lib/supabase/queries";
+import { useUserStore } from "@/stores/user-store";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -20,6 +21,7 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; bgColor: str
 export default function BillingPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
+  const { activePropertyId } = useUserStore();
   const [subscription, setSubscription] = useState<Record<string, unknown> | null>(null);
   const [loading, setLoading] = useState(true);
   const [portalLoading, setPortalLoading] = useState(false);
@@ -28,7 +30,13 @@ export default function BillingPage() {
     async function load() {
       if (!user) return;
       try {
-        const sub = await getSubscription(user.id);
+        let sub = null;
+        if (activePropertyId) {
+          sub = await getSubscriptionForProperty(activePropertyId);
+        }
+        if (!sub) {
+          sub = await getSubscription(user.id);
+        }
         setSubscription(sub);
       } catch {
         // No subscription
@@ -37,7 +45,7 @@ export default function BillingPage() {
       }
     }
     if (!authLoading) load();
-  }, [user, authLoading]);
+  }, [user, authLoading, activePropertyId]);
 
   const openPortal = async () => {
     setPortalLoading(true);

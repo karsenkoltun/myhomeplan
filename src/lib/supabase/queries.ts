@@ -486,6 +486,52 @@ export async function getSubscription(userId: string) {
   return data;
 }
 
+/** Get subscription for a specific property */
+export async function getSubscriptionForProperty(propertyId: string) {
+  const { data, error } = await supabase()
+    .from("subscriptions")
+    .select("*, subscription_services(*)")
+    .eq("property_id", propertyId)
+    .in("status", ["active", "trialing", "draft"])
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Get subscription with usage data for a specific property */
+export async function getSubscriptionWithUsageForProperty(propertyId: string) {
+  const sub = await getSubscriptionForProperty(propertyId);
+  if (!sub) return null;
+
+  const services = sub.subscription_services ?? [];
+  const periodStart = sub.current_period_start ?? sub.created_at;
+  const periodEnd = sub.current_period_end ?? new Date().toISOString();
+
+  const { data: bookings } = await supabase()
+    .from("service_bookings")
+    .select("service_id, status")
+    .eq("subscription_id", sub.id)
+    .eq("status", "completed")
+    .gte("scheduled_date", periodStart.split("T")[0])
+    .lte("scheduled_date", periodEnd.split("T")[0]);
+
+  const completedByService: Record<string, number> = {};
+  (bookings ?? []).forEach((b) => {
+    completedByService[b.service_id] = (completedByService[b.service_id] || 0) + 1;
+  });
+
+  const usageMap = services.map((svc: Record<string, unknown>) => ({
+    serviceId: svc.service_id as string,
+    frequency: svc.frequency as string,
+    monthlyPrice: svc.calculated_monthly_price as number,
+    used: completedByService[svc.service_id as string] ?? 0,
+  }));
+
+  return { subscription: sub, usageMap, periodStart, periodEnd };
+}
+
 export async function createSubscription(
   userId: string,
   propertyId: string | null,

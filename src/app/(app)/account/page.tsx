@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
-import { getProfile, getContractorProfile, getStrataProperty, getPMCompany } from "@/lib/supabase/queries";
+import { getProfile, getContractorProfile, getStrataProperty, getPMCompany, getAllProperties } from "@/lib/supabase/queries";
 import { HomeownerDashboard } from "@/components/dashboard/homeowner-dashboard";
 import { ContractorDashboard } from "@/components/dashboard/contractor-dashboard";
 import { StrataDashboard } from "@/components/dashboard/strata-dashboard";
@@ -18,7 +18,7 @@ export default function AccountPage() {
   const [profile, setProfile] = useState<Record<string, unknown> | null>(null);
   const [setupProgress, setSetupProgress] = useState<SetupProgress | null>(null);
   const [loading, setLoading] = useState(true);
-  const { activeRole, setActiveRole, setAvailableRoles } = useUserStore();
+  const { activeRole, activePropertyId, setActiveRole, setAvailableRoles, setActivePropertyId } = useUserStore();
 
   const loadData = useCallback(async () => {
     if (!user) return;
@@ -71,6 +71,18 @@ export default function AccountPage() {
       if (!activeRole) {
         setActiveRole(primaryRole);
       }
+
+      // Initialize activePropertyId if not set
+      if (!activePropertyId) {
+        try {
+          const props = await getAllProperties(user.id);
+          if (props.length > 0) {
+            setActivePropertyId(props[0].id);
+          }
+        } catch {
+          // silent
+        }
+      }
     } catch {
       // Profile doesn't exist yet - that's ok, show setup guide
       setProfile({});
@@ -78,7 +90,7 @@ export default function AccountPage() {
     } finally {
       setLoading(false);
     }
-  }, [user, activeRole, setActiveRole, setAvailableRoles]);
+  }, [user, activeRole, activePropertyId, setActiveRole, setAvailableRoles, setActivePropertyId]);
 
   useEffect(() => {
     if (!authLoading) loadData();

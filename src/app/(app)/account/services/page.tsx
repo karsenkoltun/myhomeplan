@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,13 +35,15 @@ import {
 import { useAuth } from "@/components/auth/auth-provider";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
+import { useUserStore } from "@/stores/user-store";
 import {
   SERVICES,
   SERVICE_FREQUENCY_OPTIONS,
   PLAN_DISCOUNTS,
 } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
-import { getProperty, createSubscription, updateSetupProgress } from "@/lib/supabase/queries";
+import { getAllProperties, createSubscription, updateSetupProgress } from "@/lib/supabase/queries";
+import { PropertySelector } from "@/components/dashboard/property-selector";
 import { toast } from "sonner";
 
 const ICON_MAP: Record<string, LucideIcon> = {
@@ -62,10 +64,35 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Armchair,
 };
 
+interface Property {
+  id: string;
+  address?: string | null;
+  city?: string | null;
+  home_type?: string | null;
+}
+
 export default function ServicesPage() {
   const { user } = useAuth();
   const { selectedServices, planInterval, serviceFrequencies } = usePlanStore();
   const { property, serviceSpecs } = usePropertyStore();
+  const { activePropertyId, setActivePropertyId } = useUserStore();
+  const [properties, setProperties] = useState<Property[]>([]);
+
+  useEffect(() => {
+    async function loadProps() {
+      if (!user) return;
+      try {
+        const props = await getAllProperties(user.id);
+        setProperties(props);
+        if (props.length > 0 && !activePropertyId) {
+          setActivePropertyId(props[0].id);
+        }
+      } catch {
+        // silent
+      }
+    }
+    loadProps();
+  }, [user, activePropertyId, setActivePropertyId]);
 
   const activeServices = useMemo(
     () => SERVICES.filter((s) => selectedServices.includes(s.id)),
@@ -124,6 +151,16 @@ export default function ServicesPage() {
           </p>
         </FadeIn>
 
+        {properties.length > 1 && (
+          <div className="mt-4">
+            <PropertySelector
+              properties={properties}
+              activePropertyId={activePropertyId}
+              onSelect={setActivePropertyId}
+            />
+          </div>
+        )}
+
         <FadeIn delay={0.1}>
           <Card className="mt-8">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center">
@@ -156,6 +193,16 @@ export default function ServicesPage() {
           Manage and view your active home services.
         </p>
       </FadeIn>
+
+      {properties.length > 1 && (
+        <div className="mt-4">
+          <PropertySelector
+            properties={properties}
+            activePropertyId={activePropertyId}
+            onSelect={setActivePropertyId}
+          />
+        </div>
+      )}
 
       {/* Active Plan Summary */}
       <FadeIn delay={0.1}>
@@ -257,6 +304,7 @@ export default function ServicesPage() {
       <FadeIn delay={0.3}>
         <SavePlanButton
           userId={user?.id}
+          propertyId={activePropertyId || properties[0]?.id || null}
           services={activeServices}
           servicePrices={servicePrices}
           monthlyTotal={monthlyTotal}
@@ -290,6 +338,7 @@ export default function ServicesPage() {
 
 function SavePlanButton({
   userId,
+  propertyId,
   services,
   servicePrices,
   monthlyTotal,
@@ -299,6 +348,7 @@ function SavePlanButton({
   serviceFrequencies,
 }: {
   userId?: string;
+  propertyId: string | null;
   services: typeof SERVICES;
   servicePrices: Record<string, number>;
   monthlyTotal: number;
@@ -313,7 +363,6 @@ function SavePlanButton({
     if (!userId || services.length === 0) return;
     setSaving(true);
     try {
-      const prop = await getProperty(userId);
       const serviceItems = services.map((s) => ({
         serviceId: s.id,
         frequency: serviceFrequencies[s.id] || s.frequency,
@@ -323,7 +372,7 @@ function SavePlanButton({
 
       await createSubscription(
         userId,
-        prop?.id || null,
+        propertyId,
         planInterval as "monthly" | "quarterly" | "annual",
         monthlyTotal,
         discount,

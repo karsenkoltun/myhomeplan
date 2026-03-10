@@ -16,12 +16,11 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { usePropertyStore } from "@/stores/property-store";
-import { usePlanStore } from "@/stores/plan-store";
+import { useUserStore } from "@/stores/user-store";
 import {
-  getProperty,
+  getAllProperties,
   getBookingsForProperty,
-  getSubscription,
-  getSubscriptionWithUsage,
+  getSubscriptionWithUsageForProperty,
   getRecentActivity,
   getServiceCredits,
 } from "@/lib/supabase/queries";
@@ -34,6 +33,7 @@ import { BookingList } from "./booking-list";
 import { UsageOverview } from "./usage-overview";
 import { ActivityFeed } from "./activity-feed";
 import { CreditBalance } from "./credit-balance";
+import { PropertySelector } from "./property-selector";
 import { FadeIn, SpringNumber } from "@/components/ui/motion";
 import type { Database } from "@/lib/supabase/types";
 import type { CalendarData } from "@/components/ui/fullscreen-calendar";
@@ -52,6 +52,17 @@ const ICON_MAP: Record<string, LucideIcon> = {
 };
 
 type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
+
+interface Property {
+  id: string;
+  address?: string | null;
+  city?: string | null;
+  home_type?: string | null;
+  home_sqft?: number | null;
+  lot_sqft?: number | null;
+  bedrooms?: number | null;
+  bathrooms?: number | null;
+}
 
 interface UsageData {
   serviceId: string;
@@ -75,7 +86,8 @@ export function HomeownerDashboard({
   profile: Record<string, unknown>;
 }) {
   const { property, serviceSpecs } = usePropertyStore();
-  const { selectedServices, planInterval } = usePlanStore();
+  const { activePropertyId, setActivePropertyId } = useUserStore();
+  const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [usageData, setUsageData] = useState<UsageData[]>([]);
   const [periodStart, setPeriodStart] = useState("");
@@ -84,64 +96,103 @@ export function HomeownerDashboard({
   const [totalCredits, setTotalCredits] = useState(0);
   const [usedCredits, setUsedCredits] = useState(0);
   const [planTierName, setPlanTierName] = useState<string | null>(null);
+  const [dbPlanInterval, setDbPlanInterval] = useState<string | null>(null);
+  const [dbMonthlyTotal, setDbMonthlyTotal] = useState<number | null>(null);
+  const [dbServiceCount, setDbServiceCount] = useState<number | null>(null);
+  const [dbServices, setDbServices] = useState<{ service_id: string; calculated_monthly_price: number }[]>([]);
 
+  // Load properties once
   useEffect(() => {
-    async function loadData() {
+    async function loadProperties() {
+      const userId = profile.id as string;
       try {
-        const userId = profile.id as string;
-        const prop = await getProperty(userId);
-
-        if (prop) {
-          const data = await getBookingsForProperty(prop.id);
-          setBookings(data);
-
-          const activityData = await getRecentActivity(userId, prop.id);
-          setActivities(activityData);
-        }
-
-        // Load usage data from subscription
-        const usageResult = await getSubscriptionWithUsage(userId);
-        if (usageResult) {
-          setUsageData(usageResult.usageMap);
-          setPeriodStart(usageResult.periodStart);
-          setPeriodEnd(usageResult.periodEnd);
-
-          // Find plan tier name
-          const sub = usageResult.subscription;
-          if (sub.plan_tier_id) {
-            const tier = PLAN_TIERS.find((t) => t.id === sub.plan_tier_id);
-            if (tier) setPlanTierName(tier.name);
-          }
-
-          // Load credits
-          const credits = await getServiceCredits(sub.id);
-          const total = credits.reduce((s, c) => s + c.total_credits, 0);
-          const used = credits.reduce((s, c) => s + c.used_credits, 0);
-          setTotalCredits(total);
-          setUsedCredits(used);
+        const props = await getAllProperties(userId);
+        setProperties(props);
+        if (props.length > 0 && !activePropertyId) {
+          setActivePropertyId(props[0].id);
         }
       } catch {
         // silent
       }
     }
-    loadData();
-  }, [profile.id]);
+    loadProperties();
+  }, [profile.id, activePropertyId, setActivePropertyId]);
+
+  // Load data when active property changes
+  useEffect(() => {
+    async function loadData() {
+      const userId = profile.id as string;
+      const propId = activePropertyId || properties[0]?.id;
+      if (!propId) return;
+
+      try {
+        // Load bookings + activity for active property
+        const [bookingData, activityData] = await Promise.all([
+          getBookingsForProperty(propId),
+          getRecentActivity(userId, propId),
+        ]);
+        setBookings(bookingData);
+        setActivities(activityData);
+
+        // Load usage from DB subscription for this property
+        const usageResult = await getSubscriptionWithUsageForProperty(propId);
+        if (usageResult) {
+          setUsageData(usageResult.usageMap);
+          setPeriodStart(usageResult.periodStart);
+          setPeriodEnd(usageResult.periodEnd);
+
+          const sub = usageResult.subscription;
+          setDbPlanInterval(sub.plan_interval as string | null);
+          setDbMonthlyTotal(sub.monthly_total as number | null);
+          setDbServiceCount((sub.subscription_services as unknown[])?.length ?? 0);
+          setDbServices(
+            ((sub.subscription_services ?? []) as { service_id: string; calculated_monthly_price: number }[])
+          );
+
+          if (sub.plan_tier_id) {
+            const tier = PLAN_TIERS.find((t) => t.id === sub.plan_tier_id);
+            if (tier) setPlanTierName(tier.name);
+          } else {
+            setPlanTierName(null);
+          }
+
+          const credits = await getServiceCredits(sub.id);
+          setTotalCredits(credits.reduce((s, c) => s + c.total_credits, 0));
+          setUsedCredits(credits.reduce((s, c) => s + c.used_credits, 0));
+        } else {
+          // No subscription for this property
+          setUsageData([]);
+          setPeriodStart("");
+          setPeriodEnd("");
+          setPlanTierName(null);
+          setDbPlanInterval(null);
+          setDbMonthlyTotal(null);
+          setDbServiceCount(null);
+          setDbServices([]);
+          setTotalCredits(0);
+          setUsedCredits(0);
+        }
+      } catch {
+        // silent
+      }
+    }
+    if (properties.length > 0) loadData();
+  }, [profile.id, activePropertyId, properties]);
 
   const displayName = (profile.first_name as string) || "there";
-  const selectedServiceData = SERVICES.filter((s) => selectedServices.includes(s.id));
-  const subtotal = selectedServiceData.reduce(
-    (sum, s) => sum + calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
-    0
-  );
-  const discount = PLAN_DISCOUNTS[planInterval].discount;
-  const total = subtotal * (1 - discount);
+
+  // Use DB subscription data if available, else fall back to Zustand planStore
+  const hasSub = dbMonthlyTotal !== null;
+  const planInterval = dbPlanInterval || "monthly";
+  const planInfo = PLAN_DISCOUNTS[planInterval as keyof typeof PLAN_DISCOUNTS] || PLAN_DISCOUNTS.monthly;
+  const total = hasSub ? dbMonthlyTotal! : 0;
+  const serviceCount = hasSub ? (dbServiceCount ?? 0) : 0;
 
   const upcomingBookings = bookings.filter(
     (b) => b.status !== "completed" && b.status !== "cancelled"
   );
   const completedCount = bookings.filter((b) => b.status === "completed").length;
 
-  // Map bookings to calendar events for the FullScreenCalendar
   const calendarData: CalendarData[] = useMemo(() => {
     return bookings
       .filter((b) => b.status !== "cancelled")
@@ -164,9 +215,20 @@ export function HomeownerDashboard({
       title={`Welcome, ${displayName}!`}
       subtitle="Here's your plan overview. Everything in one place."
     >
+      {/* Property Selector */}
+      {properties.length > 1 && (
+        <div className="mb-4">
+          <PropertySelector
+            properties={properties}
+            activePropertyId={activePropertyId}
+            onSelect={setActivePropertyId}
+          />
+        </div>
+      )}
+
       {/* Stats Row */}
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard icon={ClipboardList} label="Active Services" value={selectedServices.length} delay={0.05} />
+        <StatCard icon={ClipboardList} label="Active Services" value={serviceCount} delay={0.05} />
         <StatCard icon={Calendar} label="Upcoming" value={upcomingBookings.length} delay={0.1} />
         <StatCard icon={DollarSign} label="Monthly Cost" value={Number.isFinite(total) ? Math.round(total) : 0} prefix="$" delay={0.15} />
         <StatCard icon={CheckCircle2} label="Completed" value={completedCount} delay={0.2} />
@@ -190,37 +252,46 @@ export function HomeownerDashboard({
                   {planTierName && (
                     <Badge className="bg-primary text-primary-foreground">{planTierName}</Badge>
                   )}
-                  <Badge className="bg-primary/10 text-primary">{PLAN_DISCOUNTS[planInterval].label}</Badge>
+                  <Badge className="bg-primary/10 text-primary">{planInfo.label}</Badge>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
-              <div className="flex items-baseline gap-1">
-                <span className="text-3xl font-bold text-primary">$<SpringNumber value={Math.round(total)} /></span>
-                <span className="text-muted-foreground">/month</span>
-              </div>
-              <p className="mt-1 text-sm text-muted-foreground">{selectedServices.length} services included</p>
-              <Separator className="my-4" />
-              <div className="space-y-2">
-                {selectedServiceData.slice(0, 5).map((service) => {
-                  const Icon = ICON_MAP[service.icon] || CheckCircle2;
-                  const price = calculateServicePrice(service, property.homeSqft, property.lotSqft, serviceSpecs[service.id], property);
-                  return (
-                    <div key={service.id} className="flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-2">
-                        <Icon className="h-3.5 w-3.5 text-muted-foreground" />
-                        <span>{service.name}</span>
-                      </div>
-                      <span className="font-medium">${(Number.isFinite(price) ? price : 0).toFixed(0)}/mo</span>
-                    </div>
-                  );
-                })}
-                {selectedServiceData.length > 5 && (
-                  <p className="text-xs text-muted-foreground">+{selectedServiceData.length - 5} more services</p>
-                )}
-              </div>
+              {hasSub ? (
+                <>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-primary">$<SpringNumber value={Math.round(total)} /></span>
+                    <span className="text-muted-foreground">/month</span>
+                  </div>
+                  <p className="mt-1 text-sm text-muted-foreground">{serviceCount} services included</p>
+                  <Separator className="my-4" />
+                  <div className="space-y-2">
+                    {dbServices.slice(0, 5).map((svc) => {
+                      const service = SERVICES.find((s) => s.id === svc.service_id);
+                      if (!service) return null;
+                      const Icon = ICON_MAP[service.icon] || CheckCircle2;
+                      return (
+                        <div key={svc.service_id} className="flex items-center justify-between text-sm">
+                          <div className="flex items-center gap-2">
+                            <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+                            <span>{service.name}</span>
+                          </div>
+                          <span className="font-medium">${(svc.calculated_monthly_price ?? 0).toFixed(0)}/mo</span>
+                        </div>
+                      );
+                    })}
+                    {dbServices.length > 5 && (
+                      <p className="text-xs text-muted-foreground">+{dbServices.length - 5} more services</p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground">No plan configured for this property.</p>
+                </div>
+              )}
               <Button variant="outline" className="mt-4 w-full" size="sm" asChild>
-                <Link href="/plan-builder">Modify Plan</Link>
+                <Link href="/account/services">{hasSub ? "Modify Plan" : "Build a Plan"}</Link>
               </Button>
             </CardContent>
           </Card>

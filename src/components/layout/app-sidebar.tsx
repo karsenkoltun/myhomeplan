@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RoleSwitcher } from "@/components/dashboard/role-switcher";
+import type { UserType } from "@/stores/user-store";
 
 interface NavItem {
   label: string;
@@ -40,6 +41,11 @@ const bottomNavItems: NavItem[] = [
 export function AppSidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
+
+  const handleAddRole = (role: UserType) => {
+    router.push(`/onboarding?role=${role}`);
+  };
 
   function isActive(href: string) {
     if (href === "/account") return pathname === "/account";
@@ -79,7 +85,7 @@ export function AppSidebar() {
 
       {/* Role switcher */}
       <div className="border-b border-sidebar-border py-3">
-        <RoleSwitcher collapsed={collapsed} />
+        <RoleSwitcher collapsed={collapsed} onAddRole={handleAddRole} />
       </div>
 
       {/* Main navigation */}
