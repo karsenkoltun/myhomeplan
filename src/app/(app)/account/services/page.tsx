@@ -30,6 +30,8 @@ import {
   Armchair,
   Loader2,
   Save,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
   type LucideIcon,
 } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
@@ -55,6 +57,8 @@ import { toast } from "sonner";
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
 };
 
 interface Property {

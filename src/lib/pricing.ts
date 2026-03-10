@@ -236,6 +236,121 @@ export function calculateServicePrice(
           propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
         break;
       }
+      case "tree-shrub-trimming": {
+        propertyMultiplier *= 1 + n(property.matureTrees) * pd(cfg, service.id, "per_mature_tree");
+        if (property.landscapingComplexity === "extensive")
+          propertyMultiplier *= pd(cfg, service.id, "landscaping_extensive");
+        else if (property.landscapingComplexity === "minimal")
+          propertyMultiplier *= pd(cfg, service.id, "landscaping_minimal");
+        break;
+      }
+      case "garden-maintenance": {
+        if (n(property.gardenBeds) > 0)
+          propertyMultiplier *= 1 + n(property.gardenBeds) * pd(cfg, service.id, "per_garden_bed");
+        if (n(property.gardenBedSqft) > 0) {
+          const divisor = pd(cfg, service.id, "garden_bed_sqft_divisor") || 1;
+          propertyMultiplier *= 1 + Math.min(
+            pd(cfg, service.id, "garden_bed_sqft_max"),
+            n(property.gardenBedSqft) / divisor
+          );
+        }
+        if (property.landscapingComplexity === "extensive")
+          propertyMultiplier *= pd(cfg, service.id, "landscaping_extensive");
+        else if (property.landscapingComplexity === "minimal")
+          propertyMultiplier *= pd(cfg, service.id, "landscaping_minimal");
+        break;
+      }
+      case "deck-fence-staining": {
+        if (n(property.deckPatioSqft) > 0) {
+          const divisor = pd(cfg, service.id, "deck_patio_divisor") || 1;
+          propertyMultiplier *= 1 + Math.min(
+            pd(cfg, service.id, "deck_patio_max"),
+            n(property.deckPatioSqft) / divisor
+          );
+        }
+        if (property.fenceType === "wood" && n(property.fenceLinearFeet) > 0) {
+          const divisor = pd(cfg, service.id, "fence_wood_divisor") || 1;
+          propertyMultiplier *= 1 + Math.min(
+            pd(cfg, service.id, "fence_wood_max"),
+            n(property.fenceLinearFeet) / divisor
+          );
+        }
+        break;
+      }
+      case "driveway-sealing": {
+        const drivewayMult = property.drivewayLength === "long"
+          ? pd(cfg, service.id, "driveway_long")
+          : property.drivewayLength === "short"
+            ? pd(cfg, service.id, "driveway_short")
+            : 1;
+        propertyMultiplier *= drivewayMult;
+        if (property.drivewayMaterial === "gravel")
+          propertyMultiplier *= pd(cfg, service.id, "driveway_gravel");
+        if (property.drivewayMaterial === "pavers")
+          propertyMultiplier *= pd(cfg, service.id, "driveway_pavers");
+        break;
+      }
+      case "roof-cleaning": {
+        if (property.roofType === "metal")
+          propertyMultiplier *= pd(cfg, service.id, "roof_metal");
+        if (property.roofType === "tile")
+          propertyMultiplier *= pd(cfg, service.id, "roof_tile");
+        if (n(property.floors) > 2)
+          propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
+        break;
+      }
+      case "deep-cleaning": {
+        const bathThreshold = pd(cfg, service.id, "bathrooms_threshold");
+        if (n(property.bathrooms) > bathThreshold)
+          propertyMultiplier *= 1 + (n(property.bathrooms) - bathThreshold) * pd(cfg, service.id, "per_extra_bathroom");
+        const bedThreshold = pd(cfg, service.id, "bedrooms_threshold");
+        if (n(property.bedrooms) > bedThreshold)
+          propertyMultiplier *= 1 + (n(property.bedrooms) - bedThreshold) * pd(cfg, service.id, "per_extra_bedroom");
+        if (n(property.floors) > 2)
+          propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
+        if (property.hasPets)
+          propertyMultiplier *= pd(cfg, service.id, "has_pets");
+        break;
+      }
+      case "air-duct-cleaning": {
+        if (n(homeSqft) > pd(cfg, service.id, "large_home_threshold"))
+          propertyMultiplier *= pd(cfg, service.id, "large_home");
+        if (n(property.floors) > 2)
+          propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
+        break;
+      }
+      case "water-heater-service": {
+        if (property.waterHeaterType === "tankless")
+          propertyMultiplier *= pd(cfg, service.id, "tankless");
+        if (n(property.waterHeaterAge) > 10)
+          propertyMultiplier *= pd(cfg, service.id, "age_10plus");
+        break;
+      }
+      case "chimney-sweep": {
+        if (n(property.floors) > 2)
+          propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
+        break;
+      }
+      case "sump-pump-maintenance": {
+        if (property.foundation === "basement")
+          propertyMultiplier *= pd(cfg, service.id, "foundation_basement");
+        if (property.foundation === "crawlspace")
+          propertyMultiplier *= pd(cfg, service.id, "foundation_crawlspace");
+        break;
+      }
+      case "exterior-caulking": {
+        const windowBase = pd(cfg, service.id, "window_count_base") || 10;
+        const extraWindows = Math.max(0, n(property.windowCount, 10) - windowBase);
+        if (extraWindows > 0)
+          propertyMultiplier *= 1 + Math.floor(extraWindows / 5) * pd(cfg, service.id, "per_extra_window_group");
+        if (n(property.floors) > 2)
+          propertyMultiplier *= pd(cfg, service.id, "floors_above_2");
+        if (property.exteriorMaterial === "wood")
+          propertyMultiplier *= pd(cfg, service.id, "wood_siding");
+        if (property.exteriorMaterial === "stucco")
+          propertyMultiplier *= pd(cfg, service.id, "stucco");
+        break;
+      }
     }
   }
 

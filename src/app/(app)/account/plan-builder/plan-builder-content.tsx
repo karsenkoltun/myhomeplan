@@ -39,6 +39,23 @@ import {
   ChevronDown,
   Loader2,
   Building2,
+  TreePine,
+  Flower2,
+  CloudRain,
+  PaintBucket,
+  Layers,
+  Umbrella,
+  SprayCan,
+  Wind,
+  Fan,
+  DoorOpen,
+  Flame,
+  Heater,
+  Refrigerator,
+  Gauge,
+  LifeBuoy,
+  Shield,
+  Trash2,
 } from "lucide-react";
 import {
   SERVICES,
@@ -57,6 +74,8 @@ import Link from "next/link";
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
 };
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

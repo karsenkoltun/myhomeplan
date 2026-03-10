@@ -172,6 +172,59 @@ const DEFAULT_ADJUSTMENTS: Record<string, number> = {
   "property_detail:painting:fence_wood_divisor": 500,
   "property_detail:painting:fence_wood_max": 0.3,
   "property_detail:painting:floors_above_2": 1.25,
+  // Property detail - tree & shrub trimming
+  "property_detail:tree-shrub-trimming:per_mature_tree": 0.1,
+  "property_detail:tree-shrub-trimming:landscaping_extensive": 1.3,
+  "property_detail:tree-shrub-trimming:landscaping_minimal": 0.7,
+  // Property detail - garden maintenance
+  "property_detail:garden-maintenance:per_garden_bed": 0.1,
+  "property_detail:garden-maintenance:garden_bed_sqft_divisor": 500,
+  "property_detail:garden-maintenance:garden_bed_sqft_max": 0.5,
+  "property_detail:garden-maintenance:landscaping_extensive": 1.3,
+  "property_detail:garden-maintenance:landscaping_minimal": 0.7,
+  // Property detail - irrigation maintenance
+  "property_detail:irrigation-maintenance:has_irrigation": 1.0,
+  // Property detail - deck & fence staining
+  "property_detail:deck-fence-staining:deck_patio_divisor": 200,
+  "property_detail:deck-fence-staining:deck_patio_max": 1.0,
+  "property_detail:deck-fence-staining:fence_wood_divisor": 200,
+  "property_detail:deck-fence-staining:fence_wood_max": 0.6,
+  // Property detail - driveway sealing
+  "property_detail:driveway-sealing:driveway_long": 1.4,
+  "property_detail:driveway-sealing:driveway_short": 0.7,
+  "property_detail:driveway-sealing:driveway_gravel": 0, // not applicable for gravel
+  "property_detail:driveway-sealing:driveway_pavers": 1.15,
+  // Property detail - roof cleaning
+  "property_detail:roof-cleaning:roof_metal": 0.85,
+  "property_detail:roof-cleaning:roof_tile": 1.2,
+  "property_detail:roof-cleaning:floors_above_2": 1.2,
+  // Property detail - deep cleaning
+  "property_detail:deep-cleaning:bathrooms_threshold": 2,
+  "property_detail:deep-cleaning:per_extra_bathroom": 0.1,
+  "property_detail:deep-cleaning:bedrooms_threshold": 3,
+  "property_detail:deep-cleaning:per_extra_bedroom": 0.06,
+  "property_detail:deep-cleaning:floors_above_2": 1.15,
+  "property_detail:deep-cleaning:has_pets": 1.15,
+  // Property detail - air duct cleaning
+  "property_detail:air-duct-cleaning:large_home_threshold": 2500,
+  "property_detail:air-duct-cleaning:large_home": 1.2,
+  "property_detail:air-duct-cleaning:floors_above_2": 1.15,
+  // Property detail - water heater service
+  "property_detail:water-heater-service:tankless": 1.2,
+  "property_detail:water-heater-service:age_10plus": 1.15,
+  // Property detail - chimney sweep
+  "property_detail:chimney-sweep:floors_above_2": 1.15,
+  // Property detail - sump pump maintenance
+  "property_detail:sump-pump-maintenance:foundation_basement": 1.0,
+  "property_detail:sump-pump-maintenance:foundation_crawlspace": 1.1,
+  // Property detail - hot tub & pool
+  "property_detail:hot-tub-pool:has_pool": 1.0,
+  // Property detail - exterior caulking
+  "property_detail:exterior-caulking:window_count_base": 10,
+  "property_detail:exterior-caulking:per_extra_window_group": 0.05,
+  "property_detail:exterior-caulking:floors_above_2": 1.2,
+  "property_detail:exterior-caulking:wood_siding": 1.15,
+  "property_detail:exterior-caulking:stucco": 1.1,
   // Spec - lawn mowing
   "spec:lawn-mowing:terrain_slope": 1.15,
   "spec:lawn-mowing:terrain_steep": 1.3,

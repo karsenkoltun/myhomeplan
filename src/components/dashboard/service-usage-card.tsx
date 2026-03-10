@@ -4,6 +4,8 @@ import type { LucideIcon } from "lucide-react";
 import {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, CheckCircle2,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -14,6 +16,8 @@ import { SERVICE_FREQUENCY_OPTIONS } from "@/data/services";
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
 };
 
 function getProgressColor(percentage: number): string {

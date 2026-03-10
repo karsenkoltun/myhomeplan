@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { CheckCircle2, Sparkles, type LucideIcon, Scissors, Snowflake, Thermometer, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Building2, MapPin, Clock, FileSearch, ShieldCheck, Phone, Briefcase, ArrowRight, Loader2, Shield, DollarSign } from "lucide-react";
+import { CheckCircle2, Sparkles, type LucideIcon, Scissors, Snowflake, Thermometer, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Building2, MapPin, Clock, FileSearch, ShieldCheck, Phone, Briefcase, ArrowRight, Loader2, Shield, DollarSign, TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan, Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Trash2 } from "lucide-react";
 import { useUserStore } from "@/stores/user-store";
 import { usePropertyStore } from "@/stores/property-store";
 import { usePlanStore } from "@/stores/plan-store";
@@ -24,6 +24,8 @@ import { RequiredLabel, FieldError } from "./shared";
 const ICON_MAP: Record<string, LucideIcon> = {
   Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
   Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
+  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
+  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
 };
 
 const accountSchema = z.object({
