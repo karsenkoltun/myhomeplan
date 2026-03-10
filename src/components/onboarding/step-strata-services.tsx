@@ -9,20 +9,10 @@ import { Label } from "@/components/ui/label";
 import {
   Check,
   CheckCircle2,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Waves,
-  Droplets,
-  Sun,
-  Car,
-  ArrowUpDown,
-  type LucideIcon,
   TrendingDown,
 } from "lucide-react";
-import { STRATA_SERVICES, calculateStrataServicePrice, type StrataService } from "@/data/strata-services";
+import { ICON_MAP } from "@/lib/icon-map";
+import { STRATA_SERVICES, calculateStrataServicePrice } from "@/data/strata-services";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
 import { calculateVolumeDiscount, applyVolumeDiscount } from "@/lib/pricing";
@@ -30,10 +20,6 @@ import { SpringNumber } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { StepValidationRef } from "./step-property-info";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Waves, Droplets, Sun, Car, ArrowUpDown,
-};
 
 // Frequency options for strata services
 const frequencyOptions = [

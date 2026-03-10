@@ -11,36 +11,12 @@ import {
   TrendingUp,
   Shield,
   Users,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Hammer,
-  Wrench,
-  Zap,
-  Sprout,
-  Leaf,
-  Droplets,
-  Waves,
-  Sun,
-  Paintbrush,
-  Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Trash2,
-  type LucideIcon,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { SERVICES } from "@/data/services";
 import { usePropertyStore } from "@/stores/property-store";
 import { calculateContractorPayout } from "@/lib/pricing";
 import { cn } from "@/lib/utils";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 const benefits = [
   {

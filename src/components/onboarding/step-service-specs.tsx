@@ -8,7 +8,8 @@ import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan, Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2, type LucideIcon } from "lucide-react";
+import { ChevronDown, CheckCircle2, Clock } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { useState } from "react";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
@@ -16,14 +17,6 @@ import { SERVICES, SERVICE_FREQUENCY_OPTIONS } from "@/data/services";
 import { SERVICE_SPECS, type SpecField } from "@/data/property-specs";
 import { calculateServicePrice } from "@/lib/pricing";
 import { SpringNumber } from "@/components/ui/motion";
-import { Clock } from "lucide-react";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 export function StepServiceSpecs() {
   const { selectedServices, serviceFrequencies, setServiceFrequency } = usePlanStore();

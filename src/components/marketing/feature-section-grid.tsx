@@ -4,37 +4,9 @@ import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { easings } from "@/lib/animations";
-import {
-  Leaf,
-  Thermometer,
-  Flower2,
-  Snowflake,
-  Bug,
-  Sparkles,
-  Hammer,
-  Wifi,
-  DollarSign,
-  Home,
-  Shield,
-  Wrench,
-  type LucideIcon,
-} from "lucide-react";
+import { Home } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import Link from "next/link";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Leaf,
-  Thermometer,
-  Flower2,
-  Snowflake,
-  Bug,
-  Sparkles,
-  Hammer,
-  Wifi,
-  DollarSign,
-  Home,
-  Shield,
-  Wrench,
-};
 
 export interface FeatureItem {
   icon: string;

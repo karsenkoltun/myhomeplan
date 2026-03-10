@@ -13,27 +13,10 @@ import {
   Calendar,
   Percent,
   Package,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Hammer,
-  Wrench,
-  Zap,
-  Sprout,
-  Leaf,
-  Droplets,
-  Waves,
-  Sun,
-  Paintbrush,
-  Armchair,
   Loader2,
   Save,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-  type LucideIcon,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { useAuth } from "@/components/auth/auth-provider";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
@@ -53,13 +36,6 @@ import {
 } from "@/lib/supabase/queries";
 import { PropertySelector } from "@/components/dashboard/property-selector";
 import { toast } from "sonner";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 interface Property {
   id: string;

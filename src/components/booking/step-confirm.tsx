@@ -73,11 +73,11 @@ export function StepConfirm() {
 
           if (cp) {
             await createNotification({
-              profile_id: cp.profile_id,
+              user_id: cp.profile_id,
               title: "New Job Assigned",
-              body: `${draft.serviceName} on ${format(parseISO(draft.scheduledDate), "MMM d, yyyy")} at ${draft.scheduledTime}`,
-              type: "booking_assigned",
-              data: { booking_id: booking.id, service_id: draft.serviceId },
+              message: `${draft.serviceName} on ${format(parseISO(draft.scheduledDate), "MMM d, yyyy")} at ${draft.scheduledTime}`,
+              type: "new_job_assigned",
+              metadata: { booking_id: booking.id, service_id: draft.serviceId },
             });
           }
         } catch {

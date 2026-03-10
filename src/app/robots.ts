@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/", "/onboarding/", "/account/", "/booking/", "/login", "/signup", "/forgot-password", "/reset-password", "/auth/"],
+        disallow: ["/api/", "/onboarding/", "/account/", "/admin/", "/booking/", "/login", "/signup", "/forgot-password", "/reset-password", "/auth/"],
       },
       // Allow AI search crawlers
       { userAgent: "GPTBot", allow: "/" },

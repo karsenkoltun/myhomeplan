@@ -11,26 +11,10 @@ import { FadeIn } from "@/components/ui/motion";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Sparkles,
-  Bug,
-  Hammer,
-  Wrench,
-  Zap,
-  Sprout,
-  Leaf,
-  Droplets,
-  Waves,
-  Sun,
-  Paintbrush,
   ArrowRight,
   Receipt,
   TrendingDown,
   AlertTriangle,
-  type LucideIcon,
-  Armchair,
   ShoppingCart,
   X,
   ChevronUp,
@@ -39,24 +23,8 @@ import {
   ChevronDown,
   Loader2,
   Building2,
-  TreePine,
-  Flower2,
-  CloudRain,
-  PaintBucket,
-  Layers,
-  Umbrella,
-  SprayCan,
-  Wind,
-  Fan,
-  DoorOpen,
-  Flame,
-  Heater,
-  Refrigerator,
-  Gauge,
-  LifeBuoy,
-  Shield,
-  Trash2,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import {
   SERVICES,
   SERVICE_CATEGORIES,
@@ -70,13 +38,6 @@ import { getAllProperties } from "@/lib/supabase/queries";
 import type { PropertyProfile } from "@/stores/property-store";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /** Map a DB homeowner_properties row (snake_case) to the PropertyProfile interface (camelCase) */

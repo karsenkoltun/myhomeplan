@@ -756,23 +756,23 @@ export async function updateBookingStatus(
 
 // ---- NOTIFICATIONS ----
 
-export async function getNotifications(profileId: string) {
+export async function getNotifications(userId: string, limit = 30) {
   const { data, error } = await supabase()
     .from("notifications")
     .select("*")
-    .eq("profile_id", profileId)
+    .eq("user_id", userId)
     .order("created_at", { ascending: false })
-    .limit(20);
+    .limit(limit);
   if (error) throw error;
   return data ?? [];
 }
 
 export async function createNotification(notification: {
-  profile_id: string;
+  user_id: string;
   title: string;
-  body: string;
+  message: string;
   type: string;
-  data?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
 }) {
   const { data, error } = await supabase()
     .from("notifications")
@@ -792,6 +792,25 @@ export async function markNotificationRead(notificationId: string) {
     .single();
   if (error) throw error;
   return data;
+}
+
+export async function markAllNotificationsRead(userId: string) {
+  const { error } = await supabase()
+    .from("notifications")
+    .update({ read: true })
+    .eq("user_id", userId)
+    .eq("read", false);
+  if (error) throw error;
+}
+
+export async function getUnreadCount(userId: string) {
+  const { count, error } = await supabase()
+    .from("notifications")
+    .select("*", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("read", false);
+  if (error) throw error;
+  return count ?? 0;
 }
 
 // ---- CONTRACTOR AVAILABILITY ----
@@ -877,7 +896,7 @@ export async function getRecentActivity(profileId: string, propertyId?: string) 
       id: n.id,
       type: "notification" as const,
       title: n.title,
-      body: n.body,
+      body: n.message,
       timestamp: n.created_at,
       read: n.read,
     })),
@@ -1035,6 +1054,67 @@ export async function getServiceCredits(subscriptionId: string) {
   }
 }
 
+// ---- REVIEWS ----
+
+export async function createReview(data: {
+  homeowner_id: string;
+  contractor_profile_id: string;
+  booking_id: string;
+  rating: number;
+  comment?: string;
+  punctuality_rating: number;
+  quality_rating: number;
+  communication_rating: number;
+  value_rating: number;
+}) {
+  const { data: review, error } = await supabase()
+    .from("reviews")
+    .insert(data)
+    .select()
+    .single();
+  if (error) throw error;
+  return review;
+}
+
+export async function getReviewsForContractor(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("reviews")
+    .select("*, profiles!reviews_homeowner_id_fkey(first_name, last_name)")
+    .eq("contractor_profile_id", contractorProfileId)
+    .order("created_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function getReviewForBooking(bookingId: string) {
+  const { data, error } = await supabase()
+    .from("reviews")
+    .select("*")
+    .eq("booking_id", bookingId)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+export async function updateContractorRating(contractorProfileId: string) {
+  const reviews = await getReviewsForContractor(contractorProfileId);
+  if (reviews.length === 0) return;
+
+  const avgRating =
+    reviews.reduce((sum, r) => sum + (r.rating as number), 0) / reviews.length;
+
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .update({ rating: Math.round(avgRating * 10) / 10 })
+    .eq("id", contractorProfileId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+// ---- SERVICE CREDITS ----
+
 export async function purchaseCredits(
   subscriptionId: string,
   serviceId: string,
@@ -1052,4 +1132,139 @@ export async function purchaseCredits(
     .single();
   if (error) throw error;
   return data;
+}
+
+// ---- CONTRACTOR MATCHING & JOB MANAGEMENT ----
+
+/** Count how many bookings a contractor has in a given week (non-cancelled) */
+export async function getContractorWeeklyBookingCount(
+  contractorId: string,
+  weekStart: string
+) {
+  const weekEnd = new Date(weekStart + "T12:00:00");
+  weekEnd.setDate(weekEnd.getDate() + 6);
+  const weekEndStr = weekEnd.toISOString().split("T")[0];
+
+  const { count, error } = await supabase()
+    .from("service_bookings")
+    .select("*", { count: "exact", head: true })
+    .eq("contractor_profile_id", contractorId)
+    .gte("scheduled_date", weekStart)
+    .lte("scheduled_date", weekEndStr)
+    .not("status", "eq", "cancelled");
+  if (error) throw error;
+  return count ?? 0;
+}
+
+/** Assign a contractor to a booking with a payout amount */
+export async function assignContractorToBooking(
+  bookingId: string,
+  contractorId: string,
+  payout: number
+) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .update({
+      contractor_profile_id: contractorId,
+      contractor_payout: payout,
+      status: "scheduled" as const,
+    })
+    .eq("id", bookingId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Decline a booking - clears the contractor assignment and triggers reassignment */
+export async function declineBooking(
+  bookingId: string,
+  contractorId: string,
+  reason?: string
+) {
+  // First verify this contractor is actually assigned to this booking
+  const { data: booking, error: fetchErr } = await supabase()
+    .from("service_bookings")
+    .select("*")
+    .eq("id", bookingId)
+    .single();
+  if (fetchErr) throw fetchErr;
+  if (!booking) throw new Error("Booking not found");
+  if (booking.contractor_profile_id !== contractorId) {
+    throw new Error("Contractor is not assigned to this booking");
+  }
+
+  // Clear the contractor assignment
+  const updates: Record<string, unknown> = {
+    contractor_profile_id: null,
+    contractor_payout: null,
+    status: "scheduled" as const,
+  };
+  if (reason) {
+    updates.notes = booking.notes
+      ? `${booking.notes}\n[Declined by contractor: ${reason}]`
+      : `[Declined by contractor: ${reason}]`;
+  }
+
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .update(updates)
+    .eq("id", bookingId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Get contractor's bookings, optionally filtered by status */
+export async function getContractorBookings(
+  contractorId: string,
+  status?: string
+) {
+  let query = supabase()
+    .from("service_bookings")
+    .select("*")
+    .eq("contractor_profile_id", contractorId)
+    .order("scheduled_date", { ascending: true });
+
+  if (status) {
+    query = query.eq("status", status);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Get a single booking by ID */
+export async function getBookingById(bookingId: string) {
+  const { data, error } = await supabase()
+    .from("service_bookings")
+    .select("*")
+    .eq("id", bookingId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Get a contractor profile by its ID (not the user profile_id) */
+export async function getContractorProfileById(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_profiles")
+    .select("*")
+    .eq("id", contractorProfileId)
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Get property owner's profile_id from a property */
+export async function getPropertyOwnerId(propertyId: string) {
+  const { data, error } = await supabase()
+    .from("homeowner_properties")
+    .select("profile_id")
+    .eq("id", propertyId)
+    .single();
+  if (error) throw error;
+  return data?.profile_id ?? null;
 }

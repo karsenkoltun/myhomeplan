@@ -106,7 +106,7 @@ export function NotificationBell() {
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium">{n.title}</p>
                         <p className="text-xs text-muted-foreground line-clamp-2">
-                          {n.body}
+                          {n.message}
                         </p>
                         <p className="mt-1 text-[10px] text-muted-foreground">
                           {format(new Date(n.created_at), "MMM d, h:mm a")}

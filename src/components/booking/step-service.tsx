@@ -5,12 +5,9 @@ import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
-  CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Package, Loader2,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-  type LucideIcon,
+  CheckCircle2, Package, Loader2,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { useAuth } from "@/components/auth/auth-provider";
 import { useUserStore } from "@/stores/user-store";
 import { useBookingStore } from "@/stores/booking-store";
@@ -18,13 +15,6 @@ import { getSubscriptionForProperty, getSubscription } from "@/lib/supabase/quer
 import { SERVICES } from "@/data/services";
 import { FadeIn } from "@/components/ui/motion";
 import { motion } from "framer-motion";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 export function StepService() {
   const { user } = useAuth();

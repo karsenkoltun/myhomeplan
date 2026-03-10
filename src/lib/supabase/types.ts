@@ -474,15 +474,15 @@ export type Database = {
       notifications: {
         Row: {
           id: string;
-          profile_id: string;
+          user_id: string;
           title: string;
-          body: string;
+          message: string;
           type: string;
           read: boolean;
-          data: Json | null;
+          metadata: Json | null;
           created_at: string;
         };
-        Insert: Partial<Database["public"]["Tables"]["notifications"]["Row"]> & { profile_id: string; title: string };
+        Insert: Partial<Database["public"]["Tables"]["notifications"]["Row"]> & { user_id: string; title: string };
         Update: Partial<Database["public"]["Tables"]["notifications"]["Row"]>;
       };
       service_credits: {
@@ -497,6 +497,32 @@ export type Database = {
         };
         Insert: Partial<Database["public"]["Tables"]["service_credits"]["Row"]> & { subscription_id: string; service_id: string; total_credits: number };
         Update: Partial<Database["public"]["Tables"]["service_credits"]["Row"]>;
+      };
+      reviews: {
+        Row: {
+          id: string;
+          created_at: string;
+          homeowner_id: string;
+          contractor_profile_id: string;
+          booking_id: string;
+          rating: number;
+          comment: string | null;
+          punctuality_rating: number;
+          quality_rating: number;
+          communication_rating: number;
+          value_rating: number;
+        };
+        Insert: Partial<Database["public"]["Tables"]["reviews"]["Row"]> & {
+          homeowner_id: string;
+          contractor_profile_id: string;
+          booking_id: string;
+          rating: number;
+          punctuality_rating: number;
+          quality_rating: number;
+          communication_rating: number;
+          value_rating: number;
+        };
+        Update: Partial<Database["public"]["Tables"]["reviews"]["Row"]>;
       };
       stripe_webhook_events: {
         Row: {
@@ -549,6 +575,23 @@ export type Database = {
         };
         Insert: Partial<Database["public"]["Tables"]["platform_config"]["Row"]> & { key: string; value: Json };
         Update: Partial<Database["public"]["Tables"]["platform_config"]["Row"]>;
+      };
+      messages: {
+        Row: {
+          id: string;
+          booking_id: string;
+          sender_id: string;
+          message: string;
+          message_type: "text" | "system" | "photo";
+          read: boolean;
+          created_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["messages"]["Row"]> & {
+          booking_id: string;
+          sender_id: string;
+          message: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["messages"]["Row"]>;
       };
     };
     Views: Record<string, never>;

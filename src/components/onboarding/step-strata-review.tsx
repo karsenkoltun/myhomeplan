@@ -18,20 +18,10 @@ import {
   Mail,
   TrendingDown,
   FileText,
-  type LucideIcon,
-  Scissors,
-  Snowflake,
-  Thermometer,
-  Bug,
-  Waves,
-  Droplets,
-  Sun,
-  Car,
-  ArrowUpDown,
   Shield,
-  DollarSign,
   Wrench,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { useUserStore } from "@/stores/user-store";
 import { usePropertyStore } from "@/stores/property-store";
 import { usePlanStore } from "@/stores/plan-store";
@@ -39,10 +29,6 @@ import { STRATA_SERVICES, calculateStrataServicePrice, STRATA_PLAN_DISCOUNTS } f
 import { calculateVolumeDiscount, applyVolumeDiscount } from "@/lib/pricing";
 import { SpringNumber, ShimmerButton } from "@/components/ui/motion";
 import { toast } from "sonner";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Waves, Droplets, Sun, Car, ArrowUpDown,
-};
 
 const buildingTypeLabels: Record<string, string> = {
   townhouse: "Townhouse Complex",

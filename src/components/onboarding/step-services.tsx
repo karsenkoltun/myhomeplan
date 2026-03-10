@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
-import { Check, CheckCircle2, ChevronDown, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap, Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, Info, AlertTriangle, TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan, Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2, type LucideIcon } from "lucide-react";
+import { Check, CheckCircle2, ChevronDown, Info, AlertTriangle } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { SERVICES, SERVICE_CATEGORIES, type ServiceCategory, type Service } from "@/data/services";
 import { usePlanStore } from "@/stores/plan-store";
 import { usePropertyStore } from "@/stores/property-store";
@@ -15,13 +16,6 @@ import { SpringNumber } from "@/components/ui/motion";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import type { StepValidationRef } from "./step-property-info";
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 function ServiceDetails({ service }: { service: Service }) {
   return (

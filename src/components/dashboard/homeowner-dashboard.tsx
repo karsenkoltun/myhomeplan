@@ -10,13 +10,10 @@ import { Separator } from "@/components/ui/separator";
 import { motion } from "framer-motion";
 import {
   Home, Settings, CreditCard, Calendar,
-  CheckCircle2, Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair, ClipboardList, DollarSign,
+  CheckCircle2, ClipboardList, DollarSign,
   Phone, AlertCircle,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-  type LucideIcon,
 } from "lucide-react";
+import { ICON_MAP } from "@/lib/icon-map";
 import { usePropertyStore } from "@/stores/property-store";
 import { useUserStore } from "@/stores/user-store";
 import {
@@ -47,13 +44,6 @@ const FullScreenCalendar = dynamic(
     })),
   { ssr: false }
 );
-
-const ICON_MAP: Record<string, LucideIcon> = {
-  Scissors, Snowflake, Thermometer, Sparkles, Bug, Hammer, Wrench, Zap,
-  Sprout, Leaf, Droplets, Waves, Sun, Paintbrush, Armchair,
-  TreePine, Flower2, CloudRain, PaintBucket, Layers, Umbrella, SprayCan,
-  Wind, Fan, DoorOpen, Flame, Heater, Refrigerator, Gauge, LifeBuoy, Shield, Trash2,
-};
 
 type Booking = Database["public"]["Tables"]["service_bookings"]["Row"];
 

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { RoleSwitcher } from "@/components/dashboard/role-switcher";
+import { NotificationBell } from "@/components/notifications/notification-bell";
 import type { UserType } from "@/stores/user-store";
 
 interface NavItem {
@@ -62,11 +63,11 @@ export function AppSidebar() {
         collapsed ? "w-16" : "w-64"
       )}
     >
-      {/* Logo */}
+      {/* Logo + Notification Bell */}
       <div
         className={cn(
           "flex h-16 items-center border-b border-sidebar-border px-4",
-          collapsed ? "justify-center" : "gap-3"
+          collapsed ? "flex-col justify-center gap-1" : "justify-between"
         )}
       >
         <Link href="/account" className="flex shrink-0 items-center gap-3">
@@ -83,6 +84,7 @@ export function AppSidebar() {
             </span>
           )}
         </Link>
+        <NotificationBell collapsed={collapsed} />
       </div>
 
       {/* Role switcher */}
