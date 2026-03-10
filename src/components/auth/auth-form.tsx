@@ -119,7 +119,10 @@ export function AuthForm({ mode: initialMode = "login", embedded = false, onSucc
       </Link>
 
       {/* Glassmorphic Card */}
-      <div className="rounded-2xl border border-border/50 bg-gradient-to-br from-card/80 to-card/40 p-6 shadow-xl backdrop-blur-xl sm:p-8">
+      <div className={cn(
+        "rounded-2xl border border-border/50 p-6 shadow-xl sm:p-8",
+        embedded ? "bg-card" : "bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl"
+      )}>
         {/* Header */}
         <div className="mb-6 text-center">
           <h1 className="text-xl font-bold tracking-tight sm:text-2xl">
