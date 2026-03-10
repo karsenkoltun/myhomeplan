@@ -39,7 +39,7 @@ const solutions = [
   "Vetted, licensed, and insured pros",
   "One subscription, one monthly bill",
   "Every service scheduled for you",
-  "Save 20-40% with bulk rates",
+  "Save up to 15% with annual plans",
   "Cancel anytime, no contracts",
 ];
 
@@ -62,10 +62,10 @@ const impactStats = [
   },
   {
     icon: Users,
-    value: 50,
-    suffix: "+",
-    label: "Local contractors connected",
-    sublabel: "The best your region has to offer, vetted and ready to go.",
+    value: 32,
+    suffix: "",
+    label: "Services available to book",
+    sublabel: "Outdoor, indoor, systems, and specialty - all under one roof.",
   },
   {
     icon: Clock,
@@ -132,7 +132,7 @@ const steps = [
   {
     num: "01",
     title: "Tell us about your home",
-    detail: "Property size, lot, heating. 2 minutes.",
+    detail: "Property size, lot, heating. 5 minutes.",
   },
   {
     num: "02",
@@ -442,7 +442,7 @@ export default function HomePage() {
                 Ready to get started?
               </h2>
               <p className="mt-5 text-lg text-muted-foreground">
-                Build your custom home plan in under 2 minutes.
+                Build your custom home plan in under 5 minutes.
               </p>
             </FadeIn>
             <FadeIn delay={0.2}>

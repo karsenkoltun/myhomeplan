@@ -7,7 +7,7 @@ export const categories: Record<string, string> = {
 export const faqData: Record<string, { question: string; answer: string }[]> = {
   homeowners: [
     { question: "What is My Home Plan?", answer: "My Home Plan is a monthly subscription service that bundles all your home maintenance needs into one simple plan. Instead of hiring and managing multiple contractors - you pay one monthly fee and we handle everything." },
-    { question: "How much does it cost?", answer: "Plans start at $89/month for Essentials. Our most popular Home Care plan starts at $159/month, and Premium starts at $249/month. Quarterly plans save 5% and annual plans save 15%." },
+    { question: "How much does it cost?", answer: "Plans start at $89/month for Essentials. Our most popular Complete plan starts at $159/month, and Premium starts at $249/month. Quarterly plans save 5% and annual plans save 15%." },
     { question: "Can I cancel anytime?", answer: "Monthly plans are month-to-month with no contract. Quarterly and annual plans are prepaid but refundable on a prorated basis if you cancel early." },
     { question: "How are contractors vetted?", answer: "Business license check, $2M liability insurance, WorkSafe BC coverage, background check, reference check, and a probation period with quality monitoring." },
     { question: "What if I'm not happy with the service?", answer: "100% quality guarantee. If you're not satisfied, we'll send another contractor to redo it at no additional cost." },
@@ -22,7 +22,7 @@ export const faqData: Record<string, { question: string; answer: string }[]> = {
   ],
   contractors: [
     { question: "Is there a cost to join?", answer: "Zero cost. You don't pay for leads, listings, or advertising." },
-    { question: "How much do I get paid?", answer: "Contractors keep 70-80% of the service value, depending on tier and performance." },
+    { question: "How much do I get paid?", answer: "Contractors keep 75% of the service value. Payouts are processed within 7 days of job completion." },
     { question: "How fast do I get paid?", answer: "Within 7 days of job completion, every time. Direct deposit." },
     { question: "Do I have to accept every job?", answer: "No. You set your availability and service area. Accept or decline any job." },
     { question: "What are the requirements?", answer: "BC business license, $2M liability insurance, WorkSafe BC, 3+ years experience, clean background check, and 2 references." },

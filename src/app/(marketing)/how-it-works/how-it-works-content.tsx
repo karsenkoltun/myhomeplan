@@ -31,7 +31,7 @@ const processSteps = [
     num: "02",
     title: "We Match You With Pros",
     description:
-      "We match your home with licensed, insured professionals in your area. Every contractor is background-checked and rated by real homeowners.",
+      "We match your home with licensed, insured professionals in your area. Every contractor is background-checked and verified before joining our network.",
     badge: "All pros are pre-vetted",
   },
   {
@@ -54,7 +54,7 @@ const guaranteeItems: Gallery4Item[] = [
   {
     id: "on-time",
     title: "On-Time Guarantee",
-    description: "Miss a window and your next service is free. We respect your time because we know it's valuable.",
+    description: "We hold our contractors to strict scheduling standards. Your time matters and we respect it.",
     image: "https://images.pexels.com/photos/1178684/pexels-photo-1178684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
@@ -84,7 +84,7 @@ const guaranteeItems: Gallery4Item[] = [
   {
     id: "damage",
     title: "Damage Protection",
-    description: "If anything goes wrong during a service, we cover it. Full liability coverage on every visit.",
+    description: "All contractors carry liability insurance. If anything goes wrong during a service, you're covered.",
     image: "https://images.pexels.com/photos/6419128/pexels-photo-6419128.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];

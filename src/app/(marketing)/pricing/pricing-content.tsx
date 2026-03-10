@@ -43,21 +43,21 @@ const homeTypes = [
 
 /* ─── Pricing plans per home type ─── */
 const suburbanPlans = [
-  { name: "Essential", level: "essential", price: { monthly: 89, yearly: 890 } },
-  { name: "Complete", level: "complete", price: { monthly: 159, yearly: 1590 }, popular: true },
-  { name: "Premium", level: "premium", price: { monthly: 249, yearly: 2490 } },
+  { name: "Essentials", level: "essential", price: { monthly: 89, yearly: 908 } },
+  { name: "Complete", level: "complete", price: { monthly: 159, yearly: 1622 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 249, yearly: 2540 } },
 ];
 
 const townhomePlans = [
-  { name: "Essential", level: "essential", price: { monthly: 69, yearly: 690 } },
-  { name: "Complete", level: "complete", price: { monthly: 119, yearly: 1190 }, popular: true },
-  { name: "Premium", level: "premium", price: { monthly: 189, yearly: 1890 } },
+  { name: "Essentials", level: "essential", price: { monthly: 69, yearly: 703 } },
+  { name: "Complete", level: "complete", price: { monthly: 119, yearly: 1214 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 189, yearly: 1927 } },
 ];
 
 const condoPlans = [
-  { name: "Essential", level: "essential", price: { monthly: 49, yearly: 490 } },
-  { name: "Complete", level: "complete", price: { monthly: 89, yearly: 890 }, popular: true },
-  { name: "Premium", level: "premium", price: { monthly: 149, yearly: 1490 } },
+  { name: "Essentials", level: "essential", price: { monthly: 49, yearly: 500 } },
+  { name: "Complete", level: "complete", price: { monthly: 89, yearly: 908 }, popular: true },
+  { name: "Premium", level: "premium", price: { monthly: 149, yearly: 1520 } },
 ];
 
 /* ─── Features per home type ─── */
@@ -188,7 +188,7 @@ const guaranteeItems: Gallery4Item[] = [
   {
     id: "on-time",
     title: "On-Time Guarantee",
-    description: "Miss a scheduled window and your next service is on us. We respect your time.",
+    description: "We hold our contractors to strict scheduling standards. Your time matters and we respect it.",
     image: "https://images.pexels.com/photos/1178684/pexels-photo-1178684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
   {
@@ -200,7 +200,7 @@ const guaranteeItems: Gallery4Item[] = [
   {
     id: "savings",
     title: "Bundle Savings",
-    description: "The more services you add, the more you save. Annual plans save up to 20%.",
+    description: "The more services you add, the more you save. Annual plans save 15%.",
     image: "https://images.pexels.com/photos/1459495/pexels-photo-1459495.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
   },
 ];

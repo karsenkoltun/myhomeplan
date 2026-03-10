@@ -978,7 +978,7 @@ export interface PlanTier {
 export const PLAN_TIERS: PlanTier[] = [
   {
     id: "minimum",
-    name: "Minimum",
+    name: "Essentials",
     tagline: "Keep Your Home Maintained",
     description:
       "Essential outdoor maintenance at an affordable price. The basics your home needs to stay in great shape year-round.",
@@ -999,7 +999,7 @@ export const PLAN_TIERS: PlanTier[] = [
   },
   {
     id: "fundamentals",
-    name: "Fundamentals",
+    name: "Complete",
     tagline: "Everything Your Home Needs",
     description:
       "Comprehensive indoor and outdoor care that covers all the essentials. The most popular choice for a reason.",
