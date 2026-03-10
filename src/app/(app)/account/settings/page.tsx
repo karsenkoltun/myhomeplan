@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
-import { ArrowLeft, Save, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, Save, Loader2, Trash2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { getProfile, updateProfile } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
@@ -38,6 +38,10 @@ export default function SettingsPage() {
   const [smsNotifications, setSmsNotifications] = useState(true);
   const [marketingEmails, setMarketingEmails] = useState(false);
   const [savingNotifications, setSavingNotifications] = useState(false);
+
+  // Reset data
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [resetting, setResetting] = useState(false);
 
   // Delete account
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -129,6 +133,24 @@ export default function SettingsPage() {
       toast.error("Failed to save preferences. Please try again.");
     } finally {
       setSavingNotifications(false);
+    }
+  };
+
+  const handleResetData = async () => {
+    if (!user) return;
+    setResetting(true);
+    try {
+      const res = await fetch("/api/account/reset", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Reset failed");
+      toast.success("Account data reset. Starting fresh!");
+      setShowResetConfirm(false);
+      router.refresh();
+    } catch (err) {
+      console.error("Failed to reset data:", err);
+      toast.error("Failed to reset data. Please try again.");
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -345,8 +367,62 @@ export default function SettingsPage() {
           </Card>
         </FadeIn>
 
-        {/* ---- Danger Zone ---- */}
+        {/* ---- Reset Data ---- */}
         <FadeIn delay={0.4}>
+          <Card className="border-orange-500/50">
+            <CardHeader>
+              <CardTitle className="text-base text-orange-600">
+                Reset Account Data
+              </CardTitle>
+              <CardDescription>
+                Wipe all your properties, subscriptions, business profiles, and setup progress. Your login and profile info (name, email, phone) will be kept.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {!showResetConfirm ? (
+                <Button
+                  variant="outline"
+                  className="gap-2 border-orange-500/50 text-orange-600 hover:bg-orange-50 hover:text-orange-700"
+                  onClick={() => setShowResetConfirm(true)}
+                >
+                  <RotateCcw className="h-4 w-4" />
+                  Reset All Data
+                </Button>
+              ) : (
+                <div className="space-y-3">
+                  <Separator />
+                  <p className="text-sm text-muted-foreground">
+                    This will delete all your properties, subscriptions, services, business profiles, and reset your setup progress. Are you sure?
+                  </p>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="destructive"
+                      className="gap-2"
+                      disabled={resetting}
+                      onClick={handleResetData}
+                    >
+                      {resetting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <RotateCcw className="h-4 w-4" />
+                      )}
+                      {resetting ? "Resetting..." : "Yes, Reset Everything"}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => setShowResetConfirm(false)}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </FadeIn>
+
+        {/* ---- Danger Zone ---- */}
+        <FadeIn delay={0.5}>
           <Card className="border-destructive/50">
             <CardHeader>
               <CardTitle className="text-base text-destructive">
