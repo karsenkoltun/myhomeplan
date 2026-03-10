@@ -12,6 +12,9 @@ import { ArrowLeft, Save, Loader2, Trash2, RotateCcw } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { getProfile, updateProfile } from "@/lib/supabase/queries";
 import { createClient } from "@/lib/supabase/client";
+import { usePlanStore } from "@/stores/plan-store";
+import { usePropertyStore } from "@/stores/property-store";
+import { useUserStore } from "@/stores/user-store";
 import { FadeIn } from "@/components/ui/motion";
 import { toast } from "sonner";
 import Link from "next/link";
@@ -143,6 +146,12 @@ export default function SettingsPage() {
       const res = await fetch("/api/account/reset", { method: "POST" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Reset failed");
+
+      // Clear all Zustand localStorage stores
+      usePlanStore.getState().reset();
+      usePropertyStore.getState().reset();
+      useUserStore.getState().reset();
+
       toast.success("Account data reset. Starting fresh!");
       setShowResetConfirm(false);
       router.refresh();
