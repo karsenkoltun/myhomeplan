@@ -85,7 +85,7 @@ export function StepService() {
             Build and save a plan first, then you can book your included services.
           </p>
           <Button className="mt-6" asChild>
-            <Link href="/plan-builder">Build Your Plan</Link>
+            <Link href="/account/plan-builder">Build Your Plan</Link>
           </Button>
         </div>
       </FadeIn>

@@ -415,7 +415,7 @@ export function HomeownerDashboard({
                   { icon: Calendar, label: "Book Service", href: "/account/book" },
                   { icon: ClipboardList, label: "My Services", href: "/account/services" },
                   { icon: Settings, label: "Edit Property", href: "/account/property" },
-                  { icon: Home, label: "Browse Plans", href: "/plan-builder" },
+                  { icon: Home, label: "Browse Plans", href: "/account/plan-builder" },
                   { icon: CreditCard, label: "Settings", href: "/account/settings" },
                 ].map((action) => (
                   <Link key={action.label} href={action.href}>
