@@ -31,9 +31,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Redirect to dashboard on sign-in if user is on a public page
+      if (event === "SIGNED_IN" && session?.user) {
+        const path = window.location.pathname;
+        const isPublicPage = !path.startsWith("/account") && !path.startsWith("/onboarding");
+        if (isPublicPage) {
+          window.location.href = "/account";
+        }
+      }
     });
 
     return () => subscription.unsubscribe();
