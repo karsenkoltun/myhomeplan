@@ -18,6 +18,7 @@ import {
   Users,
   BarChart3,
   ShieldCheck,
+  FileText,
 } from "lucide-react";
 
 interface AdminMetrics {
@@ -163,6 +164,18 @@ export default function AdminDashboardPage() {
       href: "/admin/revenue",
       icon: BarChart3,
     },
+    {
+      title: "Documents",
+      description: "Review and approve contractor documents and credentials",
+      href: "/admin/documents",
+      icon: FileText,
+    },
+    {
+      title: "Analytics",
+      description: "Advanced metrics, cohort analysis, and platform insights",
+      href: "/admin/analytics",
+      icon: BarChart3,
+    },
   ];
 
   return (
@@ -220,7 +233,7 @@ export default function AdminDashboardPage() {
         <h2 className="mb-4 text-lg font-semibold text-foreground">
           Quick Links
         </h2>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {quickLinks.map((link) => (
             <Link key={link.href} href={link.href}>
               <Card className="group cursor-pointer rounded-2xl transition-all duration-200 hover:border-primary/30 hover:shadow-md">

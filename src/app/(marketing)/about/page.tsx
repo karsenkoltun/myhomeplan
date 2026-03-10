@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "About Us | Making Home Maintenance Simple | My Home Plan",
   description:
     "Learn about My Home Plan's mission to make home maintenance simple, fair, and reliable for homeowners in the Okanagan Valley, BC.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/about",
+  },
   openGraph: {
     title: "About Us | Making Home Maintenance Simple | My Home Plan",
     description:

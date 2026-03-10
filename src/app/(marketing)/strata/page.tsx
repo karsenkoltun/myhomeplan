@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Strata Building Maintenance | One Contract, One Invoice | My Home Plan",
   description:
     "Simplify strata maintenance with one plan covering all building services. Vetted contractors, transparent pricing, guaranteed scheduling for strata councils in the Okanagan Valley.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/strata",
+  },
   openGraph: {
     title: "Strata Building Maintenance | One Contract, One Invoice | My Home Plan",
     description:

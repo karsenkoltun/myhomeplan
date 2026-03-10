@@ -1268,3 +1268,91 @@ export async function getPropertyOwnerId(propertyId: string) {
   if (error) throw error;
   return data?.profile_id ?? null;
 }
+
+// ---- CONTRACTOR DOCUMENTS ----
+
+/** Get all documents for a contractor profile */
+export async function getContractorDocuments(contractorProfileId: string) {
+  const { data, error } = await supabase()
+    .from("contractor_documents")
+    .select("*")
+    .eq("contractor_profile_id", contractorProfileId)
+    .order("uploaded_at", { ascending: false });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Insert a new contractor document record */
+export async function uploadContractorDocument(docData: {
+  contractor_profile_id: string;
+  document_type: string;
+  file_name: string;
+  file_url: string;
+  file_size: number;
+  expires_at?: string | null;
+}) {
+  const { data, error } = await supabase()
+    .from("contractor_documents")
+    .insert({
+      ...docData,
+      status: "pending",
+    })
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Update document status (admin review) */
+export async function updateDocumentStatus(
+  documentId: string,
+  status: "pending" | "approved" | "rejected" | "expired",
+  reviewerId?: string,
+  rejectionReason?: string
+) {
+  const updates: Record<string, unknown> = { status };
+  if (status === "approved" || status === "rejected") {
+    updates.reviewed_at = new Date().toISOString();
+    if (reviewerId) updates.reviewed_by = reviewerId;
+  }
+  if (rejectionReason) updates.rejection_reason = rejectionReason;
+
+  const { data, error } = await supabase()
+    .from("contractor_documents")
+    .update(updates)
+    .eq("id", documentId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+/** Get all pending documents across all contractors (admin) */
+export async function getPendingDocuments() {
+  const { data, error } = await supabase()
+    .from("contractor_documents")
+    .select("*, contractor_profiles(business_name, owner_name, profile_id)")
+    .eq("status", "pending")
+    .order("uploaded_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+/** Get documents expiring within N days */
+export async function getExpiringDocuments(daysAhead: number) {
+  const futureDate = new Date();
+  futureDate.setDate(futureDate.getDate() + daysAhead);
+  const futureDateStr = futureDate.toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split("T")[0];
+
+  const { data, error } = await supabase()
+    .from("contractor_documents")
+    .select("*, contractor_profiles(business_name, owner_name, profile_id)")
+    .eq("status", "approved")
+    .not("expires_at", "is", null)
+    .lte("expires_at", futureDateStr)
+    .gte("expires_at", todayStr)
+    .order("expires_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}

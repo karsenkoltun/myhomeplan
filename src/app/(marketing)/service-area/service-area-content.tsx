@@ -10,7 +10,8 @@ import {
   MarqueeCityItem,
 } from "@/components/marketing/infinite-marquee";
 import { motion, useInView } from "framer-motion";
-import { CheckCircle2, MapPin, ArrowRight, Clock } from "lucide-react";
+import { CheckCircle2, MapPin, ArrowRight, Clock, ChevronRight } from "lucide-react";
+import { CITIES } from "@/data/service-areas";
 
 const ServiceMap = dynamic(() => import("@/components/ui/service-map"), {
   ssr: false,
@@ -28,15 +29,11 @@ const ExpandMap = dynamic(() => import("@/components/ui/expand-map"), {
   ssr: false,
 });
 
-const activeCities = [
-  { name: "Kelowna", population: "150,000+" },
-  { name: "West Kelowna", population: "36,000+" },
-  { name: "Vernon", population: "44,000+" },
-  { name: "Penticton", population: "37,000+" },
-  { name: "Lake Country", population: "15,000+" },
-  { name: "Summerland", population: "12,000+" },
-  { name: "Peachland", population: "5,500+" },
-];
+const activeCities = CITIES.map((c) => ({
+  name: c.name,
+  population: c.population,
+  slug: c.slug,
+}));
 
 const comingSoon = [
   "Kamloops",
@@ -110,22 +107,27 @@ export default function ServiceAreaContent() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={citiesInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.5, delay: i * 0.08 }}
-                className="group rounded-2xl border border-border/50 bg-card p-6 hover:shadow-lg hover:shadow-black/5 transition-all duration-300"
               >
-                <div className="flex items-start justify-between">
+                <Link
+                  href={`/service-area/${city.slug}`}
+                  className="group flex items-start justify-between rounded-2xl border border-border/50 bg-card p-6 hover:border-primary/20 hover:shadow-lg hover:shadow-black/5 transition-all duration-300"
+                >
                   <div>
-                    <h3 className="text-base font-semibold tracking-tight">
+                    <h3 className="text-base font-semibold tracking-tight group-hover:text-primary transition-colors">
                       {city.name}
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
                       Pop. {city.population}
                     </p>
+                    <span className="mt-2 inline-flex items-center gap-1 text-xs font-medium text-primary opacity-0 transition-opacity group-hover:opacity-100">
+                      View services <ChevronRight className="h-3 w-3" />
+                    </span>
                   </div>
                   <span className="flex items-center gap-1.5 rounded-full bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-600">
                     <CheckCircle2 className="h-3 w-3" />
                     Active
                   </span>
-                </div>
+                </Link>
               </motion.div>
             ))}
           </div>

@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Pricing | Home Service Plans Starting at $89/mo | My Home Plan",
   description:
     "Transparent pricing for home maintenance plans. Essential, Complete, and Premium tiers with monthly, quarterly, and annual billing. Price lock guarantee included.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/pricing",
+  },
   openGraph: {
     title: "Pricing | Home Service Plans Starting at $89/mo | My Home Plan",
     description:

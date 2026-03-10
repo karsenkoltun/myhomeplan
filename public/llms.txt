@@ -1,0 +1,33 @@
+# My Home Plan
+
+> All your home services, one monthly plan. Serving the Okanagan Valley, BC.
+
+My Home Plan is a monthly subscription platform that bundles home maintenance services (lawn care, snow removal, HVAC, cleaning, pest control, and 27 more) into one plan. We serve 7 cities in BC's Okanagan Valley: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, and Peachland.
+
+## Key Pages
+
+- [Home](https://myhomeplan.ca/): Main landing page with overview of the subscription service
+- [How It Works](https://myhomeplan.ca/how-it-works): 4-step process explanation
+- [Pricing](https://myhomeplan.ca/pricing): Plans starting at $49-$249/month based on home type
+- [Plan Builder](https://myhomeplan.ca/plan-builder): Interactive tool to build a custom maintenance plan
+- [Service Area](https://myhomeplan.ca/service-area): Coverage map of the Okanagan Valley
+- [FAQ](https://myhomeplan.ca/faq): Frequently asked questions for homeowners, strata, and contractors
+- [For Homeowners](https://myhomeplan.ca/homeowners): Benefits for homeowners
+- [For Contractors](https://myhomeplan.ca/contractors): How contractors join the network
+- [For Strata](https://myhomeplan.ca/strata): Strata and building maintenance plans
+- [For Property Managers](https://myhomeplan.ca/property-managers): Multi-property management solutions
+- [Blog](https://myhomeplan.ca/blog): 70+ articles on home maintenance, cost guides, and local tips
+- [About](https://myhomeplan.ca/about): Company information
+- [Contact](https://myhomeplan.ca/contact): Contact information
+
+## Services Offered
+Lawn mowing, snow removal, gutter cleaning, window cleaning, HVAC tune-ups, house cleaning, pest control, handyman services, pressure washing, tree trimming, garden maintenance, deck staining, driveway sealing, roof cleaning, deep cleaning, air duct cleaning, plumbing inspection, electrical inspection, water heater service, chimney sweep, appliance maintenance, dryer vent cleaning, sump pump maintenance, exterior caulking, spring cleanup, fall cleanup, lawn fertilization, irrigation maintenance, carpet cleaning, garage cleaning, organizing, junk removal.
+
+## Pricing
+- Suburban homes: $89-$249/month
+- Townhomes: $69-$189/month
+- Condos: $49-$149/month
+- Annual plans save 15%
+
+## Service Area
+Okanagan Valley, British Columbia, Canada: Kelowna, West Kelowna, Vernon, Penticton, Lake Country, Summerland, Peachland.

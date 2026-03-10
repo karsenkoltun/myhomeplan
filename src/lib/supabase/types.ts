@@ -236,6 +236,29 @@ export type Database = {
         Insert: Partial<Database["public"]["Tables"]["contractor_references"]["Row"]> & { contractor_profile_id: string };
         Update: Partial<Database["public"]["Tables"]["contractor_references"]["Row"]>;
       };
+      contractor_documents: {
+        Row: {
+          id: string;
+          contractor_profile_id: string;
+          document_type: "business_license" | "insurance_certificate" | "wcb_letter" | "background_check" | "drivers_license" | "other";
+          file_name: string;
+          file_url: string;
+          file_size: number;
+          status: "pending" | "approved" | "rejected" | "expired";
+          expires_at: string | null;
+          reviewed_at: string | null;
+          reviewed_by: string | null;
+          rejection_reason: string | null;
+          uploaded_at: string;
+        };
+        Insert: Partial<Database["public"]["Tables"]["contractor_documents"]["Row"]> & {
+          contractor_profile_id: string;
+          document_type: string;
+          file_name: string;
+          file_url: string;
+        };
+        Update: Partial<Database["public"]["Tables"]["contractor_documents"]["Row"]>;
+      };
       // PM tables
       pm_companies: {
         Row: {

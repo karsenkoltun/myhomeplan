@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "FAQ | Frequently Asked Questions | My Home Plan",
   description:
     "Get answers to common questions about My Home Plan's home service subscriptions, pricing, contractor vetting, service areas, and satisfaction guarantee.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/faq",
+  },
   openGraph: {
     title: "FAQ | Frequently Asked Questions | My Home Plan",
     description:

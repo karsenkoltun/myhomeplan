@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllPosts } from "@/lib/blog";
 import { BLOG_CATEGORIES, type BlogCategory } from "@/types/blog";
+import { CITIES } from "@/data/service-areas";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://myhomeplan.ca";
@@ -24,6 +25,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
   ];
 
+  // Service area city pages
+  const cityPages: MetadataRoute.Sitemap = CITIES.map((city) => ({
+    url: `${baseUrl}/service-area/${city.slug}`,
+    lastModified: new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.8,
+  }));
+
   // Blog category pages
   const categoryPages: MetadataRoute.Sitemap = (
     Object.keys(BLOG_CATEGORIES) as BlogCategory[]
@@ -43,5 +52,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.8,
   }));
 
-  return [...staticPages, ...categoryPages, ...blogPages];
+  return [...staticPages, ...cityPages, ...categoryPages, ...blogPages];
 }

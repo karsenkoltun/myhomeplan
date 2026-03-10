@@ -5,6 +5,7 @@ import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { OrganizationSchema } from "@/components/seo/schema-markup";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -108,6 +109,13 @@ export default function RootLayout({
               },
             }),
           }}
+        />
+        <OrganizationSchema
+          sameAs={[
+            "https://www.facebook.com/myhomeplan",
+            "https://www.instagram.com/myhomeplan",
+            "https://www.linkedin.com/company/myhomeplan",
+          ]}
         />
       </head>
       <body

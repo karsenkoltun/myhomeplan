@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Join as a Contractor | Free Leads & Guaranteed Pay | My Home Plan",
   description:
     "Get free qualified leads, guaranteed payment, and zero marketing costs. Join the Okanagan's fastest-growing home service network. Licensed contractors welcome.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/contractors",
+  },
   openGraph: {
     title: "Join as a Contractor | Free Leads & Guaranteed Pay | My Home Plan",
     description:

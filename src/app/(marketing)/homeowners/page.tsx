@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Homeowners | Save 20-40% on Home Maintenance | My Home Plan",
   description:
     "Stop overpaying for home services. One monthly plan covers lawn care, snow removal, HVAC, cleaning, pest control and more. Vetted contractors, guaranteed scheduling. Serving the Okanagan Valley, BC.",
+  alternates: {
+    canonical: "https://myhomeplan.ca/homeowners",
+  },
   openGraph: {
     title: "Homeowners | Save 20-40% on Home Maintenance | My Home Plan",
     description:
