@@ -15,7 +15,7 @@ import { usePlanStore } from "@/stores/plan-store";
 import { useAuth } from "@/components/auth/auth-provider";
 import { SERVICES, PLAN_DISCOUNTS } from "@/data/services";
 import { calculateServicePrice } from "@/lib/pricing";
-import { updateProfile, upsertProperty, upsertContractorProfile, saveContractorReferences, saveContractorServiceRates, createSubscription } from "@/lib/supabase/queries";
+import { updateProfile, upsertContractorProfile, saveContractorReferences, saveContractorServiceRates } from "@/lib/supabase/queries";
 import { calculateContractorPayout } from "@/lib/pricing";
 import { SpringNumber, ShimmerButton } from "@/components/ui/motion";
 import { toast } from "sonner";
@@ -93,87 +93,99 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
 
     try {
       if (user) {
-        // Save profile (but NOT onboarding_complete - that happens after payment)
-        await updateProfile(user.id, {
-          first_name: firstName,
-          last_name: lastName,
-          email,
-          phone,
-          street: property.address,
-          province: "BC",
-          agreed_to_terms: true,
-          agreed_to_privacy: true,
-        });
-
-        const savedProperty = await upsertProperty(user.id, {
-          address: property.address,
-          home_sqft: property.homeSqft,
-          lot_sqft: property.lotSqft,
-          year_built: property.yearBuilt,
-          home_type: property.homeType,
-          bedrooms: property.bedrooms,
-          bathrooms: property.bathrooms,
-          floors: property.floors,
-          heating_type: property.heatingType,
-          has_ac: property.hasAC,
-          has_garage: property.hasGarage,
-          has_driveway: property.hasDriveway,
-          has_deck: property.hasDeck,
-          has_fence: property.hasFence,
-          has_pets: property.hasPets,
-          roof_type: property.roofType,
-          exterior_material: property.exteriorMaterial,
-          foundation: property.foundation,
-          window_count: property.windowCount,
-          landscaping_complexity: property.landscapingComplexity,
-          mature_trees: property.matureTrees,
-          garden_beds: property.gardenBeds,
-          garden_bed_sqft: property.gardenBedSqft,
-          deck_patio_sqft: property.deckPatioSqft,
-          has_pool: property.hasPool,
-          has_irrigation: property.hasIrrigation,
-          driveway_material: property.drivewayMaterial,
-          driveway_length: property.drivewayLength,
-          fence_type: property.fenceType,
-          fence_linear_feet: property.fenceLinearFeet,
-          hvac_brand: property.hvacBrand,
-          hvac_age: property.hvacAge,
-          water_heater_type: property.waterHeaterType,
-          water_heater_age: property.waterHeaterAge,
-          furnace_filter_size: property.furnaceFilterSize,
-          access_instructions: property.accessInstructions,
-          gate_code_exists: property.gateCodeExists,
-          lockbox_exists: property.lockboxExists,
-          alarm_system: property.alarmSystem,
-          pet_details: property.petDetails,
-          parking_instructions: property.parkingInstructions,
-          preferred_service_day: property.preferredServiceDay,
-          chemical_sensitivities: property.chemicalSensitivities,
-          special_instructions: property.specialInstructions,
-          home_insurance_provider: property.homeInsuranceProvider,
-        });
-
-        let subscriptionId: string | null = null;
-
-        if (selectedServices.length > 0) {
-          const serviceItems = selectedServiceData.map((s) => ({
-            serviceId: s.id,
-            frequency: s.frequency,
-            specs: serviceSpecs[s.id] || {},
-            monthlyPrice: calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
-          }));
-
-          const sub = await createSubscription(
-            user.id,
-            savedProperty.id,
-            planInterval,
-            total,
-            discount,
-            serviceItems,
-            "trialing"
-          );
-          subscriptionId = sub.id;
+        if (selectedServices.length === 0) {
+          completeOnboarding();
+          setSubmitted(true);
+          toast.success("Welcome to My Home Plan!");
+          setTimeout(onComplete, 1500);
+          return;
         }
+
+        // Build service items for the API
+        const serviceItems = selectedServiceData.map((s) => ({
+          serviceId: s.id,
+          frequency: s.frequency,
+          specs: serviceSpecs[s.id] || {},
+          monthlyPrice: calculateServicePrice(s, property.homeSqft, property.lotSqft, serviceSpecs[s.id], property),
+        }));
+
+        // Create subscription + property + profile update via server API
+        const subRes = await fetch("/api/subscriptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            propertyId: null,
+            planInterval,
+            monthlyTotal: total,
+            discountPct: discount,
+            services: serviceItems,
+            status: "trialing",
+            profileData: {
+              first_name: firstName,
+              last_name: lastName,
+              email,
+              phone,
+              street: property.address,
+              province: "BC",
+              agreed_to_terms: true,
+              agreed_to_privacy: true,
+            },
+            propertyData: {
+              address: property.address,
+              home_sqft: property.homeSqft,
+              lot_sqft: property.lotSqft,
+              year_built: property.yearBuilt,
+              home_type: property.homeType,
+              bedrooms: property.bedrooms,
+              bathrooms: property.bathrooms,
+              floors: property.floors,
+              heating_type: property.heatingType,
+              has_ac: property.hasAC,
+              has_garage: property.hasGarage,
+              has_driveway: property.hasDriveway,
+              has_deck: property.hasDeck,
+              has_fence: property.hasFence,
+              has_pets: property.hasPets,
+              roof_type: property.roofType,
+              exterior_material: property.exteriorMaterial,
+              foundation: property.foundation,
+              window_count: property.windowCount,
+              landscaping_complexity: property.landscapingComplexity,
+              mature_trees: property.matureTrees,
+              garden_beds: property.gardenBeds,
+              garden_bed_sqft: property.gardenBedSqft,
+              deck_patio_sqft: property.deckPatioSqft,
+              has_pool: property.hasPool,
+              has_irrigation: property.hasIrrigation,
+              driveway_material: property.drivewayMaterial,
+              driveway_length: property.drivewayLength,
+              fence_type: property.fenceType,
+              fence_linear_feet: property.fenceLinearFeet,
+              hvac_brand: property.hvacBrand,
+              hvac_age: property.hvacAge,
+              water_heater_type: property.waterHeaterType,
+              water_heater_age: property.waterHeaterAge,
+              furnace_filter_size: property.furnaceFilterSize,
+              access_instructions: property.accessInstructions,
+              gate_code_exists: property.gateCodeExists,
+              lockbox_exists: property.lockboxExists,
+              alarm_system: property.alarmSystem,
+              pet_details: property.petDetails,
+              parking_instructions: property.parkingInstructions,
+              preferred_service_day: property.preferredServiceDay,
+              chemical_sensitivities: property.chemicalSensitivities,
+              special_instructions: property.specialInstructions,
+              home_insurance_provider: property.homeInsuranceProvider,
+            },
+          }),
+        });
+
+        const subData = await subRes.json();
+        if (!subRes.ok) {
+          throw new Error(subData.error || "Failed to save plan");
+        }
+
+        const subscriptionId = subData.subscription?.id;
 
         // Update local store before redirect
         setAccount({
@@ -196,7 +208,7 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
 
         // Redirect to Stripe Checkout
         if (subscriptionId) {
-          const res = await fetch("/api/stripe/checkout", {
+          const checkoutRes = await fetch("/api/stripe/checkout", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -206,23 +218,22 @@ function HomeownerReview({ onComplete }: { onComplete: () => void }) {
             }),
           });
 
-          const data = await res.json();
-          if (data.url) {
-            window.location.href = data.url;
+          const checkoutData = await checkoutRes.json();
+          if (checkoutData.url) {
+            window.location.href = checkoutData.url;
             return;
           }
-          throw new Error(data.error || "Failed to create checkout session");
+          throw new Error(checkoutData.error || "Failed to create checkout session");
         }
       }
 
-      // Fallback if no services selected (shouldn't happen, but safe)
       completeOnboarding();
       setSubmitted(true);
       toast.success("Welcome to My Home Plan!");
       setTimeout(onComplete, 1500);
     } catch (error) {
       console.error("Failed to save:", error);
-      toast.error("Something went wrong. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Something went wrong. Please try again.");
     } finally {
       setSaving(false);
     }

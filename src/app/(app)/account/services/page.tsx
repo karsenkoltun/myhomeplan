@@ -31,8 +31,6 @@ import {
   getAllProperties,
   getSubscriptionForProperty,
   getSubscription,
-  createSubscription,
-  updateSetupProgress,
 } from "@/lib/supabase/queries";
 import { PropertySelector } from "@/components/dashboard/property-selector";
 import { toast } from "sonner";
@@ -514,23 +512,29 @@ function SavePlanButton({
         monthlyPrice: servicePrices[s.id] || 0,
       }));
 
-      await createSubscription(
-        userId,
-        propertyId,
-        planInterval as "monthly" | "quarterly" | "annual",
-        monthlyTotal,
-        discount,
-        serviceItems,
-        "draft" as "active" | "trialing"
-      );
+      const res = await fetch("/api/subscriptions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          propertyId,
+          planInterval,
+          monthlyTotal,
+          discountPct: discount,
+          services: serviceItems,
+          status: "trialing",
+        }),
+      });
 
-      await updateSetupProgress(userId, "plan_configured", true).catch(() => {});
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Failed to save plan");
+      }
+
       toast.success("Plan saved! Activate it when you're ready to start.");
-      // Reload to show DB view
       window.location.reload();
     } catch (error) {
       console.error("Failed to save plan:", error);
-      toast.error("Failed to save plan. Please try again.");
+      toast.error(error instanceof Error ? error.message : "Failed to save plan. Please try again.");
     } finally {
       setSaving(false);
     }
