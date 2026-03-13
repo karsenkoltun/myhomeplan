@@ -3,8 +3,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { FadeIn, ShimmerButton, AnimatedCounter } from "@/components/ui/motion";
-import { HeroScene } from "@/components/hero/hero-scene";
-import { HeroTextReveal } from "@/components/hero/hero-text-reveal";
+import { HeroSection } from "@/components/hero/hero-section";
 import { Timeline } from "@/components/ui/timeline";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect, useCallback } from "react";
@@ -279,10 +278,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col overflow-x-clip">
       {/* ══════════ HERO ══════════ */}
-      <section className="relative min-h-[100vh] overflow-hidden">
-        <HeroScene />
-        <HeroTextReveal />
-      </section>
+      <HeroSection />
 
 
       {/* ══════════ PROBLEM → SOLUTION ══════════ */}
